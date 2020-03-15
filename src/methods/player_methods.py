@@ -259,7 +259,7 @@ def attach(app):
     @app.route('/me/buy_ins', methods=['GET'])
     @role_jwt_required(['user'])
     def get_buy_in(user_id):
-        
+
         buyin = Buy_ins.query.filter_by(user_id=user_id).order_by(Buy_ins.id.desc()).first()
         if buyin is None:
             raise APIException('Buy_in not found', 404)
