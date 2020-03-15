@@ -1,13 +1,13 @@
 import os
 import utils
 import requests
-from flask import render_template
+from flask import render_template, jsonify
 from models import Devices
 from utils import APIException
 from pyfcm import FCMNotification
 
 push_service = None
-FIREBASE_KEY = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+FIREBASE_KEY = os.environ.get('FIREBASE_KEY')
 if FIREBASE_KEY is not None:
     push_service = FCMNotification(api_key=FIREBASE_KEY)
 
@@ -87,7 +87,7 @@ def send_fcm(template, user_id, data={}):
     #     message_body = content['fms'],
     #     data_message = data['data_message']
     # )
-
+    return jsonify(result)
     if result['failure'] or not result['success']:
         raise APIException('Problem sending the notification')
 
