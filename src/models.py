@@ -343,6 +343,7 @@ class BuyinStatus(enum.Enum):
     active = 'active'
     busted = 'busted'
     cashed = 'cashed'
+    bagged = 'bagged'
     pending = 'pending'
 
 class Buy_ins(db.Model):
