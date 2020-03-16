@@ -8,6 +8,82 @@ from datetime import datetime
 from models import db, Profiles, Buy_ins, Swaps, Tournaments, Flights
 
 
+
+def original_endpoint(user_id, id):
+        
+        if id == 'all':
+            now = datetime.utcnow() - timedelta(days=1)
+
+            # Filter past tournaments
+            if request.args.get('history') == 'true':
+                trmnts = Tournaments.get_history()
+
+            # Filter current and future tournaments
+            else:
+                trmnts = Tournaments.get_live_upcoming()
+                    
+            # Filter by name
+            name = request.args.get('name') 
+            if name is not None:
+                trmnts = trmnts.filter( Tournaments.name.ilike(f'%{name}%') )
+
+
+            # Order by zip code
+            zip = request.args.get('zip', '')
+            if zip.isnumeric():
+                path = os.environ['APP_PATH']
+                with open( path + '/src/zip_codes.json' ) as zip_file:
+                    data = json.load(zip_file)
+                    zipcode = data.get(zip)
+                    if zipcode is None:
+                        raise APIException('Zipcode not in file', 500)
+                    lat = zipcode['latitude']
+                    lon = zipcode['longitude']
+
+            # Order by user location
+            else:
+                lat = request.args.get('lat', '')
+                lon = request.args.get('lon', '')
+
+            if isfloat(lat) and isfloat(lon):
+                trmnts = trmnts.order_by( 
+                    ( db.func.abs(float(lon) - Tournaments.longitude) + 
+                      db.func.abs(float(lat) - Tournaments.latitude) )
+                .asc() )
+
+            # Order by ascending date
+            elif request.args.get('asc') == 'true':
+                trmnts = trmnts.order_by( Tournaments.start_at.asc() )
+
+            # Order by descending date
+            elif request.args.get('desc') == 'true':
+                trmnts = trmnts.order_by( Tournaments.start_at.desc() )
+
+            
+            # Pagination
+            offset, limit = utils.resolve_pagination( request.args )
+            trmnts = trmnts.offset( offset ).limit( limit )
+
+            
+            return jsonify(
+                [ actions.swap_tracker_json( trmnt, user_id ) for trmnt in trmnts ]
+            ), 200
+
+
+        # Single tournament by id
+        elif id.isnumeric():
+            trmnt = Tournaments.query.get(int(id))
+            if trmnt is None:
+                raise APIException('Tournament not found', 404)
+
+            return jsonify( actions.swap_tracker_json( trmnt, user_id )), 200
+
+
+        raise APIException('Invalid id', 400)
+
+
+
+
 def swap_tracker_json(trmnt, user_id):
     
     my_buyin = Buy_ins.get_latest( user_id=user_id, tournament_id=trmnt.id )

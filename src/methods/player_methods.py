@@ -6,6 +6,7 @@ import actions
 import cloudinary
 import cloudinary.uploader
 from google.cloud import vision
+from functools import cmp_to_key
 from datetime import datetime, timedelta
 from flask import request, jsonify, render_template
 from flask_jwt_simple import create_jwt, decode_jwt, get_jwt
@@ -418,25 +419,38 @@ def attach(app):
     @app.route('/tournaments/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_tournaments(user_id, id):
-
+        
+        # List Flights
         if id == 'all':
-            now = datetime.utcnow() - timedelta(days=1)
+            
+            # Order by date: ascending or descending
+            order_method = None
+            if request.args.get('asc') == 'true':
+                order_method = Flights.start_at.asc()
+            elif request.args.get('desc') == 'true':
+                order_method = Flights.start_at.desc()
 
-            # Filter past tournaments
+            # Filter past flights and order by default asc
             if request.args.get('history') == 'true':
-                trmnts = Tournaments.get_history()
+                flights = Flights.get(history=True)
+                flights = flights.order_by(
+                    Flights.start_at.desc() if order_method is None else order_method )
 
-            # Filter current and future tournaments
+            # Filter current and future flights and order by default desc
             else:
-                trmnts = Tournaments.get_live_upcoming()
-                    
+                flights = Flights.get(history=False)
+                flights = flights.order_by(
+                    Flights.start_at.asc() if order_method is None else order_method )
+
+            
             # Filter by name
             name = request.args.get('name') 
             if name is not None:
-                trmnts = trmnts.filter( Tournaments.name.ilike(f'%{name}%') )
+                flights = flights.filter( Flights.tournament.has(
+                    Tournaments.name.ilike(f'%{name}%') ))
 
 
-            # Order by zip code
+            # Get zip code LAT LON
             zip = request.args.get('zip', '')
             if zip.isnumeric():
                 path = os.environ['APP_PATH']
@@ -448,35 +462,49 @@ def attach(app):
                     lat = zipcode['latitude']
                     lon = zipcode['longitude']
 
-            # Order by user location
+            # Get user LAT LON
             else:
                 lat = request.args.get('lat', '')
                 lon = request.args.get('lon', '')
 
+            # Order flights by distance, whithin the day
             if isfloat(lat) and isfloat(lon):
-                trmnts = trmnts.order_by( 
-                    ( db.func.abs(float(lon) - Tournaments.longitude) + 
-                      db.func.abs(float(lat) - Tournaments.latitude) )
-                .asc() )
+                flights = [{
+                    'flight': f,
+                    'distance': utils.distance( 
+                        origin=[float(lat), float(lon)],
+                        destination=[f.tournament.latitude, f.tournament.longitude] )
+                } for f in flights]
 
-            # Order by ascending date
-            elif request.args.get('asc') == 'true':
-                trmnts = trmnts.order_by( Tournaments.start_at.asc() )
+                flights = sorted( flights, key=cmp_to_key(utils.sort_by_location) )
 
-            # Order by descending date
-            elif request.args.get('desc') == 'true':
-                trmnts = trmnts.order_by( Tournaments.start_at.desc() )
+                # Pagination
+                offset, limit = utils.resolve_pagination( request.args )
+                flights = flights[ offset : offset+limit ]
+                
+                return jsonify([{
+                    ** x['flight'].serialize(),
+                    'address': x['flight'].tournament.address,
+                    'city': x['flight'].tournament.city,
+                    'state': x['flight'].tournament.state,
+                    'zip_code': x['flight'].tournament.zip_code,
+                    'distance': x['distance']
+                } for x in flights]), 200
 
+
+            else:
+                # Pagination
+                offset, limit = utils.resolve_pagination( request.args )
+                flights = flights.offset( offset ).limit( limit )
+                
+                return jsonify([{
+                    **f.serialize(),
+                    'address': f.tournament.address,
+                    'city': f.tournament.city,
+                    'state': f.tournament.state,
+                    'zip_code': f.tournament.zip_code
+                } for f in flights], 200)
             
-            # Pagination
-            offset, limit = utils.resolve_pagination( request.args )
-            trmnts = trmnts.offset( offset ).limit( limit )
-
-            
-            return jsonify(
-                [ actions.swap_tracker_json( trmnt, user_id ) for trmnt in trmnts ]
-            ), 200
-
 
         # Single tournament by id
         elif id.isnumeric():

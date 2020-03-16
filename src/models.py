@@ -256,11 +256,12 @@ class Tournaments(db.Model):
         close_time = utils.designated_trmnt_close_time()
         trmnts = Tournaments.query \
                     .filter( Tournaments.flights.any(
-                        db.not_( Flights.start_at > close_time )))
+                        db.not_( Flights.start_at > close_time ))) \
+                    .order_by( Tournaments.start_at.desc() )
         if user_id:
             trmnts = trmnts.filter( Tournaments.flights.any( 
-                            Flights.buy_ins.any( user_id = user_id ))) \
-                        .order_by( Tournaments.start_at.desc() )
+                            Flights.buy_ins.any( user_id = user_id )))
+                        
         return trmnts if trmnts.count() > 0 else None
     
     def get_all_users_latest_buyins(self):
@@ -314,6 +315,16 @@ class Flights(db.Model):
 
     def __repr__(self):
         return f'<Flights tournament_id:{self.tournament_id} day:{self.day}>'
+
+    @staticmethod
+    def get(history, user_id=False):
+        close_time = utils.designated_trmnt_close_time()
+        condition = Flights.start_at < close_time if history == True \
+                else Flights.start_at > close_time
+        flights = Flights.query.filter( condition )
+        if user_id:
+            flights = flights.filter( Flights.buy_ins.any( user_id=user_id ) )
+        return flights if flights.count() > 0 else None
 
     def serialize(self):
         return {

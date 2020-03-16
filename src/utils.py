@@ -1,5 +1,6 @@
 import os
 import re
+import math
 import hashlib
 import cloudinary
 import cloudinary.uploader
@@ -108,6 +109,32 @@ def ocr_reading(result):
     response = client.text_detection(image=image)
     texts = response.text_annotations
     return texts and texts[0].description
+
+def sort_by_location(a, b):
+    af = a['flight'].start_at
+    bf = b['flight'].start_at
+    # if same day, order by distance
+    if (af.timetuple().tm_yday + af.year) == (bf.timetuple().tm_yday + bf.year):
+        return -1 if a['distance'] < b['distance'] else 1
+    # else order by day first
+    else:
+        return -1 if af < bf else 1
+
+def distance(origin, destination):
+    lat1, lon1 = origin
+    lat2, lon2 = destination
+    radius = 3958.8  # miles
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+            math.cos(math.radians(lat1)) *
+            math.cos(math.radians(lat2)) * math.sin(dlon / 2) *
+            math.sin(dlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = radius * c
+
+    return d
 
 # Notes: 'admin' will have access even if arg not passed
 def role_jwt_required(valid_roles=['invalid']):
