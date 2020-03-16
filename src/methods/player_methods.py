@@ -488,6 +488,7 @@ def attach(app):
                     'city': x['flight'].tournament.city,
                     'state': x['flight'].tournament.state,
                     'zip_code': x['flight'].tournament.zip_code,
+                    'buy_in': Buy_ins.get_latest( user_id, f.tournament_id ) is not None,
                     'distance': x['distance']
                 } for x in flights]), 200
 
@@ -502,8 +503,9 @@ def attach(app):
                     'address': f.tournament.address,
                     'city': f.tournament.city,
                     'state': f.tournament.state,
-                    'zip_code': f.tournament.zip_code
-                } for f in flights], 200)
+                    'zip_code': f.tournament.zip_code,
+                    'buy_in': Buy_ins.get_latest( user_id, f.tournament_id ) is not None
+                } for f in flights]), 200
             
 
         # Single tournament by id
