@@ -254,13 +254,13 @@ def run():
     now = datetime.utcnow()
     live = Tournaments(
         name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties',
-        address='Thunder Valley Casino Resort, 1200 Athens Ave',
-        city='Lincoln',
-        state='CA',
-        zip_code='95648',
-        latitude=38.904035,
-        longitude=-121.295541,
-        start_at=now - timedelta(days=2)
+        address='5550 NW 40th St',
+        city='Coconut Creek',
+        state='FL',
+        zip_code='33073',
+        latitude=26.2779,
+        longitude=-80.1989,
+        start_at=datetime(now.year,now.month,now.day,13)
     )
     db.session.add(live)
 
@@ -271,14 +271,12 @@ def run():
     ########################
 
     flight1_live = Flights(
-        start_at=now,
-        # end_at=now + timedelta(hours=5),
+        start_at=live.start_at,
         tournament=live,
         day='1A'
     )
     flight2_live = Flights(
-        start_at=now + timedelta(days=1),
-        # end_at=now + timedelta(days=1, hours=5),
+        start_at=datetime(now.year,now.month,now.day,17),
         tournament=live,
         day='1B'
     )
@@ -287,13 +285,11 @@ def run():
 
     flight1_heartland = Flights(
         start_at=datetime(2019,10,11,12),
-        # end_at=datetime(2019,10,11,16),
         tournament=heartland,
         day='1'
     )
     flight2_heartland = Flights(
         start_at=datetime(2019,10,11,16),
-        # end_at=datetime(2019,10,11,21),
         tournament=heartland,
         day='2'
     )
@@ -302,19 +298,16 @@ def run():
 
     flight1_stones = Flights(
         start_at=datetime(2019,9,30,12),
-        # end_at=datetime(2019,9,30,15),
         tournament=stones,
         day='1'
     )
     flight2_stones = Flights(
         start_at=datetime(2019,9,30,15),
-        # end_at=datetime(2019,9,30,21),
         tournament=stones,
         day='2'
     )
     flight3_stones = Flights(
         start_at=datetime(2019,10,1,12),
-        # end_at=datetime(2019,10,1,21),
         tournament=stones,
         day='3'
     )
@@ -323,7 +316,6 @@ def run():
 
     flight1_wpt = Flights(
         start_at=datetime(2019,10,2,12),
-        # end_at=datetime(2019,10,2,22),
         tournament=wpt,
         day='1'
     )
@@ -821,7 +813,6 @@ def run():
     )
     flight1_oldvegas = Flights(
         start_at=datetime(1990,5,2,10),
-        # end_at=now + timedelta(days=1, hours=5),
         tournament=oldvegas,
         day='1'
     )
