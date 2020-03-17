@@ -466,7 +466,7 @@ def attach(app):
             else:
                 lat = request.args.get('lat', '')
                 lon = request.args.get('lon', '')
-
+            # return f'lat:{lat}, lon:{lon}'
             # Order flights by distance, whithin the day
             if isfloat(lat) and isfloat(lon):
                 flights = [{
@@ -488,7 +488,8 @@ def attach(app):
                     'city': x['flight'].tournament.city,
                     'state': x['flight'].tournament.state,
                     'zip_code': x['flight'].tournament.zip_code,
-                    'buy_in': Buy_ins.get_latest( user_id, f.tournament_id ) is not None,
+                    'buy_in': Buy_ins.get_latest( 
+                        user_id, x['flight'].tournament_id ) is not None,
                     'distance': x['distance']
                 } for x in flights]), 200
 
