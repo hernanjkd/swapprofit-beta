@@ -371,10 +371,10 @@ def attach(app):
 
         buyin = Buy_ins.query.get(id)
         if buyin is None:
-            raise APIException('Buy_in not found', 404)
+            raise APIException('Buy-in not found', 404)
 
         if buyin.status._value_ == 'busted':
-            raise APIException('This buyin has a status of "busted"')
+            raise APIException('This buy-in has a status of "busted"')
 
 
         if request.args.get('validate') == 'true':
@@ -388,10 +388,10 @@ def attach(app):
                     #     'tournament_name': buyin.flight.tournament.name
                     # })
             elif buyin.status._value_ == 'active':
-                raise APIException('Buy in already validated')
+                raise APIException('Buy-in already validated')
 
         elif buyin.status._value_ == 'pending':
-            raise APIException('This buyin has not been validated', 406)
+            raise APIException('This buy-in has not been validated', 406)
 
         # Update status
         if req.get('status') == 'busted':
@@ -466,7 +466,7 @@ def attach(app):
             else:
                 lat = request.args.get('lat', '')
                 lon = request.args.get('lon', '')
-            # return f'lat:{lat}, lon:{lon}'
+            
             # Order flights by distance, whithin the day
             if isfloat(lat) and isfloat(lon):
                 flights = [{

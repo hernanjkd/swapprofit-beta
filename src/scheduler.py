@@ -1,20 +1,20 @@
 import os
 import utils
+import models as m
 from sqlalchemy import create_engine, func, asc, or_
 from sqlalchemy.orm import sessionmaker
-from models import Tournaments, Flights, Swaps
 from datetime import datetime, timedelta
 
 engine = create_engine( os.environ.get('DATABASE_URL'))
 Session = sessionmaker( bind=engine )
 session = Session()
 
-# Close tournaments
+
 close_time = utils.designated_trmnt_close_time()
-trmnts = session.query(Tournaments) \
-            .filter( Tournaments.status == 'open') \
-            .filter( Tournaments.flights.any(
-                Flights.start_at < close_time
+trmnts = session.query(m.Tournaments) \
+            .filter( m.Tournaments.status == 'open') \
+            .filter( m.Tournaments.flights.any(
+                m.Flights.start_at < close_time
             ))
 
 if trmnts is not None:
@@ -23,18 +23,31 @@ if trmnts is not None:
         if latest_flight.start_at < close_time:
             
             # This tournament is over: change status and clean swaps
+            print('update tournament', trmnt.id)
             trmnt.status = 'waiting_results'
-            swaps = session.query(Swaps) \
+            swaps = session.query(m.Swaps) \
                 .filter_by( tournament_id = trmnt.id ) \
                 .filter( or_( 
-                    Swaps.status == 'pending', 
-                    Swaps.status == 'incoming',
-                    Swaps.status == 'counter_incoming' ) )
+                    m.Swaps.status == 'pending', 
+                    m.Swaps.status == 'incoming',
+                    m.Swaps.status == 'counter_incoming' ) )
 
             for swap in swaps:
+                print('update swap', swap.id)
                 swap.status = 'canceled'
 
-            db.session.commit()
+            session.commit()
 
+
+# Delete buy-ins created before close time with status 'pending'
+buyins = session.query(m.Buy_ins) \
+    .filter_by( status = 'pending' ) \
+    .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+
+for buyin in buyins:
+    print('deleting buy-in', buyin.id)
+    session.delete(buyin)
+
+session.commit()
 
 

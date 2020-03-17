@@ -15,20 +15,17 @@ def attach(app):
         return str(r)
 
 
-    @app.route('/sendfcm/<device_token>')
-    def sendfcmtest(device_token):
-        utils.resolve_google_credentials()
+    @app.route('/sendfcm', methods=['POST'])
+    def sendfcmtest():
+        
+        j = request.get_json()
+
         return send_fcm(0,0,
             data={
-                "token": device_token,
-                "title": "A Tournament Went Live!",
-                "body": "The Alamo Hold'em 2019 tournament is now live",
-                "data" : {
-                    "type": "tournament",
-                    "id": "3",
-                    "initialPath": "Tournaments",
-                    "finalPath": "TourneyLobby"
-                }
+                "token": j['device_token'],
+                "title": j['title'],
+                "body": j['body'],
+                "data" : j['data']
             }
         )
         
