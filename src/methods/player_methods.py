@@ -373,12 +373,14 @@ def attach(app):
         if buyin is None:
             raise APIException('Buy-in not found', 404)
 
-        if buyin.status._value_ == 'busted':
-            raise APIException('This buy-in has a status of "busted"')
 
+        buyin_status = buyin.status._value_
+
+        if buyin_status in ['cashed', 'busted']:
+            raise APIException('This buy-in can no longer be modified')
 
         if request.args.get('validate') == 'true':
-            if buyin.status._value_ == 'pending':
+            if buyin_status == 'pending':
                 utils.check_params(req, 'chips','table','seat')
                 buyin.status = 'active'
                 # send_email(template='buyin_receipt', emails=buyin.user.user.email,
@@ -387,15 +389,16 @@ def attach(app):
                     #     'tournament_date': buyin.flight.tournament.start_at,
                     #     'tournament_name': buyin.flight.tournament.name
                     # })
-            elif buyin.status._value_ == 'active':
+            elif buyin_status == 'active':
                 raise APIException('Buy-in already validated')
 
-        elif buyin.status._value_ == 'pending':
+        elif buyin_status == 'pending':
             raise APIException('This buy-in has not been validated', 406)
 
+
         # Update status
-        if req.get('status') == 'busted':
-            buyin.status = 'busted'
+        if req.get('status') is not None:
+            buyin.status = req['status']
 
         # Update chips, table and seat
         if req.get('chips') is not None:
