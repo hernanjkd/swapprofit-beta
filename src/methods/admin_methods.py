@@ -286,6 +286,49 @@ def attach(app):
 
 
 
+    @app.route('/devices/users/<int:id>')
+    def get_user_device(id):
+
+        devices = Devices.query.filter_by( user_id = id )
+        if devices.count() == 0:
+            raise APIException('No devices registered for this user')
+
+        return jsonify([x.serialize() for x in devices])
+
+
+
+
+    @app.route('/users/me/devices', methods=['POST'])
+    @role_jwt_required(['user'])
+    def add_device(user_id):
+        req = request.get_json()
+        utils.check_params(req, 'device_token')
+        db.session.add(Devices(
+            user_id = user_id,
+            token = req['device_token'] ))
+        db.session.commit()
+        return jsonify({'message':'Device added successfully'})
+
+
+
+
+    @app.route('/users/me/devices', methods=['DELETE'])
+    @role_jwt_required(['user'])
+    def delete_device(user_id):
+        
+        req = request.get_json()
+        utils.check_params(req, 'device_token')
+        
+        devices = Devices.query.filter_by( token=req['device_token'] )
+        for device in devices:
+            db.session.delete( device )
+            db.session.commit()
+        
+        return jsonify({'message':'Device deleted successfully'})
+
+
+
+
     @app.route('/tournaments', methods=['POST'])
     def add_tournament():
         req = request.get_json()
@@ -353,23 +396,6 @@ def attach(app):
 
 
 
-    @app.route('/users/me/devices', methods=['DELETE'])
-    @role_jwt_required(['user'])
-    def delete_device(user_id):
-        
-        req = request.get_json()
-        utils.check_params(req, 'device_token')
-        
-        devices = Devices.query.filter_by( token=req['device_token'] )
-        for device in devices:
-            db.session.delete( device )
-            db.session.commit()
-        
-        return jsonify({'message':'Device deleted successfully'})
-
-
-
-
     @app.route('/buy_ins/<id>')
     def get_buyins(id):
         if id == 'all':
@@ -428,20 +454,6 @@ def attach(app):
         db.session.delete( Swaps.query.get(req['sender_id'], req['recipient_id'], req['tournament_id']) )
         db.session.commit()
         return jsonify({'message':'Swap deleted'}), 200
-
-
-
-
-    @app.route('/users/me/devices', methods=['POST'])
-    @role_jwt_required(['user'])
-    def add_device(user_id):
-        req = request.get_json()
-        utils.check_params(req, 'device_token')
-        db.session.add(Devices(
-            user_id = user_id,
-            token = req['device_token'] ))
-        db.session.commit()
-        return jsonify({'message':'Device added successfully'})
 
 
 
