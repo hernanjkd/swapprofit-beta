@@ -286,7 +286,7 @@ def attach(app):
 
 
 
-    @app.route('/devices/users/<int:id>')
+    @app.route('/users/<int:id>/devices')
     def get_user_device(id):
 
         devices = Devices.query.filter_by( user_id = id )
