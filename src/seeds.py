@@ -1,7 +1,8 @@
-import actions
+from sqlalchemy import func
 from models import db, Users, Profiles, Tournaments, Swaps, Flights, Buy_ins, Transactions, Devices
 from datetime import datetime, timedelta
 from utils import sha256
+import actions
 
 
 def run():
@@ -17,9 +18,9 @@ def run():
     Users.query.delete()
 
     db.session.execute("ALTER SEQUENCE users_id_seq RESTART")
-    db.session.execute("ALTER SEQUENCE tournaments_id_seq RESTART WITH 1000")
-    db.session.execute("ALTER SEQUENCE flights_id_seq RESTART WITH 1")
     db.session.execute("ALTER SEQUENCE buy_ins_id_seq RESTART")
+    db.session.execute("ALTER SEQUENCE flights_id_seq RESTART")
+    db.session.execute("ALTER SEQUENCE tournaments_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE swaps_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE transactions_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE devices_id_seq RESTART")
@@ -27,8 +28,21 @@ def run():
     db.session.commit()
 
 
+    # LOAD FILES
     actions.load_tournament_file()
 
+
+    latest_trmnt_id = db.session.query( func.max( Tournaments.id)).scalar()
+    db.session.execute(
+        "ALTER SEQUENCE tournaments_id_seq RESTART WITH " + 
+        str(latest_trmnt_id + 1) )
+
+    latest_flight_id = db.session.query( func.max( Flights.id)).scalar()
+    db.session.execute(
+        "ALTER SEQUENCE flights_id_seq RESTART WITH " +
+        str(latest_flight_id + 1) )
+    
+ 
     ########################
     #  USERS AND PROFILES
     ########################
@@ -55,7 +69,7 @@ def run():
         coins=100,
         user=lou
     ))
-
+    
     cary = Users(
         email='katz234@gmail.com',
         password=sha256('carykatz'),
@@ -3653,5 +3667,6 @@ def run():
     ##############################################
 
 
-    
+
     db.session.commit()
+    return
