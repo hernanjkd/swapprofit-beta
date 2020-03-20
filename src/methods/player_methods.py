@@ -675,6 +675,7 @@ def attach(app):
 
         if 'percentage' in req and new_status not in ['agreed','rejected','canceled']:
 
+            # Handle percentage errors
             percentage = req['percentage']
             counter = req.get('counter_percentage', percentage)
             if percentage < 1 or counter < 1:
@@ -698,6 +699,7 @@ def attach(app):
             counter_swap.percentage = counter
 
 
+        # Handle status errors
         if current_status == 'pending':
             if new_status == 'agreed':
                 raise APIException('Cannot agree a swap on a pending status', 400)
@@ -762,15 +764,18 @@ def attach(app):
         
         # Notifications
         status_to_fcm = ['counter-incoming','canceled','rejected','agreed']
-        counter_status = counter_swap.status._value_
+        status = swap.status._value_
         
-        if counter_status in status_to_fcm:
-            action = { 'counter-incoming':'countered', 'canceled':'canceled',
-                'rejected':'rejected', 'agreed':'agreed to' }
+        if status in status_to_fcm:
+            data = {
+                'counter-incoming': ('Swap Countered','countered'),
+                'canceled': ('Swap Canceled','canceled'),
+                'rejected':('Swap Rejected','rejected'),
+                'agreed': ('Swap Agreed','agreed to') }
             send_fcm(
-                user_id = recipient.id,
-                title = 'New Swap',
-                body = f'{recipient.get_name()} {action[ counter_status ]} your swap',
+                user_id = sender.id,
+                title = data[status][0],
+                body = f'{sender.get_name()} {data[status][1]} your swap',
                 data = {
                     'id': swap.id,
                     'type': 'swap',

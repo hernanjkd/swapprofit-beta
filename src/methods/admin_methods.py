@@ -1,17 +1,17 @@
-import os
-import json
-import seeds
-import utils
-import requests
 from flask import request, jsonify
 from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices
 from datetime import datetime
+import requests
+import seeds
+import utils
+import json
+import os
+
 
 def attach(app):
-
 
 
     @app.route('/reset_database')
@@ -42,10 +42,16 @@ def attach(app):
 
 
 
-    @app.route('/tournaments', methods=['POST'])
-    # @role_jwt_required(['admin'])
-    def add_tournaments():
+    @app.route('/create/token', methods=['POST'])
+    def create_token():
+        return jsonify( create_jwt(request.get_json()) ), 200
 
+
+
+
+    @app.route('/tournaments', methods=['POST'])
+    def add_tournaments():
+        return 'endpoint dissabled'
 
         # casino cache so not to request for same casinos
         path_cache = os.environ['APP_PATH'] + '/src/jsons/tournaments.json'
@@ -275,13 +281,6 @@ def attach(app):
                     'roi_rating': user.roi_rating,
                     'swap_rating': user.swap_rating
                 })
-
-
-
-
-    @app.route('/create/token', methods=['POST'])
-    def create_token():
-        return jsonify( create_jwt(request.get_json()) ), 200
 
 
 
