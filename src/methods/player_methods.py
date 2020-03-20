@@ -781,7 +781,7 @@ def attach(app):
                     'type': 'swap',
                     'initialPath': 'SwapDashboard',
                     'finalPath': 'SwapOffer'
-                })
+            })
 
 
         return jsonify([

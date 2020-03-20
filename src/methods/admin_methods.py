@@ -48,9 +48,56 @@ def attach(app):
 
 
 
+    # Update from days ago or hours ago
+    @app.route('/tournaments/update')
+    def update_tournaments():
+
+        span = request.args.get('span')
+        amount = request.args.get('amount')
+
+        if None not in [span, amount]:
+            args = f'?span={span}&amount={amount}'
+        else: args = ''
+
+        resp = requests.get( 
+            f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/update{args}" )
+        if not resp.ok:
+            raise APIException( resp.content.decode("utf-8")[-233:] , 500)
+
+
+        data = resp.json()
+        for d in data:
+
+            # TOURNAMENTS
+            trmntjson = d['tournament']
+            trmnt = Tournaments.query.get( trmntjson['id'] )
+            if trmnt is None:
+                db.session.add( Tournaments(
+                    **{col:val for col,val in trmntjson.items()} ))
+            else:
+                for col,val in trmntjson.items():
+                    if getattr(trmnt, col) != val:
+                        setattr(trmnt, col, val)
+                
+            # FLIGHTS
+            for flightjson in d['flights']:
+                flight = Flights.query.get( flightjson['id'] )
+                if flight is None:
+                    db.session.add( Flights(
+                        **{col:val for col,val in flightjson.items()} ))
+                else:
+                    for col,val in flightjson.items():
+                        if getattr(flight, col) != val:
+                            setattr(flight, col, val)
+
+            db.session.commit()
+
+
+
 
     @app.route('/tournaments', methods=['POST'])
     def add_tournaments():
+
         return 'endpoint dissabled'
 
         # casino cache so not to request for same casinos
