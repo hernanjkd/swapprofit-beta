@@ -108,7 +108,7 @@ def run():
     )
     db.session.add(kate)
     db.session.add( Transactions(
-        coins=10,
+        coins=20,
         user=kate
     ))
 
