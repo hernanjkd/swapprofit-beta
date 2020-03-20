@@ -48,10 +48,10 @@ def attach(app):
 
 
 
-    # Update from days ago or hours ago
     @app.route('/tournaments/update')
     def update_tournaments():
 
+        # Update from days ago or hours ago
         span = request.args.get('span')
         amount = request.args.get('amount')
 

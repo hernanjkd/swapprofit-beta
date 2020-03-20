@@ -595,7 +595,7 @@ def attach(app):
             raise APIException(('Swap percentage too large for recipient. '
                                 f'He has available to swap: {recipient_availability}%'), 400)
 
-
+        # Create swap
         swap = Swaps(
             sender_id = user_id,
             tournament_id = req['tournament_id'],
@@ -618,13 +618,16 @@ def attach(app):
         db.session.add_all([ swap, counter_swap ])
         db.session.commit()
 
-
+        # Notification
+        buyin = Buy_ins.get_latest(
+            user_id=sender.id, tournament_id=trmnt.id )
         send_fcm(
-            user_id = recipient.id,
+            user_id = sender.id,
             title = "New Swap",
-            body = recipient.get_name()+' wants to swap',
+            body = sender.get_name()+' wants to swap',
             data = {
-                'id': swap.id,
+                'id': counter_swap.id,
+                'buyin_id': buyin and buyin.id,
                 'type': 'swap',
                 'initialPath': 'SwapDashboard',
                 'finalPath': 'SwapOffer'
@@ -764,20 +767,25 @@ def attach(app):
         
         # Notifications
         status_to_fcm = ['counter-incoming','canceled','rejected','agreed']
-        status = swap.status._value_
+        status = counter_swap.status._value_
         
         if status in status_to_fcm:
+            buyin = Buy_ins.get_latest(
+                user_id=sender.id, tournament_id=trmnt.id )
             data = {
                 'counter-incoming': ('Swap Countered','countered'),
                 'canceled': ('Swap Canceled','canceled'),
                 'rejected':('Swap Rejected','rejected'),
-                'agreed': ('Swap Agreed','agreed to') }
+                'agreed': ('Swap Agreed','agreed to')
+            }
             send_fcm(
                 user_id = sender.id,
+                buyin_id = 
                 title = data[status][0],
                 body = f'{sender.get_name()} {data[status][1]} your swap',
                 data = {
-                    'id': swap.id,
+                    'id': counter_swap.id,
+                    'buyin_id': buyin and buyin.id,
                     'type': 'swap',
                     'initialPath': 'SwapDashboard',
                     'finalPath': 'SwapOffer'
