@@ -188,8 +188,6 @@ class Swaps(db.Model):
     @staticmethod
     def counter_status(status):
         switch = {
-            'rejected': 'canceled',
-            'canceled': 'rejected',
             'incoming': 'pending',
             'counter_incoming': 'pending',
             'pending': 'counter_incoming' }

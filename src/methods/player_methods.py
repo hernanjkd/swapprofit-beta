@@ -717,7 +717,7 @@ def attach(app):
                         raise APIException(
                             f'Cannot agree to this swap, you are overdrafting by {str(overdraft)}%', 400)
             swap.status = new_status
-            counter_swap.status = Swaps.counter_status( new_status )
+            counter_swap.status = new_status
         # If current swap is pending, leave statuses as they are
         elif current_status != 'pending':
             swap.status = Swaps.counter_status( swap.status._value_ )
