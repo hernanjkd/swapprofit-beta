@@ -68,7 +68,8 @@ class Profiles(db.Model):
         return f'<Profiles {self.first_name} {self.last_name}>'
 
     def get_name(self):
-        return f'{self.first_name} "{self.nickname}" {self.last_name}'
+        quoted_nickname = f'"{self.nickname}"' if self.nickname != '' else ''
+        return f'{self.first_name} {quoted_nickname} {self.last_name}'
 
     def get_coins(self):
         total = 0
