@@ -12,10 +12,10 @@ session = Session()
 
 close_time = utils.designated_trmnt_close_time()
 trmnts = session.query(m.Tournaments) \
-            .filter( m.Tournaments.status == 'open') \
-            .filter( m.Tournaments.flights.any(
-                m.Flights.start_at < close_time
-            ))
+    .filter( m.Tournaments.status == 'open') \
+    .filter( m.Tournaments.flights.any(
+        m.Flights.start_at < close_time
+    ))
 
 if trmnts is not None:
     for trmnt in trmnts:

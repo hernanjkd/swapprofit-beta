@@ -9,7 +9,7 @@ from pyfcm import FCMNotification
 push_service = None
 FIREBASE_KEY = os.environ.get('FIREBASE_KEY')
 if FIREBASE_KEY is not None:
-    push_service = FCMNotification(api_key=FIREBASE_KEY)
+    push_service = FCMNotification( api_key=FIREBASE_KEY )
 
 EMAIL_NOTIFICATIONS_ENABLED = os.environ.get('EMAIL_NOTIFICATIONS_ENABLED')
 
@@ -39,55 +39,22 @@ def send_email(template, emails, data={}):
     return r.status_code == 200
 
 
-def send_sms(template, phone_number, data={}):
 
-    template = get_template_content(template, data, ['email', 'fms'])
-    
-    TWILIO_SID = os.environ.get('TWILIO_SID')
-    TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
-    client = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
+def send_fcm(user_id, title, body, data={}):
 
-    message = client.messages \
-        .create(
-            body=template['fms'],
-            from_='+15017122661',
-            to='+15558675310'
-        )
+    devices = Devices.query.filter_by( user_id = user_id )
+    registration_ids = [device.token for device in devices]
 
+    if len(registration_ids) == 0 or push_service is None:
+        return False
 
-
-def send_fcm(template, user_id, data={}):
-
-    utils.resolve_google_credentials()
-
-    # devices = Devices.query.filter_by( user_id = user_id )
-    # registration_ids = [device.token for device in devices]
-
-    # if len(registration_ids) == 0 or push_service is None:
-    #     return False
-
-    # content = get_template_content(template, data, ['fms'])
-
-    # if 'fms' not in content:
-    #     raise APIException(
-    #         f'The template {template} does not seem to have a valid FMS version')
-
-    # if 'data_message' not in data:
-    #     raise APIException('There is no data for the notification')
-
-    result = push_service.notify_single_device(
-        registration_id = data['token'],
-        message_title = data['title'],
-        message_body = data['body'],
-        data_message = data['data']
+    result = push_service.notify_multiple_devices(
+        registration_ids = registration_ids,
+        message_title = title,
+        message_body = body,
+        data_message = data
     )
-    # result = push_service.notify_multiple_devices(
-    #     registration_ids = registration_ids,
-    #     message_title = content['subject'],
-    #     message_body = content['fms'],
-    #     data_message = data['data_message']
-    # )
-    return jsonify(result)
+    
     if result['failure'] or not result['success']:
         raise APIException('Problem sending the notification')
 

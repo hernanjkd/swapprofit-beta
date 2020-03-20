@@ -67,6 +67,9 @@ class Profiles(db.Model):
     def __repr__(self):
         return f'<Profiles {self.first_name} {self.last_name}>'
 
+    def get_name(self):
+        return f'{self.first_name} "{self.nickname}" {self.last_name}'
+
     def get_coins(self):
         total = 0
         for transaction in self.transactions:

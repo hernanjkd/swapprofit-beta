@@ -569,7 +569,8 @@ def attach(app):
         for swap in existing_swaps:
             if swap.status._value_ in unacceptable_status:
                 raise APIException(
-                    f'Already have a swap with status "{swap.status._value_}" with this player', 401 )
+                    f'Already have a swap with status "{swap.status._value_}"'
+                    ' with this player', 401 )
 
 
         percentage = req['percentage']
@@ -601,7 +602,8 @@ def attach(app):
             recipient_id = recipient.id,
             percentage = percentage,
             cost = swap_cost,
-            status = 'pending' )
+            status = 'pending'
+        )
         counter_swap = Swaps(
             sender_id = recipient.id,
             tournament_id = req['tournament_id'],
@@ -609,13 +611,26 @@ def attach(app):
             percentage = counter,
             cost = swap_cost,
             status = 'incoming',
-            counter_swap = swap )
+            counter_swap = swap
+        )
         swap.counter_swap = counter_swap
 
         db.session.add_all([ swap, counter_swap ])
         db.session.commit()
 
-        # send_fcm('swap_incoming_notification', recipient.id)
+
+        send_fcm(
+            user_id = recipient.id,
+            title = "New Swap",
+            body = recipient.get_name()+' wants to swap',
+            data = {
+                'id': swap.id,
+                'type': 'swap',
+                'initialPath': 'SwapDashboard',
+                'finalPath': 'SwapOffer'
+            }
+        )
+
         return jsonify({'message':'Swap created successfully.'}), 200
 
 
@@ -707,10 +722,10 @@ def attach(app):
         elif current_status != 'pending':
             swap.status = Swaps.counter_status( swap.status._value_ )
             counter_swap.status = Swaps.counter_status( counter_swap.status._value_ )
-            # send_fcm('swap_incoming_notification', recipient.id)
 
 
         db.session.commit()
+
 
 
         if new_status == 'agreed':
@@ -725,7 +740,6 @@ def attach(app):
             ))
             db.session.commit()
 
-            # send_fcm('swap_agreed_notificatin', recipient.id)
             user1_receipt = Buy_ins.get_latest(sender.id, swap.tournament_id)
             user2_receipt = Buy_ins.get_latest(recipient.id, swap.tournament_id)
             
@@ -743,6 +757,25 @@ def attach(app):
                     'user2_prof_pic': recipient.profile_pic_url,
                     'user2_percentage': counter_swap.percentage,
                     'user2_receipt_url': user2_receipt and user2_receipt.receipt_img_url
+                })
+
+        
+        # Notifications
+        status_to_fcm = ['counter-incoming','canceled','rejected','agreed']
+        counter_status = counter_swap.status._value_
+        
+        if counter_status in status_to_fcm:
+            action = { 'counter-incoming':'countered', 'canceled':'canceled',
+                'rejected':'rejected', 'agreed':'agreed to' }
+            send_fcm(
+                user_id = recipient.id,
+                title = 'New Swap',
+                body = f'{recipient.get_name()} {action[ counter_status ]} your swap',
+                data = {
+                    'id': swap.id,
+                    'type': 'swap',
+                    'initialPath': 'SwapDashboard',
+                    'finalPath': 'SwapOffer'
                 })
 
 

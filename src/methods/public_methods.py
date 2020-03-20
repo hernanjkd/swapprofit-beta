@@ -50,14 +50,14 @@ def attach(app):
 
 
 
-
     @app.route('/users/token', methods=['POST'])
     def login():
 
         req = request.get_json()
         check_params(req, 'email', 'password', 'device_token')
 
-        user = Users.query.filter_by( email=req['email'], password=sha256(req['password']) ).first()
+        user = Users.query.filter_by( 
+            email=req['email'], password=sha256(req['password']) ).first()
 
         if user is None:
             raise APIException('Sorry you entered the wrong email or password', 404)
@@ -84,7 +84,6 @@ def attach(app):
                 'exp': req.get('exp', 15)
             })
         }), 200
-
 
 
 
