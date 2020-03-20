@@ -780,7 +780,6 @@ def attach(app):
             }
             send_fcm(
                 user_id = sender.id,
-                buyin_id = 
                 title = data[status][0],
                 body = f'{sender.get_name()} {data[status][1]} your swap',
                 data = {
