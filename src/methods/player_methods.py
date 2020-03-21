@@ -620,7 +620,7 @@ def attach(app):
 
         # Notification
         buyin = Buy_ins.get_latest(
-            user_id=sender.id, tournament_id=trmnt.id )
+            user_id=sender.id, tournament_id=swap.tournament_id )
         send_fcm(
             user_id = sender.id,
             title = "New Swap",
@@ -769,14 +769,14 @@ def attach(app):
 
         
         # Notifications
-        status_to_fcm = ['counter-incoming','canceled','rejected','agreed']
+        status_to_fcm = ['counter_incoming','canceled','rejected','agreed']
         status = counter_swap.status._value_
         
         if status in status_to_fcm:
             buyin = Buy_ins.get_latest(
-                user_id=sender.id, tournament_id=trmnt.id )
+                user_id=sender.id, tournament_id=swap.tournament_id )
             data = {
-                'counter-incoming': ('Swap Countered','countered'),
+                'counter_incoming': ('Swap Countered','countered'),
                 'canceled': ('Swap Canceled','canceled'),
                 'rejected':('Swap Rejected','rejected'),
                 'agreed': ('Swap Agreed','agreed to')
