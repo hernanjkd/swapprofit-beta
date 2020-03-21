@@ -622,7 +622,7 @@ def attach(app):
         buyin = Buy_ins.get_latest(
             user_id=sender.id, tournament_id=swap.tournament_id )
         send_fcm(
-            user_id = sender.id,
+            user_id = recipient.id,
             title = "New Swap",
             body = sender.get_name()+' wants to swap',
             data = {
@@ -782,7 +782,7 @@ def attach(app):
                 'agreed': ('Swap Agreed','agreed to')
             }
             send_fcm(
-                user_id = sender.id,
+                user_id = recipient.id,
                 title = data[status][0],
                 body = f'{sender.get_name()} {data[status][1]} your swap',
                 data = {
