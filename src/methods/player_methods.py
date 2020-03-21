@@ -652,6 +652,9 @@ def attach(app):
 
         # Get swaps
         swap = Swaps.query.get(id)
+        if swap is None:
+            raise APIException('Swap not found', 404)
+
         if sender.id != swap.sender_id:
             raise APIException('Access denied: You are not the sender of this swap', 401)
         current_percentage = swap.percentage
@@ -663,8 +666,8 @@ def attach(app):
 
         counter_swap_body = {}
         counter_swap = Swaps.query.get( swap.counter_swap_id )
-        if swap is None or counter_swap is None:
-            raise APIException('Swap not found', 404)
+        if counter_swap is None:
+            raise APIException('Counter swap not found', 404)
 
 
         # Get recipient user
