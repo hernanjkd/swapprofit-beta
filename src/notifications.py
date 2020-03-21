@@ -45,6 +45,13 @@ def send_fcm(user_id, title, body, data={}):
     devices = Devices.query.filter_by( user_id = user_id )
     registration_ids = [device.token for device in devices]
 
+    return {
+        'registration_ids': registration_ids,
+        'title': title,
+        'body': body,
+        'data': data
+    }
+
     if len(registration_ids) == 0 or push_service is None:
         return False
 

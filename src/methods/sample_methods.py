@@ -20,14 +20,12 @@ def attach(app):
         
         j = request.get_json()
 
-        return send_fcm(0,0,
-            data={
-                "token": j['device_token'],
-                "title": j['title'],
-                "body": j['body'],
-                "data" : j['data']
-            }
-        )
+        return jsonify(send_fcm(
+            user_id=j['user_id'],
+            title=j['title'],
+            body=j['body'],
+            data=j['data']
+        ))
         
 
     @app.route('/testing', methods=['GET'])
