@@ -786,7 +786,7 @@ def attach(app):
                 title = data[status][0],
                 body = f'{sender.get_name()} {data[status][1]} your swap',
                 data = {
-                    'id': swap.id,
+                    'id': counter_swap.id,
                     'buyin_id': buyin and buyin.id,
                     'type': 'swap',
                     'initialPath': 'SwapDashboard',

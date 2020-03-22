@@ -446,3 +446,55 @@ class Devices(db.Model):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
+
+
+
+class Chats(db.Model):
+    __tablename__ = 'chats'
+    id = db.Column(db.Integer, primary_key=True)
+    user1_id = db.Column(db.Integer, nullable=False)
+    user2_id = db.Column(db.Integer, nullable=False)
+    tournament_id = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    messages = db.relationship('Messages', back_populates='chat')
+
+    def __repr__(self):
+        return f'<Chats user1={self.user1_id} user2={self.user2_id} tournament={self.tournament_id}>'
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user1_id': self.user1_id,
+            'user2_id': self.user2_id,
+            'tournament_id': self.tournament_id,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'messages': [x.serialize() for x in self.messages]
+        }
+
+
+class Messages(db.Model):
+    __tablename__ = 'messages'
+    id = db.Column(db.Integer, primary_key=True)
+    chat_id = db.Column(db.Integer, db.ForeignKey('chats.id'))
+    user_id = db.Column(db.Integer, nullable=False)
+    message = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    chat = db.relationship('Chats', back_populates='messages')
+
+    def __repr__(self):
+        return f'<Messages id={self.id} chat={self.chat_id} user={self.user_id}>'
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'chat_id': self.chat_id,
+            'user_id': self.user_id,
+            'message': self.message,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
