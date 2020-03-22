@@ -13,7 +13,7 @@ from flask_jwt_simple import create_jwt, decode_jwt, get_jwt
 from sqlalchemy import desc, asc
 from utils import APIException, role_jwt_required, isfloat
 from models import (db, Users, Profiles, Tournaments, Swaps, Flights, 
-    Buy_ins, Transactions, Devices)
+    Buy_ins, Transactions, Devices, Chats, Messages)
 from notifications import send_email, send_fcm
 
 
@@ -48,7 +48,6 @@ def attach(app):
             data={'validation_link': utils.jwt_link(user.id, role='email_change')} )
 
         return jsonify({'message': 'Please verify your new email'}), 200
-
 
 
 
@@ -89,7 +88,6 @@ def attach(app):
         db.session.commit()
 
         return jsonify({'message': 'Your password has been updated'}), 200
-
 
 
 
@@ -134,7 +132,6 @@ def attach(app):
 
 
 
-
     @app.route('/users/invite', methods=['POST'])
     @role_jwt_required(['user'])
     def invite_users(user_id):
@@ -149,7 +146,6 @@ def attach(app):
         })
 
         return jsonify({'message':'Invitation sent successfully'})
-
 
 
 
@@ -177,7 +173,6 @@ def attach(app):
             raise APIException('Profile not found', 404)
 
         return jsonify(user.serialize()), 200
-
 
 
 
@@ -212,8 +207,7 @@ def attach(app):
 
         return jsonify({'message':'ok'}), 200
 
-      
-      
+         
       
     @app.route('/profiles/me', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -229,7 +223,6 @@ def attach(app):
         db.session.commit()
 
         return jsonify(prof.serialize())
-
 
 
 
@@ -256,7 +249,6 @@ def attach(app):
 
 
 
-
     @app.route('/me/buy_ins', methods=['GET'])
     @role_jwt_required(['user'])
     def get_buy_in(user_id):
@@ -266,7 +258,6 @@ def attach(app):
             raise APIException('Buy_in not found', 404)
 
         return jsonify(buyin.serialize()), 200
-
 
 
 
@@ -359,7 +350,6 @@ def attach(app):
             #     }
             # })
 
-
         
 
     @app.route('/me/buy_ins/<int:id>', methods=['PUT'])
@@ -415,7 +405,6 @@ def attach(app):
         db.session.commit()
         
         return jsonify({'buy_in': buyin.serialize()})
-
 
 
 
@@ -525,7 +514,6 @@ def attach(app):
 
 
 
-
     @app.route('/me/swaps', methods=['POST'])
     @role_jwt_required(['user'])
     def create_swap(user_id):
@@ -628,6 +616,7 @@ def attach(app):
             data = {
                 'id': counter_swap.id,
                 'buyin_id': buyin and buyin.id,
+                'alert': sender.get_name()+' wants to swap',
                 'type': 'swap',
                 'initialPath': 'SwapDashboard',
                 'finalPath': 'SwapOffer'
@@ -635,7 +624,6 @@ def attach(app):
         )
 
         return jsonify({'message':'Swap created successfully.'}), 200
-
 
 
 
@@ -781,13 +769,15 @@ def attach(app):
                 'rejected':('Swap Rejected','rejected'),
                 'agreed': ('Swap Agreed','agreed to')
             }
+            msg = f'{sender.get_name()} {data[status][1]} your swap'
             send_fcm(
                 user_id = recipient.id,
                 title = data[status][0],
-                body = f'{sender.get_name()} {data[status][1]} your swap',
+                body = msg,
                 data = {
                     'id': counter_swap.id,
                     'buyin_id': buyin and buyin.id,
+                    'alert': msg,
                     'type': 'swap',
                     'initialPath': 'SwapDashboard',
                     'finalPath': 'SwapOffer'
@@ -801,7 +791,6 @@ def attach(app):
 
 
 
-
     @app.route('/swaps/me/tournament/<int:id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_swaps_actions(user_id, id):
@@ -809,7 +798,6 @@ def attach(app):
         prof = Profiles.query.get(user_id)
 
         return jsonify(prof.get_swaps_actions(id))
-
 
 
 
@@ -842,7 +830,6 @@ def attach(app):
 
 
 
-
     @app.route('/me/swap_tracker', methods=['GET'])
     @role_jwt_required(['user'])
     def swap_tracker(user_id):
@@ -861,7 +848,6 @@ def attach(app):
                 swap_trackers.append( json )
 
         return jsonify( swap_trackers )
-
 
 
 
@@ -885,7 +871,6 @@ def attach(app):
 
 
 
-
     @app.route('/users/me/transaction/report', methods=['GET'])
     @role_jwt_required(['user'])
     def transaction_report(user_id):
@@ -897,6 +882,44 @@ def attach(app):
                     .order_by( Transactions.created_at.desc() )
 
         return jsonify([x.serialize() for x in report])
+
+
+
+    # @app.route('/users/me/chats', methods=['POST'])
+    # @role_jwt_required(['user'])
+    # def create_chat(user_id):
+
+    #     req = request.get_json()
+    #     utils.check_params(req, 'user2_id', 'tournament_id')
+
+    #     chatjson = {
+    #         'user1_id': req['user_id'],
+    #         'user2_id': req['user2_id'],
+    #         'tournament_id': req['tournament_id'] }
+
+    #     # Validate
+    #     chat = Chats.query.filter_by( **chatjson ).first()
+    #     if chat is not None:
+    #         raise APIException('Chat already exists with id '+ chat.id, 400)
+
+    #     trmnt = Tournaments.query.get( req['tournament_id'] )
+    #     if trmnt is None:
+    #         raise APIException('Tournament not found', 404)
+        
+    #     user2 = Users.query.get( req['user2_id'] )
+    #     if user2 is None:
+    #         raise APIException('User2 not found', 404)
+
+    #     # Create chat
+    #     chat = Chats( **chatjson )
+    #     db.session.add( chat )
+    #     db.session.commit()
+
+    #     return jsonify(chat.serialize())
+
+
+
+    # @app.route('/users/me')
 
 
 
