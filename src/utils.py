@@ -1,9 +1,9 @@
+import cloudinary.uploader
+import cloudinary
+import hashlib
+import math
 import os
 import re
-import math
-import hashlib
-import cloudinary
-import cloudinary.uploader
 from google.cloud import vision
 from flask import jsonify, url_for
 from flask_jwt_simple import create_jwt, jwt_required, get_jwt
