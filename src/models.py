@@ -449,12 +449,17 @@ class Devices(db.Model):
 
 
 
+class ChatStatus(enum.Enum):
+    opened = 'opened'
+    closed = 'closed'
+
 class Chats(db.Model):
     __tablename__ = 'chats'
     id = db.Column(db.Integer, primary_key=True)
     user1_id = db.Column(db.Integer, nullable=False)
     user2_id = db.Column(db.Integer, nullable=False)
     tournament_id = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -469,6 +474,7 @@ class Chats(db.Model):
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'tournament_id': self.tournament_id,
+            'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
             'messages': [x.serialize() for x in self.messages]
