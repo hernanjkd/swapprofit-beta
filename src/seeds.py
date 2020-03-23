@@ -536,15 +536,29 @@ def run():
     ########################
 
     db.session.add(Buy_ins(
-        chips=1200,
+        chips=770,
         table='1',
         seat=2,
         user=lou,
         flight=flight1_live
     ))
     db.session.add(Buy_ins(
-        chips=1200,
-        table='1',
+        chips=600,
+        table='4',
+        seat=2,
+        user=lou,
+        flight=flight1_live
+    ))
+    db.session.add(Buy_ins(
+        chips=900,
+        table='6',
+        seat=2,
+        user=nikita,
+        flight=flight1_live
+    ))
+    db.session.add(Buy_ins(
+        chips=1100,
+        table='12',
         seat=4,
         user=kate,
         flight=flight1_live
