@@ -885,41 +885,58 @@ def attach(app):
 
 
 
-    # @app.route('/users/me/chats', methods=['POST'])
-    # @role_jwt_required(['user'])
-    # def create_chat(user_id):
+    @app.route('/me/chats', methods=['POST'])
+    @role_jwt_required(['user'])
+    def create_chat(user_id):
 
-    #     req = request.get_json()
-    #     utils.check_params(req, 'user2_id', 'tournament_id')
+        req = request.get_json()
+        utils.check_params(req, 'user2_id', 'tournament_id')
+        user2_id = req['user2_id']
 
-    #     chatjson = {
-    #         'user1_id': req['user_id'],
-    #         'user2_id': req['user2_id'],
-    #         'tournament_id': req['tournament_id'] }
+        chatjson = lambda flip=False: {
+            'user1_id': user_id if flip else user2_id,
+            'user2_id': user2_id if flip else user_id,
+            'tournament_id': req['tournament_id'] }
 
-    #     # Validate
-    #     chat = Chats.query.filter_by( **chatjson ).first()
-    #     if chat is not None:
-    #         raise APIException('Chat already exists with id '+ chat.id, 400)
+        # Validation
+        if user_id == user2_id:
+            raise APIException('2 users needed, only 1 received')
 
-    #     trmnt = Tournaments.query.get( req['tournament_id'] )
-    #     if trmnt is None:
-    #         raise APIException('Tournament not found', 404)
+        def check(chat):
+            if chat is not None:
+                raise APIException('Chat already exists with id '+ str(chat.id), 400)
+        check( Chats.query.filter_by( **chatjson() ).first() )
+        check( Chats.query.filter_by( **chatjson(flip=True) ).first() )
         
-    #     user2 = Users.query.get( req['user2_id'] )
-    #     if user2 is None:
-    #         raise APIException('User2 not found', 404)
+        trmnt = Tournaments.query.get( req['tournament_id'] )
+        if trmnt is None:
+            raise APIException('Tournament not found', 404)
+        
+        user2 = Users.query.get( user2_id )
+        if user2 is None:
+            raise APIException('User2 not found', 404)
 
-    #     # Create chat
-    #     chat = Chats( **chatjson )
-    #     db.session.add( chat )
-    #     db.session.commit()
+        # Create chat
+        chat = Chats( **chatjson() )
+        db.session.add( chat )
+        db.session.commit()
 
-    #     return jsonify(chat.serialize())
+        return jsonify(chat.serialize())
 
 
 
-    # @app.route('/users/me')
+    # @app.route('/me/chats/users/<int:user2_id>/tournaments/<int:trmnt_id>')
+    # @role_jwt_required(['user'])
+    # def get_chat(user_id, user2_id, trmnt_id):
+
+    #     chatjson = lambda flip=False: {
+    #         'user1_id': user_id if flip else user2_id,
+    #         'user2_id': user2_id if flip else user_id,
+    #         'tournament_id': trmnt_id }
+        
+
+
+    #     chat = get_chat()
 
 
 

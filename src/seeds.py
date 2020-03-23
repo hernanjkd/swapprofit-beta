@@ -546,7 +546,7 @@ def run():
         chips=1200,
         table='1',
         seat=4,
-        user=lou,
+        user=kate,
         flight=flight1_live
     ))
     db.session.add(Buy_ins(

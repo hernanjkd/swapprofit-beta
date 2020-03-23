@@ -449,22 +449,6 @@ class Devices(db.Model):
 
 
 
-class Chat_Pivot(db.Model):
-    __tablename__ = 'chat_pivot'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    chat_id = db.Column(db.Integer, db.ForeignKey('chats.id'))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    user = db.relationship('Users', back_populates='chats')
-    chat = db.relationship('Chats', back_populates='users')
-
-    def __repr__(self):
-        return f'<Chat_Pivot user={self.user_id} chat={self.chat_id}>'
-
-
-
 class ChatStatus(enum.Enum):
     opened = 'opened'
     closed = 'closed'
@@ -472,13 +456,17 @@ class ChatStatus(enum.Enum):
 class Chats(db.Model):
     __tablename__ = 'chats'
     id = db.Column(db.Integer, primary_key=True)
-    tournament_id = db.Column(db.Integer, nullable=False)
+    user1_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
+    user2_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
+    tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
     status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     messages = db.relationship('Messages', back_populates='chat')
-    users = db.relationship('Chat_Pivot', back_populates='chat')
+    user1 = db.relationship('Profiles', foreign_keys=[user1_id], backref='chats1')
+    user2 = db.relationship('Profiles', foreign_keys=[user2_id], backref='chats2')
+    tournament = db.relationship('Tournaments', backref='chats')
 
     def __repr__(self):
         return f'<Chats user1={self.user1_id} user2={self.user2_id} tournament={self.tournament_id}>'
@@ -486,11 +474,12 @@ class Chats(db.Model):
     def serialize(self):
         return {
             'id': self.id,
+            'user1_id': self.user1_id,
+            'user2_id': self.user2_id,
             'tournament_id': self.tournament_id,
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'users': [x.serialize() for x in self.users],
             'messages': [x.serialize() for x in self.messages]
         }
 
