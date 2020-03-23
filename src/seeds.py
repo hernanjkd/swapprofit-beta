@@ -547,14 +547,7 @@ def run():
         table='4',
         seat=2,
         user=lou,
-        flight=flight1_live
-    ))
-    db.session.add(Buy_ins(
-        chips=900,
-        table='6',
-        seat=2,
-        user=nikita,
-        flight=flight1_live
+        flight=flight2_live
     ))
     db.session.add(Buy_ins(
         chips=1100,
@@ -569,27 +562,6 @@ def run():
         seat=1,
         user=cary,
         flight=flight1_live
-    ))
-    db.session.add(Buy_ins(
-        chips=250,
-        table='1',
-        seat=5,
-        user=cary,
-        flight=flight1_heartland
-    ))
-    db.session.add(Buy_ins(
-        chips=1050,
-        table='2',
-        seat=3,
-        user=lou,
-        flight=flight2_heartland
-    ))
-    db.session.add(Buy_ins(
-        chips=900,
-        table='4',
-        seat=5,
-        user=kate,
-        flight=flight2_heartland
     ))
     db.session.add(Buy_ins(
         chips=500,
@@ -619,6 +591,35 @@ def run():
         user=nikita,
         flight=flight2_live
     ))
+    db.session.add(Buy_ins(
+        chips=250,
+        table='1',
+        seat=5,
+        user=cary,
+        flight=flight1_heartland
+    ))
+    db.session.add(Buy_ins(
+        chips=1050,
+        table='2',
+        seat=3,
+        user=lou,
+        flight=flight2_heartland
+    ))
+    db.session.add(Buy_ins(
+        chips=900,
+        table='4',
+        seat=5,
+        user=kate,
+        flight=flight2_heartland
+    ))
+    db.session.add(Buy_ins(
+        chips=900,
+        table='6',
+        seat=2,
+        user=nikita,
+        flight=flight1_heartland
+    ))
+    
 
     db.session.flush()
 
