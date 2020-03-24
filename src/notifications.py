@@ -59,25 +59,6 @@ def send_fcm(user_id, title, body, data={}):
         raise APIException('Problem sending the notification')
 
     return result
-def send_fcm2(user_id, title, body, data={}):
-
-    devices = Devices.query.filter_by( user_id = user_id )
-    registration_ids = [device.token for device in devices]
-
-    if len(registration_ids) == 0 or push_service is None:
-        return False
-
-    result = push_service.notify_single_device(
-        registration_id = registration_ids[0],
-        message_title = title,
-        message_body = body,
-        data_message = data
-    )
-    
-    if result['failure'] or not result['success']:
-        raise APIException('Problem sending the notification')
-
-    return result
     
 
 

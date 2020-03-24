@@ -3,7 +3,7 @@ import utils
 import models
 import requests
 from flask import Flask, jsonify, request
-from notifications import send_email, send_fcm, send_fcm2
+from notifications import send_email, send_fcm
 
 def attach(app):
 
@@ -20,20 +20,12 @@ def attach(app):
         
         j = request.get_json()
 
-        if j.get('single') is None:
-            return jsonify(send_fcm(
-                user_id=j['user_id'],
-                title=j['title'],
-                body=j['body'],
-                data=j['data']
-            ))
-        else:
-            return jsonify(send_fcm2(
-                user_id=j['user_id'],
-                title=j['title'],
-                body=j['body'],
-                data=j['data']
-            ))
+        return jsonify(send_fcm(
+            user_id=j['user_id'],
+            title=j['title'],
+            body=j['body'],
+            data=j['data']
+        ))
 
         
 

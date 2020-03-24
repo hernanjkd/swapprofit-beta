@@ -37,6 +37,7 @@ def check_params(body, *args):
     if msg: 
         msg = re.sub(r'(.*),', r'\1 and', msg[:-2])
         raise APIException('You must specify the ' + msg, 400)
+    return body
 
 def update_table(table, body, ignore=[]):
     ignore = [*ignore, 'created_at', 'updated_at']

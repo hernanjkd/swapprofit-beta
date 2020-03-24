@@ -468,8 +468,24 @@ class Chats(db.Model):
     user2 = db.relationship('Profiles', foreign_keys=[user2_id], backref='chats2')
     tournament = db.relationship('Tournaments', backref='chats')
 
+    def __init__(self, user1_id, user2_id, tournament_id):
+        if user1_id == user2_id:
+            raise Exception('user1 and user2 must be different users')
+        self.user1_id = user1_id
+        self.user2_id = user2_id
+        self.tournament_id = tournament_id
+
     def __repr__(self):
         return f'<Chats user1={self.user1_id} user2={self.user2_id} tournament={self.tournament_id}>'
+
+    @staticmethod
+    def get(user1_id, user2_id, tournament_id):
+        chatjson = lambda flip=False: {
+            'user1_id': user1_id if flip else user2_id,
+            'user2_id': user2_id if flip else user1_id,
+            'tournament_id': tournament_id }
+        return Chats.query.filter_by( **chatjson() ).first() or \
+               Chats.query.filter_by( **chatjson(flip=True) ).first()
 
     def serialize(self):
         return {
@@ -494,6 +510,13 @@ class Messages(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     chat = db.relationship('Chats', back_populates='messages')
+
+    def __init__(self, chat_id, user_id, message)
+        if message == '':
+            raise Exception("Message can't be empty")
+        self.chat_id = chat_id
+        self.user_id = user_id
+        self.message = message
 
     def __repr__(self):
         return f'<Messages id={self.id} chat={self.chat_id} user={self.user_id}>'
