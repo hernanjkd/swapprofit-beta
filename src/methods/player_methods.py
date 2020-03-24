@@ -938,6 +938,38 @@ def attach(app):
         db.session.commit()
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
+        
+    # @app.route('/chats/<int:chat_id>')
+    # @app.route('/chats/me/users/<int:user2_id>/tournaments/<int:trmnt_id>')
+    # @role_jwt_required(['user'])
+    # def get_chat(user_id, user2_id=None, trmnt_id=None, chat_id=None):
+
+    #     if chat_id:
+    #         chat = Chats.query.get( chat_id )
+    #     else:
+    #         chat = Chats.get(user_id, user2_id, trmnt_id)
+    #     if chat is None:
+    #         raise APIException('Chat not found', 404)
+
+    #     return jsonify( chat.serialize() )
+
+
+
+    # @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
+    # @role_jwt_required(['user'])
+    # def send_message(user_id, chat_id):
+
+    #     req = utils.check_params( request.get_json(), 'message' )
+
+    #     db.session.add( Messages(
+    #         chat_id = chat_id,
+    #         user_id = user_id,
+    #         message = req['message']
+    #     ))
+    #     db.session.commit()
+
+    #     return jsonify( Chats.query.get( chat_id ).serialize() )
+
 
 
 
