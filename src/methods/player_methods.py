@@ -892,35 +892,19 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req, 'user2_id', 'tournament_id')
         
-        user2_id = req['user2_id']
-        trmnt_id = req['tournament_id']
-
-        # Validation
-        if user_id == user2_id:
-            raise APIException('user1 and user2 must be different users')
-
-        chat = Chats.get(user_id, user2_id, trmnt_id)
+        chat = Chats.get(user_id, req['user2_id'], req['tournament_id'])
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
-        trmnt = Tournaments.query.get( trmnt_id )
-        if trmnt is None:
-            raise APIException('Tournament not found', 404)
-        
-        user2 = Users.query.get( user2_id )
-        if user2 is None:
-            raise APIException('User2 not found', 404)
-
-        # Create chat
         chat = Chats(
             user1_id = user_id,
-            user2_id = user2_id,
-            tournament_id = trmnt_id
+            user2_id = req['user2_id'],
+            tournament_id = req['tournament_id']
         )
         db.session.add( chat )
         db.session.commit()
 
-        return jsonify(chat.serialize())
+        return jsonify( chat.serialize() )
 
 
 
@@ -936,17 +920,15 @@ def attach(app):
         if chat is None:
             raise APIException('Chat not found', 404)
 
-        return jsonify(chat.serialize())
+        return jsonify( chat.serialize() )
 
 
 
-    @app.route('/messages/me/chat/<int:chat_id>', methods=['POST'])
+    @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
     @role_jwt_required(['user'])
     def send_message(user_id, chat_id):
 
         req = utils.check_params( request.get_json(), 'message' )
-        if req['message'] == '':
-            raise APIException("Message can't be empty")
 
         db.session.add( Messages(
             chat_id = chat_id,

@@ -470,7 +470,13 @@ class Chats(db.Model):
 
     def __init__(self, user1_id, user2_id, tournament_id):
         if user1_id == user2_id:
-            raise Exception('user1 and user2 must be different users')
+            raise utils.APIException('user1 and user2 must be different users', 400)
+        trmnt = Tournaments.query.get( tournament_id )
+        if trmnt is None:
+            raise utils.APIException('Tournament not found', 404)
+        user2 = Users.query.get( user2_id )
+        if user2 is None:
+            raise utils.APIException('User2 not found', 404)
         self.user1_id = user1_id
         self.user2_id = user2_id
         self.tournament_id = tournament_id
@@ -511,9 +517,16 @@ class Messages(db.Model):
 
     chat = db.relationship('Chats', back_populates='messages')
 
-    def __init__(self, chat_id, user_id, message)
+    def __init__(self, chat_id, user_id, message):
+        chat = Chats.query.get( chat_id )
+        if chat is None:
+            raise utils.APIException('Chat not found', 404)
+        if chat.status._value_ == 'closed':
+            raise utils.APIException('This chat is closed', 400)
+        if user_id not in [ chat.user1_id, chat.user2_id ]:
+            raise utils.APIException('User not in chat', 400)
         if message == '':
-            raise Exception("Message can't be empty")
+            raise utils.APIException("Message can't be empty", 400)
         self.chat_id = chat_id
         self.user_id = user_id
         self.message = message
