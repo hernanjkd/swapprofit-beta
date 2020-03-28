@@ -26,8 +26,7 @@ def attach(app):
             body=j['body'],
             data=j['data']
         ))
-
-        
+       
 
     @app.route('/testing', methods=['GET'])
     def first_endpoint():
@@ -42,16 +41,30 @@ def attach(app):
         })
 
 
-    @app.route('/mailgun')
+    @app.route('/mailgun', methods=['POST'])
     def get_logs():
-        return jsonify( requests.get(
-            f"https://api.mailgun.net/v3/{os.environ.get('MAILGUN_DOMAIN')}/events",
-            auth=("api", os.environ.get("MAILGUN_API_KEY")),
-            params={"begin"       : "Fri, 13 DEC 2019 09:00:00 -0000",
-                    "ascending"   : "yes",
-                    "limit"       :  25,
-                    "pretty"      : "yes",
-                    "recipient" : "hernanjkd@gmail.com"}).json())
+        emails = request.get_json().get('emails')
+        if emails is None:
+            return 'Send {"emails":[]}'
+
+        key = os.environ.get('MAILGUN_API_KEY')
+        domain = os.environ.get('MAILGUN_DOMAIN')
+
+        logs = []
+        for email in emails:
+            ok = requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                auth=('api', key),
+                data={
+                    'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                    'to': email,
+                    'subject': 'Testing',
+                    'text': 'Hello World',
+                    'html': '<h1>Hello World</h1>'
+                }).status_code == 200
+            logs.append({'email':email,'ok':ok})
+
+        return jsonify(logs)
+
 
     @app.route('/ocr_image', methods=['PUT'])
     def ocr():
