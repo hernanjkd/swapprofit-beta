@@ -930,6 +930,8 @@ def attach(app):
 
         req = utils.check_params( request.get_json(), 'message' )
 
+        # messages have a 100 char limit, make sure to break it up
+
         db.session.add( Messages(
             chat_id = chat_id,
             user_id = user_id,
