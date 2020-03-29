@@ -42,7 +42,7 @@ def attach(app):
 
 
     @app.route('/mailgun', methods=['POST'])
-    def get_logs():
+    def mailgun():
         emails = request.get_json().get('emails')
         if emails is None:
             return 'Send {"emails":[]}'
