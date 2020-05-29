@@ -541,84 +541,96 @@ def run():
         table='1',
         seat=2,
         user=lou,
-        flight=flight1_live
+        flight=flight1_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=600,
         table='4',
         seat=2,
         user=lou,
-        flight=flight2_live
+        flight=flight2_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=1100,
         table='12',
         seat=4,
         user=kate,
-        flight=flight1_live
+        flight=flight1_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=500,
         table='7',
         seat=1,
         user=cary,
-        flight=flight1_live
+        flight=flight1_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=500,
         table='3',
         seat=2,
         user=cary,
-        flight=flight2_live
+        flight=flight2_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=1000,
         table='2',
         seat=2,
         user=kate,
-        flight=flight2_live
+        flight=flight2_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=300,
         table='2',
         seat=2,
         user=kate,
-        flight=flight2_live
+        flight=flight2_live,
+        status='active'
     ))  
     db.session.add(Buy_ins(
         chips=700,
         table='3',
         seat=1,
         user=nikita,
-        flight=flight2_live
+        flight=flight2_live,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=250,
         table='1',
         seat=5,
         user=cary,
-        flight=flight1_heartland
+        flight=flight1_heartland,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=1050,
         table='2',
         seat=3,
         user=lou,
-        flight=flight2_heartland
+        flight=flight2_heartland,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=900,
         table='4',
         seat=5,
         user=kate,
-        flight=flight2_heartland
+        flight=flight2_heartland,
+        status='active'
     ))
     db.session.add(Buy_ins(
         chips=900,
         table='6',
         seat=2,
         user=nikita,
-        flight=flight1_heartland
+        flight=flight1_heartland,
+        status='active'
     ))
     
 
@@ -686,28 +698,32 @@ def run():
         table='4',         
         seat=2,         
         user=lou,        
-        flight=flight1_newvegas     
+        flight=flight1_newvegas,
+        status='active'    
     ))
     db.session.add(Buy_ins(         
         chips=4000,         
         table='1',         
         seat=12,         
         user=cary,        
-        flight=flight1_newvegas     
+        flight=flight1_newvegas,
+        status='active'   
     ))
     db.session.add(Buy_ins(         
         chips=9000,         
         table='22',         
         seat=7,         
         user=kate,        
-        flight=flight2_newvegas     
+        flight=flight2_newvegas,
+        status='active'     
     ))
     db.session.add(Buy_ins(         
         chips=6000,         
         table='5',         
         seat=4,         
         user=nikita,        
-        flight=flight2_newvegas     
+        flight=flight2_newvegas,
+        status='active'     
     ))
 
 
@@ -856,7 +872,8 @@ def run():
         seat=12,         
         user=lou,
         winnings=1200,        
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'     
     ))
     db.session.add(Buy_ins(         
         chips=4500,         
@@ -864,7 +881,8 @@ def run():
         seat=1,         
         user=cary,
         winnings=4000,      
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'     
     ))
     db.session.add(Buy_ins(         
         chips=5500,         
@@ -872,7 +890,8 @@ def run():
         seat=7,         
         user=nikita,
         winnings=5000,       
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'     
     ))
     db.session.add(Buy_ins(         
         chips=9000,         
@@ -1872,7 +1891,8 @@ def run():
         table='213',
         seat=2,
         user=neal,
-        flight=flight1_royale
+        flight=flight1_royale,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -1882,7 +1902,8 @@ def run():
         table='3',
         seat=2,
         user=cary,
-        flight=flight1_royale
+        flight=flight1_royale,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -1890,7 +1911,8 @@ def run():
         table='43',
         seat=5,
         user=kate,
-        flight=flight1_royale
+        flight=flight1_royale,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -1898,7 +1920,8 @@ def run():
         table='33',
         seat=2,
         user=nikita,
-        flight=flight1_royale
+        flight=flight1_royale,
+        status='active'
     ))
 
     # SWAPS
@@ -2060,7 +2083,8 @@ def run():
         table='4',
         seat=1,
         user=neal,
-        flight=flight1_king
+        flight=flight1_king,
+        status='active'
     ))
 
 	# OTHER BUYINS
@@ -2070,7 +2094,8 @@ def run():
         table='33',
         seat=4,
         user=cary,
-        flight=flight1_king
+        flight=flight1_king,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2078,7 +2103,8 @@ def run():
         table='3',
         seat=4,
         user=kate,
-        flight=flight1_king
+        flight=flight1_king,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2086,7 +2112,8 @@ def run():
         table='3',
         seat=6,
         user=nikita,
-        flight=flight1_king
+        flight=flight1_king,
+        status='active'
     ))
 
     # SWAPS
@@ -2205,7 +2232,8 @@ def run():
         seat=12,         
         user=neal,
         winnings=12000,        
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'
     ))
 
     # SWAPS
@@ -2325,7 +2353,8 @@ def run():
         table='721',
         seat=2,
         user=brian,
-        flight=flight1_loathing
+        flight=flight1_loathing,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -2335,7 +2364,8 @@ def run():
         table='3',
         seat=2,
         user=cary,
-        flight=flight1_loathing
+        flight=flight1_loathing,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2343,7 +2373,8 @@ def run():
         table='43',
         seat=5,
         user=kate,
-        flight=flight1_loathing
+        flight=flight1_loathing,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2351,7 +2382,8 @@ def run():
         table='33',
         seat=2,
         user=nikita,
-        flight=flight1_loathing
+        flight=flight1_loathing,
+        status='active'
     ))
 
     # SWAPS
@@ -2515,7 +2547,8 @@ def run():
         table='172',
         seat=2,
         user=brian,
-        flight=flight1_kakegurui
+        flight=flight1_kakegurui,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -2525,7 +2558,8 @@ def run():
         table='33',
         seat=4,
         user=cary,
-        flight=flight1_kakegurui
+        flight=flight1_kakegurui,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2533,7 +2567,8 @@ def run():
         table='3',
         seat=4,
         user=kate,
-        flight=flight1_kakegurui
+        flight=flight1_kakegurui,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2541,7 +2576,8 @@ def run():
         table='3',
         seat=6,
         user=nikita,
-        flight=flight1_kakegurui
+        flight=flight1_kakegurui,
+        status='active'
     ))
 
 
@@ -2665,7 +2701,8 @@ def run():
         seat=12,         
         user=brian,
         winnings=3000,        
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'   
     ))
 
 
@@ -2786,7 +2823,8 @@ def run():
         table='126',
         seat=2,
         user=perry,
-        flight=flight1_country
+        flight=flight1_country,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -2796,7 +2834,8 @@ def run():
         table='3',
         seat=2,
         user=cary,
-        flight=flight1_country
+        flight=flight1_country,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2804,7 +2843,8 @@ def run():
         table='43',
         seat=5,
         user=kate,
-        flight=flight1_country
+        flight=flight1_country,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2812,7 +2852,8 @@ def run():
         table='33',
         seat=2,
         user=nikita,
-        flight=flight1_country
+        flight=flight1_country,
+        status='active'
     ))
 
     # SWAPS
@@ -2975,7 +3016,8 @@ def run():
         table='13',
         seat=2,
         user=perry,
-        flight=flight1_ultimate
+        flight=flight1_ultimate,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -2985,7 +3027,8 @@ def run():
         table='33',
         seat=4,
         user=cary,
-        flight=flight1_ultimate
+        flight=flight1_ultimate,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -2993,7 +3036,8 @@ def run():
         table='3',
         seat=4,
         user=kate,
-        flight=flight1_ultimate
+        flight=flight1_ultimate,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -3001,7 +3045,8 @@ def run():
         table='3',
         seat=6,
         user=nikita,
-        flight=flight1_ultimate
+        flight=flight1_ultimate,
+        status='active'
     ))
 
     # SWAPS
@@ -3122,7 +3167,8 @@ def run():
         seat=12,         
         user=perry,
         winnings=10000,        
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'     
     ))
 
     # SWAPS
@@ -3242,7 +3288,8 @@ def run():
         table='81',
         seat=2,
         user=bobby,
-        flight=flight1_hangover
+        flight=flight1_hangover,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -3252,7 +3299,8 @@ def run():
         table='3',
         seat=2,
         user=cary,
-        flight=flight1_hangover
+        flight=flight1_hangover,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -3260,7 +3308,8 @@ def run():
         table='43',
         seat=5,
         user=kate,
-        flight=flight1_hangover
+        flight=flight1_hangover,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -3268,7 +3317,8 @@ def run():
         table='33',
         seat=2,
         user=nikita,
-        flight=flight1_hangover
+        flight=flight1_hangover,
+        status='active'
     ))
 
     # SWAPS
@@ -3427,7 +3477,8 @@ def run():
         table='18',
         seat=2,
         user=bobby,
-        flight=flight1_thankyou
+        flight=flight1_thankyou,
+        status='active'
     ))
 
     # OTHER BUYINS
@@ -3437,7 +3488,8 @@ def run():
         table='33',
         seat=4,
         user=cary,
-        flight=flight1_thankyou
+        flight=flight1_thankyou,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -3445,7 +3497,8 @@ def run():
         table='3',
         seat=4,
         user=kate,
-        flight=flight1_thankyou
+        flight=flight1_thankyou,
+        status='active'
     ))
 
     db.session.add(Buy_ins(
@@ -3453,7 +3506,8 @@ def run():
         table='3',
         seat=6,
         user=nikita,
-        flight=flight1_thankyou
+        flight=flight1_thankyou,
+        status='active'
     ))
 
     # SWAPS
@@ -3575,7 +3629,8 @@ def run():
         seat=12,         
         user=bobby,
         winnings=5000,        
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'   
     ))
 
 
