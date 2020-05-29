@@ -268,12 +268,13 @@ def run():
     now = datetime.utcnow()
     live = Tournaments(
         name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties',
-        address='5550 NW 40th St',
-        city='Coconut Creek',
-        state='FL',
-        zip_code='33073',
-        latitude=26.2779,
-        longitude=-80.1989,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(now.year,now.month,now.day,13)
     )
     db.session.add(live)
@@ -993,12 +994,13 @@ def run():
 
     gamorrah = Tournaments(
         name='Coconut Creek - NLH $2,000 Guaranteed',
-        address='200 Fremont St',
-        city='Las Vegas',
-        state='NV',
-        zip_code='89101',
-        latitude=36.4683,
-        longitude=-115.4660,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(2281,10,11,12)
     )
     flight1_gamorrah = Flights(
@@ -1108,12 +1110,13 @@ def run():
 
     p2 = Tournaments(
         name='Coconut Creek - NLH  $4,000 Guaranteed',
-        address='2211 N Rampart Blvd',
-        city='Atlanta',
-        state='GA',
-        zip_code='30301',
-        latitude=33.7490,
-        longitude=-84.3880,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(2019,5,4,10)
     )
     f1_p2 = Flights(
@@ -1269,17 +1272,18 @@ def run():
         user=cary,
         flight=flight1_loathing
     ))
-
+        
 
     # FOUR
     country = Tournaments(
         name='Coconut Creek - NLH Survivor $2,000 Guaranteed',
-        address='287 Carrizo Canyon Rd',
-        city='Mescalero',
-        state='NM',
-        zip_code='12084',
-        latitude=33.2956,
-        longitude=-105.6901,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(2020,12,29,10)
     )
     flight1_country = Flights(
@@ -1486,12 +1490,13 @@ def run():
 
     donkey22 = Tournaments(
         name="Coconut Creek - NLH  $4,000 Guaranteed w/$50 Bounties",
-        address='16849 102nd St SE',
-        city='Hankinson',
-        state='ND',
-        zip_code='58041',
-        latitude=45.9383,
-        longitude=-96.8355,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(2022,3,12,10)
     )
     flight1_donkey22 = Flights(
@@ -1605,12 +1610,13 @@ def run():
 
     donkey29 = Tournaments(
         name="Coconut Creek - Omaha Hi-Low $3,000 Guaranteed",
-        address='16849 102nd St SE',
-        city='Hankinson',
-        state='ND',
-        zip_code='58041',
-        latitude=45.9383,
-        longitude=-96.8355,
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
         start_at=datetime(2029,1,2,10)
     )
     flight1_donkey29 = Flights(
