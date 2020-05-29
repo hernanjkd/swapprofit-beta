@@ -899,7 +899,8 @@ def run():
         seat=12,         
         user=kate,
         winnings=12000,     
-        flight=flight1_oldvegas     
+        flight=flight1_oldvegas,
+        status='active'     
     ))
 
 
@@ -1043,7 +1044,8 @@ def run():
         table='13',
         seat=3,
         user=kate,
-        flight=flight1_gamorrah
+        flight=flight1_gamorrah,
+        status='active'
     ))
 
     # TOURNAMENTS
@@ -1233,7 +1235,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_ocean
+        flight=flight1_ocean,
+        status='active'
     ))
 
 
@@ -1261,7 +1264,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_royale
+        flight=flight1_royale,
+        status='active'
     ))
 
 
@@ -1289,7 +1293,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_loathing
+        flight=flight1_loathing,
+        status='active'
     ))
         
 
@@ -1318,7 +1323,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_country
+        flight=flight1_country,
+        status='active'
     ))
 
 
@@ -1346,7 +1352,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_hangover
+        flight=flight1_hangover,
+        status='active'
     ))
 
 
@@ -1374,7 +1381,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_king
+        flight=flight1_king,
+        status='active'
     ))
 
 
