@@ -1410,7 +1410,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_kakegurui
+        flight=flight1_kakegurui,
+        status='active'
     ))
 
 
@@ -1438,7 +1439,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_ultimate
+        flight=flight1_ultimate,
+        status='active'
     ))
 
 
@@ -1466,7 +1468,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_thankyou
+        flight=flight1_thankyou,
+        status='active'
     ))
 
 
@@ -1494,7 +1497,8 @@ def run():
         table='1',
         seat=2,
         user=cary,
-        flight=flight1_battle
+        flight=flight1_battle,
+        status='active'
     ))
 
 
