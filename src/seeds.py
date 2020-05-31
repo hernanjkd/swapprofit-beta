@@ -910,7 +910,7 @@ def run():
         recipient_user=cary,
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
-        status='agreed'
+        status='rejected'
     )
     s2 = Swaps(
         tournament= oldvegas,
