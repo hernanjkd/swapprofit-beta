@@ -889,7 +889,7 @@ def run():
         table='1',         
         seat=7,         
         user=nikita,
-        winnings=5000,       
+        winnings=500,       
         flight=flight1_oldvegas,
         status='active'     
     ))
