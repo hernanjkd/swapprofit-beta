@@ -1,5 +1,3 @@
-import cloudinary.uploader
-import cloudinary
 import hashlib
 import math
 import os
@@ -86,21 +84,6 @@ def isfloat(string):
 
 def designated_trmnt_close_time():
     return datetime.utcnow() - timedelta(hours=17, minutes=1)
-
-def cloudinary_uploader(type, image, public_id, tags):
-    return cloudinary.uploader.upload(
-        image,
-        public_id=public_id,
-        crop='limit',
-        width=450 if type == 'profile' else 1000,
-        height=450 if type == 'profile' else 1000,
-        eager=[{
-            'width': 200, 'height': 200,
-            'crop': 'thumb', 'gravity': 'face',
-            'radius': 100
-        }] if type == 'profile' else None,
-        tags=tags
-    )
 
 def ocr_reading(result):
     client = vision.ImageAnnotatorClient()
