@@ -293,10 +293,12 @@ def attach(app):
         
         utils.resolve_google_credentials()
         
-        result = utils.cloudinary_uploader(
-            type = 'buyin',
-            image = request.files['image'],
+        result = cloudinary.uploader.upload(
+            request.files['image'],
             public_id = 'buyin' + str(buyin.id),
+            crop = 'limit',
+            width = 1000,
+            height = 1000,
             tags = ['buyin_receipt',
                 'user_'+ str(user_id),
                 'buyin_'+ str(buyin.id)]

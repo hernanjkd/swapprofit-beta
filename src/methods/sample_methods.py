@@ -2,6 +2,8 @@ import os
 import utils
 import models
 import requests
+import cloudinary
+import cloudinary.uploader
 from flask import Flask, jsonify, request
 from notifications import send_email, send_fcm
 
@@ -73,10 +75,15 @@ def attach(app):
 
         utils.resolve_google_credentials()
         
-        result = utils.cloudinary_uploader( 'buyin',
-            request.files['image'], 'ocr', 
-            ['buyin_receipt',f'user_',f'buyin_'] )
-        
+        result = cloudinary.uploader.upload(
+            request.files['image'],
+            public_id='ocr',
+            crop='limit',
+            width=1000,
+            height=1000,
+            tags=['buyin_receipt',f'user_',f'buyin_']
+        )
+
         msg = utils.ocr_reading( result )
         
         import regex
