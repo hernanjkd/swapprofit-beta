@@ -861,7 +861,7 @@ def attach(app):
 
 
 
-    @app.route('/me/transaction', methods=['POST'])
+    @app.route('/me/transactions', methods=['POST'])
     @role_jwt_required(['user'])
     def add_coins(user_id):
 
@@ -881,11 +881,11 @@ def attach(app):
 
 
 
-    @app.route('/users/me/transaction/report', methods=['GET'])
+    @app.route('/users/me/transactions/report', methods=['GET'])
     @role_jwt_required(['user'])
     def transaction_report(user_id):
         
-        month_ago = datetime.utcnow() - timedelta(months=1)
+        month_ago = datetime.utcnow() - timedelta(weeks=4)
 
         report = Transactions.query \
                     .filter( Transaction.created_at > month_ago ) \
