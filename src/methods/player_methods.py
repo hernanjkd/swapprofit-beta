@@ -241,6 +241,20 @@ def attach(app):
             tags = ['profile_picture']
         )
 
+        result = cloudinary.uploader.upload(
+            image,
+            public_id=public_id,
+            crop='limit',
+            width=450 if type == 'profile' else 1000,
+            height=450 if type == 'profile' else 1000,
+            eager=[{
+                'width': 200, 'height': 200,
+                'crop': 'thumb', 'gravity': 'face',
+                'radius': 100
+            }] if type == 'profile' else None,
+            tags=tags
+        )
+
         user.profile.profile_pic_url = result['secure_url']
 
         db.session.commit()
