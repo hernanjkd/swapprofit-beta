@@ -888,7 +888,7 @@ def attach(app):
         month_ago = datetime.utcnow() - timedelta(weeks=4)
 
         report = Transactions.query \
-                    .filter( Transaction.created_at > month_ago ) \
+                    .filter( Transactions.created_at > month_ago ) \
                     .order_by( Transactions.created_at.desc() )
 
         return jsonify([x.serialize() for x in report])
