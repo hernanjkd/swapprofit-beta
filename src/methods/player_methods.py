@@ -633,7 +633,10 @@ def attach(app):
             }
         )
 
-        return jsonify({'message':'Swap created successfully.'}), 200
+        return jsonify({
+            'swap_id': swap.id,
+            'message': 'Swap created successfully.'
+        }), 200
 
 
 
