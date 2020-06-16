@@ -515,8 +515,25 @@ def attach(app):
 
     @app.route('/transactions/users/<int:id>', methods=['POST'])
     @role_jwt_required(['admin'])
-    def handle_transactions(id):
-        
+    def handle_transactions(id, **kwargs):
+
+        req = request.get_json()
+        utils.check_params(req, 'coins')
+
+        db.session.add( Transactions(
+            user_id = id,
+            coins = req['coins'],
+            dollars = req.get('dollars', 0)
+        ))
+
+        db.session.commit()
+
+        user = Profiles.query.get( id )
+        return jsonify({
+            'user': user
+            'total_coins': user.get_coins()
+        })
+
 
 
 
