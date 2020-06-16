@@ -48,6 +48,9 @@ def attach(app):
         emails = request.get_json().get('emails')
         if emails is None:
             return 'Send {"emails":[]}'
+        
+        # delete
+        emails = ['hernanjkd@gmail.com']
 
         key = os.environ.get('MAILGUN_API_KEY')
         domain = os.environ.get('MAILGUN_DOMAIN')

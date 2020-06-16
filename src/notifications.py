@@ -34,7 +34,7 @@ def send_email(template, emails, data={}):
             'subject': template['subject'],
             'text': template['text'],
             'html': template['html']
-        })
+    })
     
     return r.status_code == 200
 
