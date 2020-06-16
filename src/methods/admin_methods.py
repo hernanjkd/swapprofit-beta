@@ -529,10 +529,7 @@ def attach(app):
         db.session.commit()
 
         user = Profiles.query.get( id )
-        return jsonify({
-            'user': user
-            'total_coins': user.get_coins()
-        })
+        return jsonify({ 'total_coins': user.get_coins() })
 
 
 
