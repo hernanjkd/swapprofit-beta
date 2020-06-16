@@ -2,7 +2,8 @@ from flask import request, jsonify
 from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
-from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices
+from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
+    Transactions
 from datetime import datetime
 import requests
 import seeds
