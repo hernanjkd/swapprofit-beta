@@ -513,5 +513,12 @@ def attach(app):
 
 
 
+    @app.route('/transactions/users/<int:id>', methods=['POST'])
+    @role_jwt_required(['admin'])
+    def handle_transactions(id):
+        
+
+
+
 
     return app
