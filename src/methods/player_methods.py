@@ -383,12 +383,12 @@ def attach(app):
             if buyin_status == 'pending':
                 utils.check_params(req, 'chips','table','seat')
                 buyin.status = 'active'
-                # send_email(template='buyin_receipt', emails=buyin.user.user.email,
-                    # data={
-                    #     'receipt_url': buyin.receipt_img_url,
-                    #     'tournament_date': buyin.flight.tournament.start_at,
-                    #     'tournament_name': buyin.flight.tournament.name
-                    # })
+                send_email(template='buyin_receipt', emails=buyin.user.user.email,
+                    data={
+                        'receipt_url': buyin.receipt_img_url,
+                        'tournament_date': buyin.flight.tournament.start_at,
+                        'tournament_name': buyin.flight.tournament.name
+                    })
             elif buyin_status == 'active':
                 raise APIException('Buy-in already validated')
 
