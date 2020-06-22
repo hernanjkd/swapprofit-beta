@@ -34,22 +34,3 @@ def test_correct_email_validation(client):
 
     resp = client.get('/users/validate/'+token)
     assert resp.status_code == 200, "I should be able to create a token"
-
-def test_wrong_jwt_payload_email_validation(client):
-
-    token = create_jwt({
-        "role": "first_time_validation"
-    })
-
-    resp = client.get('/users/validate/'+token)
-    assert resp.status_code == 400, "Its missing required keys like 'sub'"
-
-def test_correct_email_validation(client):
-
-    token = create_jwt({
-        "sub": 1,
-        "role": "first_time_validation"
-    })
-
-    resp = client.get('/users/validate/'+token)
-    assert resp.status_code == 200, "I should be able to create a token"
