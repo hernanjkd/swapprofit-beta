@@ -17,10 +17,10 @@ def hard_rock(text):
     casino = cas and f'{cas.group(1)} {cas.group(2)}'
     return {
         'casino': casino,
-        'player name': name,
-        'player id': id,
-        'buyin amount': buyin,
+        'player_name': name,
+        'player_id': id,
+        'buyin_amount': buyin,
         'seat': seat,
         'table': table,
-        'receipt timestamp': date
+        'receipt_timestamp': date
     }
