@@ -323,16 +323,21 @@ def attach(app):
         # Check regex data against tournament data
         # Check casino and tournament name?
         # Check name
+        validation = {}
         user = Profiles.query.get( user_id )
-        user.first_name
-        user.last_name
+        validation['first_name'] = \
+            True if user.first_name in regex_data['player_name'] else False
+        validation['last_name'] = \
+            True if user.last_name in regex_data['player_name'] else False
+
 
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
 
         return jsonify({
             'buyin_id': buyin.id,
-            'receipt_data': regex_data
+            'receipt_data': regex_data,
+            
         })
 
         # def check_code():
