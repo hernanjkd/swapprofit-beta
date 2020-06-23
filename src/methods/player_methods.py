@@ -320,6 +320,12 @@ def attach(app):
         if nones > 2:
             terminate_buyin()
 
+        # Check regex data against tournament data
+        # Check casino and tournament name?
+        # Check name
+        user = Profiles.query.get( user_id )
+        user.first_name
+        user.last_name
 
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
