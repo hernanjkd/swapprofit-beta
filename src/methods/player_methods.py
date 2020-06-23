@@ -337,7 +337,7 @@ def attach(app):
         return jsonify({
             'buyin_id': buyin.id,
             'receipt_data': regex_data,
-            
+            'validation': validation
         })
 
         # def check_code():
