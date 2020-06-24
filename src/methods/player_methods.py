@@ -320,6 +320,10 @@ def attach(app):
         if nones > 2:
             terminate_buyin()
 
+        if None in \
+            [regex_data['first_name'], regex_data['last_name'], regex_data['casino']]:
+            terminate_buyin()
+
         # Check regex data against tournament data
         # Check casino and tournament name?
         # Check name
@@ -329,7 +333,13 @@ def attach(app):
             True if user.first_name in regex_data['player_name'] else False
         validation['last_name'] = \
             True if user.last_name in regex_data['player_name'] else False
-
+        
+        validation['casino'] = True
+        casino_name = regex_data['casino'].split(' ')
+        # trmnt_casino = get trmnt casino name
+        for x in casino_name:
+            if x not in trmnt_casino:
+                validation['casino'] = False
 
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
