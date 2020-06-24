@@ -92,8 +92,8 @@ def attach(app):
         return jsonify({ **r, 'text': msg })
 
    
-   @app.route('/receipt/testing', methods=['PUT'])
-   def receipttesting():
+    @app.route('/receipt/testing', methods=['PUT'])
+    def receipttesting():
 
         close_time = utils.designated_trmnt_close_time()
 
