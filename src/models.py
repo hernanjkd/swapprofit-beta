@@ -222,7 +222,7 @@ class Tournaments(db.Model):
     __tablename__ = 'tournaments'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
-    casino_name = db.Column(db.String(100))
+    casino = db.Column(db.String(100))
     address = db.Column(db.String(200))
     city = db.Column(db.String(50))
     state = db.Column(db.String(20))
@@ -285,7 +285,7 @@ class Tournaments(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'casino_name': self.casino_name,
+            'casino': self.casino,
             'address': self.address,
             'city': self.city,
             'state': self.state,
