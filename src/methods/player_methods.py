@@ -337,9 +337,9 @@ def attach(app):
         validation['casino'] = True
         casino_name = regex_data['casino'].split(' ')
         # trmnt_casino = get trmnt casino name
-        for x in casino_name:
-            if x not in trmnt_casino:
-                validation['casino'] = False
+        # for x in casino_name:
+        #     if x not in trmnt_casino:
+        #         validation['casino'] = False
 
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
