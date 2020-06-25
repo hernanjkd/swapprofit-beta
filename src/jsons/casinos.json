@@ -1,5 +1,6 @@
 {
   "USFL0002": {
+    "name": "Seminole Casino Coconut Creek",
     "address": "5550 NW 40th St",
     "city": "Coconut Creek",
     "state": "Florida",
@@ -9,6 +10,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0006": {
+    "name": "King's Court Key Jai-Alai & Poker Room",
     "address": "355 E Palm Dr",
     "city": "Florida City",
     "state": "Florida",
@@ -18,6 +20,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0012": {
+    "name": "Seminole Hard Rock Hollywood",
     "address": "1 Seminole Way",
     "city": "Fort Lauderdale",
     "state": "Florida",
@@ -27,6 +30,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0010": {
+    "name": "Big Easy Casino",
     "address": "831 N Federal Hwy",
     "city": "Hallandale Beach",
     "state": "Florida",
@@ -36,6 +40,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0009": {
+    "name": "Gulfstream Park",
     "address": "901 Federal Hwy",
     "city": "Hallandale Beach",
     "state": "Florida",
@@ -45,6 +50,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0011": {
+    "name": "Hialeah Park Casino",
     "address": "2200 E 4th Ave, Hialeah",
     "city": "Hialeah",
     "state": "Florida",
@@ -54,6 +60,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0020": {
+    "name": "Isle Casino at Pompano Park",
     "address": "777 Isle of Capri Circle",
     "city": "Pompano Beach",
     "state": "Florida",
@@ -63,6 +70,7 @@
     "time_zone": "eastern daylight time"
   },
   "USFL0027": {
+    "name": "Palm Beach Kennel Club",
     "address": "1111 N Congress Ave",
     "city": "West Palm Beach",
     "state": "Florida",
