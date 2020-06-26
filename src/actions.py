@@ -156,6 +156,7 @@ def load_tournament_file():
             
             trmntjson = {
                 **trmntjson,
+                'casino': casino['name'],
                 'address': casino['address'].strip(),
                 'city': casino['city'].strip(),
                 'state': casino['state'].strip(),

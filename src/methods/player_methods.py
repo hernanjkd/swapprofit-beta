@@ -507,6 +507,7 @@ def attach(app):
                 
                 return jsonify([{
                     ** x['flight'].serialize(),
+                    'casino': x['flight'].tournament.casino,
                     'address': x['flight'].tournament.address,
                     'city': x['flight'].tournament.city,
                     'state': x['flight'].tournament.state,
@@ -524,6 +525,7 @@ def attach(app):
                 
                 return jsonify([{
                     **f.serialize(),
+                    'casino': f.tournament.casino,
                     'address': f.tournament.address,
                     'city': f.tournament.city,
                     'state': f.tournament.state,

@@ -1,5 +1,6 @@
 from sqlalchemy import func
-from models import db, Users, Profiles, Tournaments, Swaps, Flights, Buy_ins, Transactions, Devices
+from models import db, Users, Profiles, Tournaments, Swaps, Flights, Buy_ins, \
+    Transactions, Devices, Chats, Messages
 from datetime import datetime, timedelta
 from utils import sha256
 import actions
@@ -7,7 +8,8 @@ import actions
 
 def run():
          
-
+    Messages.query.delete()
+    Chats.query.delete()
     Devices.query.delete()
     Transactions.query.delete()
     Buy_ins.query.delete()
@@ -24,6 +26,8 @@ def run():
     db.session.execute("ALTER SEQUENCE swaps_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE transactions_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE devices_id_seq RESTART")
+    db.session.execute("ALTER SEQUENCE chats_id_seq RESTART")
+    db.session.execute("ALTER SEQUENCE messages_id_seq RESTART")
 
     db.session.commit()
 
@@ -230,6 +234,7 @@ def run():
     ########################
 
     heartland = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #14 - NLH $2,000,000 Guaranteed - Day 2',
         address='261 Main St',
         city='Black Hawk',
@@ -242,6 +247,7 @@ def run():
     db.session.add(heartland)
 
     stones = Tournaments(
+        casino='Casino',
         name='PBKC - NLH $2,000 Guaranteed',
         address='6510 Antelope Rd',
         city='Citrus Heights',
@@ -254,6 +260,7 @@ def run():
     db.session.add(stones)
 
     wpt = Tournaments(
+        casino='Casino',
         name='Gulfstream - NLH $1,500 Guaranteed',
         address='Thunder Valley Casino Resort, 1200 Athens Ave',
         city='Lincoln',
@@ -267,6 +274,7 @@ def run():
 
     now = datetime.utcnow()
     live = Tournaments(
+        casino='Casino',
         name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties',
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -667,6 +675,7 @@ def run():
     ####################################
 
     newvegas = Tournaments(
+        casino='Casino',
         name='New Vegas Strip - Texas Hold\'em Finale',
         address='129 East Fremont St.',
         city='Las Vegas',
@@ -848,6 +857,7 @@ def run():
     ######################
 
     oldvegas = Tournaments(
+        casino='Casino',
         name='RRPO #21 - NLH $100,000 Guaranteed - Day 1A',
         address='2211 N Rampart Blvd',
         city='Las Vegas',
@@ -1013,6 +1023,7 @@ def run():
     ##################
 
     gamorrah = Tournaments(
+        casino='Casino',
         name='Coconut Creek - NLH $2,000 Guaranteed',
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -1050,6 +1061,7 @@ def run():
 
     # TOURNAMENTS
     p2 = Tournaments(
+        casino='Casino',
         name='PBKC - NLH $2,500 Guaranteed',
         address='2211 N Rampart Blvd',
         city='Charlotte',
@@ -1066,6 +1078,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #20 - 8 Max NLH $200,000 Guaranteed - Day 2',
         address='2211 N Rampart Blvd',
         city='Albany',
@@ -1082,6 +1095,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #23 - High Roller NLH $1,000,000 Guaranteed - Day 1',
         address='2211 N Rampart Blvd',
         city='New Orleans',
@@ -1098,6 +1112,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #24 - PLO',
         address='2211 N Rampart Blvd',
         city='West Palm Beach',
@@ -1114,6 +1129,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='RRPO #21 - NLH $100,000 Guaranteed - Day 1B',
         address='2211 N Rampart Blvd',
         city='Jacksonville',
@@ -1130,6 +1146,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Coconut Creek - NLH  $4,000 Guaranteed',
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -1147,6 +1164,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #25 - Six Max NLH',
         address='2211 N Rampart Blvd',
         city='Los Angeles',
@@ -1163,6 +1181,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='PBKC - NLH $2,000 Guaranteed',
         address='2211 N Rampart Blvd',
         city='Seattle',
@@ -1179,6 +1198,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='Gulfstream - Ladies NLH $1,500 Guaranteed',
         address='2211 N Rampart Blvd',
         city='Dallas',
@@ -1195,6 +1215,7 @@ def run():
     db.session.add_all([p2, f1_p2])
 
     p2 = Tournaments(
+        casino='Casino',
         name='RRPO #21 - NLH $100,000 Guaranteed - Day 1C',
         address='2211 N Rampart Blvd',
         city='Bangor',
@@ -1213,6 +1234,7 @@ def run():
 
     # ONE
     ocean = Tournaments(
+        casino='Casino',
         name='The Big Easy - NLH $2,500 Guaranteed',
         address='3600 S Las Vegas Blvd',
         city='Las Vegas',
@@ -1242,6 +1264,7 @@ def run():
 
     # TWO
     royale = Tournaments(
+        casino='Casino',
         name='Isle - Omaha 8 or Better - $2,000 Guaranteed',
         address='One MGM Way',
         city='Springfield',
@@ -1271,6 +1294,7 @@ def run():
 
     # THREE
     loathing = Tournaments(
+        casino='Casino',
         name='RRPO #21 - NLH $100,000 Guaranteed - Day 1D',
         address='3799 S. Las Vegas Blvd',
         city='Las Vegas',
@@ -1300,6 +1324,7 @@ def run():
 
     # FOUR
     country = Tournaments(
+        casino='Casino',
         name='Coconut Creek - NLH Survivor $2,000 Guaranteed',
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -1330,6 +1355,7 @@ def run():
 
     # FIVE
     hangover = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #14 - NLH $2,000,000 Guaranteed - Day 4',
         address='3570 S Las Vegas Blvd',
         city='Las Vegas',
@@ -1359,6 +1385,7 @@ def run():
 
     # SIX
     king = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #26 - Seniors 50+ NLH',
         address='1 Seminole Way',
         city='Hollywood',
@@ -1388,6 +1415,7 @@ def run():
 
     # SEVEN
     kakegurui = Tournaments(
+        casino='Casino',
         name='PBKC - NLH',
         address='794 Lucky Eagle Dr',
         city='Eagle Pass',
@@ -1417,6 +1445,7 @@ def run():
 
     # EIGHT
     ultimate = Tournaments(
+        casino='Casino',
         name='Hard Rock - RRPO #23 - High Roller NLH $1,000,000 Guaranteed - Day 2',
         address='2705 Central Ave',
         city='Hot Springs',
@@ -1446,6 +1475,7 @@ def run():
 
     # NINE
     thankyou = Tournaments(
+        casino='Casino',
         name='RRPO #21 - NLH $100,000 Guaranteed - Day 1E',
         address='7002 Arundel Mills Cir #7777',
         city='Hanover',
@@ -1475,6 +1505,7 @@ def run():
 
     # TEN
     battle = Tournaments(
+        casino='Casino',
         name='Isle - NLH $3,000 Guaranteed',
         address='91 WA-108',
         city='Shelton',
@@ -1503,6 +1534,7 @@ def run():
 
 
     donkey21 = Tournaments(
+        casino='Casino',
         name="Kings Court Key - NLH $1,500 Guaranteed",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1520,6 +1552,7 @@ def run():
     db.session.add_all([donkey21, flight1_donkey21])
 
     donkey22 = Tournaments(
+        casino='Casino',
         name="Coconut Creek - NLH  $4,000 Guaranteed w/$50 Bounties",
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -1538,6 +1571,7 @@ def run():
     db.session.add_all([donkey22, flight1_donkey22])
 
     donkey23 = Tournaments(
+        casino='Casino',
         name="Hard Rock - RRPO #27 - NLH",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1555,6 +1589,7 @@ def run():
     db.session.add_all([donkey23, flight1_donkey23])
 
     donkey24 = Tournaments(
+        casino='Casino',
         name="PBKC - NLH",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1572,6 +1607,7 @@ def run():
     db.session.add_all([donkey24, flight1_donkey24])
 
     donkey25 = Tournaments(
+        casino='Casino',
         name="Gulfstream - NLH $2,000 Guaranteed",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1589,6 +1625,7 @@ def run():
     db.session.add_all([donkey25, flight1_donkey25])
 
     donkey26 = Tournaments(
+        casino='Casino',
         name="RRPO #21 - NLH $100,000 Guaranteed - Day 1F",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1606,6 +1643,7 @@ def run():
     db.session.add_all([donkey26, flight1_donkey26])
 
     donkey27 = Tournaments(
+        casino='Casino',
         name="The Big Easy - NLH Shootout $2,500 Guaranteed",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1623,6 +1661,7 @@ def run():
     db.session.add_all([donkey27, flight1_donkey27])
 
     donkey28 = Tournaments(
+        casino='Casino',
         name="Isle - NLH Satellite for $200 seat(s)",
         address='16849 102nd St SE',
         city='Hankinson',
@@ -1640,6 +1679,7 @@ def run():
     db.session.add_all([donkey28, flight1_donkey28])
 
     donkey29 = Tournaments(
+        casino='Casino',
         name="Coconut Creek - Omaha Hi-Low $3,000 Guaranteed",
         address="5550 NW 40th St",
         city="Coconut Creek",
@@ -1658,6 +1698,7 @@ def run():
     db.session.add_all([donkey29, flight1_donkey29])
 
     donkey30 = Tournaments(
+        casino='Casino',
         name="Hard Rock - RRPO #14 - NLH $2,000,000 Guaranteed - Day 5",
         address='16849 102nd St SE',
         city='Hankinson',
