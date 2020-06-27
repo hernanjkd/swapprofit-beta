@@ -107,7 +107,7 @@ def swap_tracker_json(trmnt, user_id):
 
 
 
-
+# Save all the data in the json files in the db
 def load_tournament_file():
 
 

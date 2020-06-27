@@ -324,9 +324,8 @@ def attach(app):
             [regex_data['first_name'], regex_data['last_name'], regex_data['casino']]:
             terminate_buyin()
 
-        # Check regex data against tournament data
-        # Check casino and tournament name?
-        # Check name
+        # Verify regex data against tournament data
+        # Check player name
         validation = {}
         user = Profiles.query.get( user_id )
         validation['first_name'] = \
@@ -334,12 +333,13 @@ def attach(app):
         validation['last_name'] = \
             True if user.last_name in regex_data['player_name'] else False
         
+        # Check casino name
         validation['casino'] = True
         casino_name = regex_data['casino'].split(' ')
-        # trmnt_casino = get trmnt casino name
-        # for x in casino_name:
-        #     if x not in trmnt_casino:
-        #         validation['casino'] = False
+        trmnt_casino = get trmnt casino name
+        for x in casino_name:
+            if x not in trmnt_casino:
+                validation['casino'] = False
 
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
