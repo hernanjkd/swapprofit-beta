@@ -341,6 +341,11 @@ def attach(app):
             if x not in trmnt_casino:
                 validation['casino'] = False
 
+        for valid in validation.values():
+            if valid == False:
+                terminate_buyin()
+
+
         buyin.receipt_img_url = result['secure_url']
         db.session.commit()
 
