@@ -423,6 +423,11 @@ def attach(app):
                         'tournament_date': buyin.flight.tournament.start_at,
                         'tournament_name': buyin.flight.tournament.name
                     })
+
+                db.session.commit()
+        
+                return jsonify({'buy_in': buyin.serialize()})
+
             elif buyin_status == 'active':
                 raise APIException('Buy-in already validated')
 
