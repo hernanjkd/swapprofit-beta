@@ -403,6 +403,19 @@ def attach(app):
         if request.args.get('validate') == 'true':
             if buyin_status == 'pending':
                 utils.check_params(req, 'chips','table','seat')
+
+                # Update chips, table and seat
+                if req.get('chips') is not None:
+                    if req['chips'] > 999999999:
+                        raise APIException('Too many characters for chips')
+                    buyin.chips = req['chips']
+                if req.get('table') is not None:
+                    if len( req['table'] ) > 20:
+                        raise APIException('Too many characters for table')
+                    buyin.table = req['table']
+                if req.get('seat') is not None:
+                    buyin.seat = req['seat']
+
                 buyin.status = 'active'
                 send_email(template='buyin_receipt', emails=buyin.user.user.email,
                     data={
