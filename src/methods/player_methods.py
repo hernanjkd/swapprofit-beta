@@ -328,26 +328,41 @@ def attach(app):
         # Check player name
         validation = {}
         user = Profiles.query.get( user_id )
-        validation['first_name'] = \
-            True if user.first_name in regex_data['player_name'] else False
-        validation['last_name'] = \
-            True if user.last_name in regex_data['player_name'] else False
+        validation['first_name'] = {
+            receipt: regex_data['player_name'],
+            database: user.first_name,
+            valid: True if user.first_name in regex_data['player_name'] else False
+        }
+        validation['last_name'] = {
+            receipt: regex_data['player_name'],
+            databse: user.last_name,
+            valid: True if user.last_name in regex_data['player_name'] else False
+        }
         
         # Check casino name
-        validation['casino'] = True
-        casino_name = regex_data['casino'].split(' ')
-        trmnt_casino = get trmnt casino name
-        for x in casino_name:
+        trmnt_casino = flight.tournament.casino
+        validation['casino'] = {
+            receipt: regex_data['casino'],
+            database: '',
+            valid: True 
+        }
+        casino_names = regex_data['casino'].split(' ')
+        for x in casino_names:
             if x not in trmnt_casino:
-                validation['casino'] = False
+                validation['casino']['valid'] = False
+                break
 
         # for valid in validation.values():
         #     if valid == False:
         #         terminate_buyin()
 
+        # ADD TOURNAMENT DATE FOR VALIDATION
 
         buyin.receipt_img_url = result['secure_url']
-        db.session.commit()
+        # db.session.commit()
+
+        cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
+        db.session.rollback()
 
         return jsonify({
             'buyin_id': buyin.id,
