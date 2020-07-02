@@ -340,7 +340,13 @@ def attach(app):
         condition = user.last_name.lower() in regex_data['player_name'].lower()
         validation['last_name'] = {
             'ocr': regex_data['player_name'],
-            'databse': user.last_name,
+            'database': user.last_name,
+            'valid': True if condition else False
+        }
+        condition = user.nickname.lower() in regex_data['player_name'].lower()
+        validation['nickname'] = {
+            'ocr': regex_data['player_name'],
+            'database': user.nickname,
             'valid': True if condition else False
         }
         
