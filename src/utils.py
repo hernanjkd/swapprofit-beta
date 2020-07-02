@@ -8,6 +8,10 @@ from flask_jwt_simple import create_jwt, jwt_required, get_jwt
 from datetime import datetime, timedelta
 from models import Users
 
+
+hours_to_close_tournament = timedelta(hours=17, minutes=1)
+
+
 class APIException(Exception):
     status_code = 400
 
@@ -84,7 +88,7 @@ def isfloat(string):
 
 # If flight.start_at < designated_trmnt_close_time() then the trmnt has ended
 def designated_trmnt_close_time():
-    return datetime.utcnow() - timedelta(hours=17, minutes=1)
+    return datetime.utcnow() - hours_to_close_tournament
 
 def ocr_reading(result):
     client = vision.ImageAnnotatorClient()

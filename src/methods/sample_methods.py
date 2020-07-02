@@ -90,3 +90,7 @@ def attach(app):
         r = regex.hard_rock(msg)
 
         return jsonify({ **r, 'text': msg })
+
+
+   
+    return app

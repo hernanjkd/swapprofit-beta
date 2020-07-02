@@ -276,9 +276,9 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        # if flight is None or flight.start_at < close_time:
-        #     raise APIException(
-        #         "Cannot buy into this flight. It either has ended, or does not exist")
+        if flight is None or flight.start_at < close_time:
+            raise APIException(
+                "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
@@ -323,7 +323,9 @@ def attach(app):
         if None in [regex_data['player_name'], regex_data['casino']]:
             terminate_buyin()
 
+        #############################################
         # Verify regex data against tournament data
+        
         # Check player name
         validation = {}
         user = Profiles.query.get( user_id )
@@ -353,6 +355,16 @@ def attach(app):
                 validation['casino']['valid'] = False
                 break
 
+        # Check date
+        strtime = regex_data['receipt_timestamp']
+        try:
+            dt = datetime.strptime(strtime, '%B %d, %Y %I:%M %p')
+        except:
+            dt = None
+        
+        valid = False
+        # if dt is not None:
+        #     if 
 
         buyin.receipt_img_url = result['secure_url']
         # db.session.commit()
