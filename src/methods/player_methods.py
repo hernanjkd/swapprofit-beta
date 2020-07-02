@@ -287,51 +287,41 @@ def attach(app):
         db.session.add(buyin)
         db.session.flush()
 
-        # if 'image' not in request.files:
-        #     raise APIException('"image" property missing in the files array', 404)
+        if 'image' not in request.files:
+            raise APIException('"image" property missing in the files array', 404)
         
         
-        # utils.resolve_google_credentials()
+        utils.resolve_google_credentials()
         
-        # result = cloudinary.uploader.upload(
-        #     request.files['image'],
-        #     public_id = 'buyin' + str(buyin.id),
-        #     crop = 'limit',
-        #     width = 1000,
-        #     height = 1000,
-        #     tags = ['buyin_receipt',
-        #         'user_'+ str(user_id),
-        #         'buyin_'+ str(buyin.id)]
-        # )
+        result = cloudinary.uploader.upload(
+            request.files['image'],
+            public_id = 'buyin' + str(buyin.id),
+            crop = 'limit',
+            width = 1000,
+            height = 1000,
+            tags = ['buyin_receipt',
+                'user_'+ str(user_id),
+                'buyin_'+ str(buyin.id)]
+        )
 
-        # def terminate_buyin():
-        #     cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
-        #     db.session.rollback()
-        #     raise APIException('Take another photo')
+        def terminate_buyin():
+            cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
+            db.session.rollback()
+            raise APIException('Take another photo')
 
-        # ocr_data = utils.ocr_reading( result )
-        # if list(ocr_data) == []:
-        #     terminate_buyin()
+        ocr_data = utils.ocr_reading( result )
+        if list(ocr_data) == []:
+            terminate_buyin()
         
-        # regex_data = regex.hard_rock( ocr_data )
-        # nones = 0
-        # for val in regex_data.values():
-        #     if val is None: nones += 1
-        # if nones > 2:
-        #     terminate_buyin()
+        regex_data = regex.hard_rock( ocr_data )
+        nones = 0
+        for val in regex_data.values():
+            if val is None: nones += 1
+        if nones > 2:
+            terminate_buyin()
 
-        # if None in [regex_data['player_name'], regex_data['casino']]:
-        #     terminate_buyin()
-
-        regex_data = {
-            "buyin_amount": "120.00",
-            "casino": "SEMINOLE Hard Rock",
-            "player_id": "2081669",
-            "player_name": "LUIZ S (LOU STADLER)",
-            "receipt_timestamp": "February 22, 2020 9:26 am",
-            "seat": "8",
-            "table": "14"
-        }
+        if None in [regex_data['player_name'], regex_data['casino']]:
+            terminate_buyin()
 
         # Verify regex data against tournament data
         # Check player name
@@ -354,26 +344,27 @@ def attach(app):
         trmnt_casino = flight.tournament.casino
         validation['casino'] = {
             'receipt': regex_data['casino'],
-            'database': '',
+            'database': trmnt_casino,
             'valid': True 
         }
         casino_names = regex_data['casino'].split(' ')
-        for x in casino_names:
-            if x not in trmnt_casino:
+        for name in casino_names:
+            if name.lower() not in trmnt_casino.lower():
                 validation['casino']['valid'] = False
                 break
 
 
-        # buyin.receipt_img_url = result['secure_url']
+        buyin.receipt_img_url = result['secure_url']
         # db.session.commit()
 
-        # cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
+        cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
         db.session.rollback()
 
         return jsonify({
             'buyin_id': buyin.id,
             'receipt_data': regex_data,
-            'validation': validation
+            'validation': validation,
+            'ocr_data': ocr_data
         })
 
         # def check_code():

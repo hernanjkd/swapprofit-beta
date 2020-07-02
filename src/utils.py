@@ -82,6 +82,7 @@ def isfloat(string):
         return True
     except: return False
 
+# If flight.start_at < designated_trmnt_close_time() then the trmnt has ended
 def designated_trmnt_close_time():
     return datetime.utcnow() - timedelta(hours=17, minutes=1)
 
