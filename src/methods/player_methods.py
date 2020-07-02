@@ -276,9 +276,9 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        if flight is None or flight.start_at < close_time:
-            raise APIException(
-                "Cannot buy into this flight. It either has ended, or does not exist")
+        # if flight is None or flight.start_at < close_time:
+        #     raise APIException(
+        #         "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
@@ -287,64 +287,75 @@ def attach(app):
         db.session.add(buyin)
         db.session.flush()
 
-        if 'image' not in request.files:
-            raise APIException('"image" property missing in the files array', 404)
+        # if 'image' not in request.files:
+        #     raise APIException('"image" property missing in the files array', 404)
         
         
-        utils.resolve_google_credentials()
+        # utils.resolve_google_credentials()
         
-        result = cloudinary.uploader.upload(
-            request.files['image'],
-            public_id = 'buyin' + str(buyin.id),
-            crop = 'limit',
-            width = 1000,
-            height = 1000,
-            tags = ['buyin_receipt',
-                'user_'+ str(user_id),
-                'buyin_'+ str(buyin.id)]
-        )
+        # result = cloudinary.uploader.upload(
+        #     request.files['image'],
+        #     public_id = 'buyin' + str(buyin.id),
+        #     crop = 'limit',
+        #     width = 1000,
+        #     height = 1000,
+        #     tags = ['buyin_receipt',
+        #         'user_'+ str(user_id),
+        #         'buyin_'+ str(buyin.id)]
+        # )
 
-        def terminate_buyin():
-            cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
-            db.session.rollback()
-            raise APIException('Take another photo')
+        # def terminate_buyin():
+        #     cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
+        #     db.session.rollback()
+        #     raise APIException('Take another photo')
 
-        ocr_data = utils.ocr_reading( result )
-        if list(ocr_data) == []:
-            terminate_buyin()
+        # ocr_data = utils.ocr_reading( result )
+        # if list(ocr_data) == []:
+        #     terminate_buyin()
         
-        regex_data = regex.hard_rock( ocr_data )
-        nones = 0
-        for val in regex_data.values():
-            if val is None: nones += 1
-        if nones > 2:
-            terminate_buyin()
+        # regex_data = regex.hard_rock( ocr_data )
+        # nones = 0
+        # for val in regex_data.values():
+        #     if val is None: nones += 1
+        # if nones > 2:
+        #     terminate_buyin()
 
-        if None in \
-            [regex_data['first_name'], regex_data['last_name'], regex_data['casino']]:
-            terminate_buyin()
+        # if None in [regex_data['player_name'], regex_data['casino']]:
+        #     terminate_buyin()
+
+        regex_data = {
+            "buyin_amount": "120.00",
+            "casino": "SEMINOLE Hard Rock",
+            "player_id": "2081669",
+            "player_name": "LUIZ S (LOU STADLER)",
+            "receipt_timestamp": "February 22, 2020 9:26 am",
+            "seat": "8",
+            "table": "14"
+        }
 
         # Verify regex data against tournament data
         # Check player name
         validation = {}
         user = Profiles.query.get( user_id )
+        condition = user.first_name.lower() in regex_data['player_name'].lower()
         validation['first_name'] = {
-            receipt: regex_data['player_name'],
-            database: user.first_name,
-            valid: True if user.first_name in regex_data['player_name'] else False
+            'receipt': regex_data['player_name'],
+            'database': user.first_name,
+            'valid': True if condition else False
         }
+        condition = user.last_name.lower() in regex_data['player_name'].lower()
         validation['last_name'] = {
-            receipt: regex_data['player_name'],
-            databse: user.last_name,
-            valid: True if user.last_name in regex_data['player_name'] else False
+            'receipt': regex_data['player_name'],
+            'databse': user.last_name,
+            'valid': True if condition else False
         }
         
         # Check casino name
         trmnt_casino = flight.tournament.casino
         validation['casino'] = {
-            receipt: regex_data['casino'],
-            database: '',
-            valid: True 
+            'receipt': regex_data['casino'],
+            'database': '',
+            'valid': True 
         }
         casino_names = regex_data['casino'].split(' ')
         for x in casino_names:
@@ -352,16 +363,11 @@ def attach(app):
                 validation['casino']['valid'] = False
                 break
 
-        # for valid in validation.values():
-        #     if valid == False:
-        #         terminate_buyin()
 
-        # ADD TOURNAMENT DATE FOR VALIDATION
-
-        buyin.receipt_img_url = result['secure_url']
+        # buyin.receipt_img_url = result['secure_url']
         # db.session.commit()
 
-        cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
+        # cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
         db.session.rollback()
 
         return jsonify({
