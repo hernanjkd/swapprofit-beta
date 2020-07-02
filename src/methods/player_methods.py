@@ -277,9 +277,9 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        # if flight is None or flight.start_at < close_time:
-        #     raise APIException(
-        #         "Cannot buy into this flight. It either has ended, or does not exist")
+        if flight is None or flight.start_at < close_time:
+            raise APIException(
+                "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
@@ -376,10 +376,7 @@ def attach(app):
         }
 
         buyin.receipt_img_url = result['secure_url']
-        # db.session.commit()
-
-        cloudinary.uploader.destroy( 'buyin'+str(buyin.id) )
-        db.session.rollback()
+        db.session.commit()
 
         return jsonify({
             'buyin_id': buyin.id,
@@ -443,16 +440,18 @@ def attach(app):
                 utils.check_params(req, 'chips','table','seat')
 
                 # Update chips, table and seat
-                if req.get('chips') is not None:
-                    if req['chips'] > 999999999:
-                        raise APIException('Too many characters for chips')
-                    buyin.chips = req['chips']
-                if req.get('table') is not None:
-                    if len( req['table'] ) > 20:
-                        raise APIException('Too many characters for table')
-                    buyin.table = req['table']
-                if req.get('seat') is not None:
-                    buyin.seat = req['seat']
+                if req['chips'] > 999999999:
+                    raise APIException('Too many characters for chips')
+                if len( req['table'] ) > 20:
+                    raise APIException('Too many characters for table')
+                if req['table'] == '':
+                    raise APIException('Table can\'t be empty')
+                if req['seat'] < 1:
+                    raise APIException('Seat can\'t be smaller than 1')
+
+                buyin.chips = req['chips']
+                buyin.table = req['table']
+                buyin.seat = req['seat']
 
                 buyin.status = 'active'
                 send_email(template='buyin_receipt', emails=buyin.user.user.email,
