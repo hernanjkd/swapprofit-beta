@@ -11,7 +11,8 @@ from datetime import datetime, timedelta
 from flask import request, jsonify, render_template
 from flask_jwt_simple import create_jwt, decode_jwt, get_jwt
 from sqlalchemy import desc, asc
-from utils import APIException, role_jwt_required, isfloat
+from utils import APIException, role_jwt_required, isfloat, \
+    hours_to_close_tournament
 from models import (db, Users, Profiles, Tournaments, Swaps, Flights, 
     Buy_ins, Transactions, Devices, Chats, Messages)
 from notifications import send_email, send_fcm
@@ -276,9 +277,9 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        if flight is None or flight.start_at < close_time:
-            raise APIException(
-                "Cannot buy into this flight. It either has ended, or does not exist")
+        # if flight is None or flight.start_at < close_time:
+        #     raise APIException(
+        #         "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
@@ -323,6 +324,7 @@ def attach(app):
         if None in [regex_data['player_name'], regex_data['casino']]:
             terminate_buyin()
 
+
         #############################################
         # Verify regex data against tournament data
         
@@ -331,13 +333,13 @@ def attach(app):
         user = Profiles.query.get( user_id )
         condition = user.first_name.lower() in regex_data['player_name'].lower()
         validation['first_name'] = {
-            'receipt': regex_data['player_name'],
+            'ocr': regex_data['player_name'],
             'database': user.first_name,
             'valid': True if condition else False
         }
         condition = user.last_name.lower() in regex_data['player_name'].lower()
         validation['last_name'] = {
-            'receipt': regex_data['player_name'],
+            'ocr': regex_data['player_name'],
             'databse': user.last_name,
             'valid': True if condition else False
         }
@@ -345,7 +347,7 @@ def attach(app):
         # Check casino name
         trmnt_casino = flight.tournament.casino
         validation['casino'] = {
-            'receipt': regex_data['casino'],
+            'ocr': regex_data['casino'],
             'database': trmnt_casino,
             'valid': True 
         }
@@ -356,15 +358,22 @@ def attach(app):
                 break
 
         # Check date
-        strtime = regex_data['receipt_timestamp']
+        regex_timestamp = regex_data['receipt_timestamp']
         try:
-            dt = datetime.strptime(strtime, '%B %d, %Y %I:%M %p')
+            dt = datetime.strptime(regex_timestamp, '%B %d, %Y %I:%M %p')
         except:
             dt = None
         
         valid = False
-        # if dt is not None:
-        #     if 
+        if dt is not None:
+            close = flight.start_at + hours_to_close_tournament
+            if datetime.utcnow() < close:
+                valid = True
+        validation['datetime'] = {
+            'ocr': regex_timestamp,
+            'flight_start_time': flight.start_at,
+            'valid': valid
+        }
 
         buyin.receipt_img_url = result['secure_url']
         # db.session.commit()
