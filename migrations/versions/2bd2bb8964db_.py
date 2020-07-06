@@ -99,7 +99,7 @@ def upgrade():
     sa.Column('chips', sa.Integer(), nullable=True),
     sa.Column('table', sa.String(length=20), nullable=True),
     sa.Column('seat', sa.Integer(), nullable=True),
-    sa.Column('place', sa.Integer(), nullable=True),
+    sa.Column('place', sa.String(length=6), nullable=True),
     sa.Column('winnings', sa.String(length=30), nullable=True),
     sa.Column('player_name', sa.String(length=50), nullable=True),
     sa.Column('status', sa.Enum('active', 'busted', 'cashed', 'bagged', 'pending', name='buyinstatus'), nullable=True),

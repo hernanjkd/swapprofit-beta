@@ -359,7 +359,7 @@ class Buy_ins(db.Model):
     chips = db.Column(db.Integer)
     table = db.Column(db.String(20))
     seat = db.Column(db.Integer)
-    place = db.Column(db.Integer, default=None)
+    place = db.Column(db.String(6), default=None)
     winnings = db.Column(db.String(30), default=None)
     player_name = db.Column(db.String(50))
     status = db.Column(db.Enum(BuyinStatus), default=BuyinStatus.pending)
