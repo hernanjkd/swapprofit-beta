@@ -221,7 +221,7 @@ def attach(app):
             "tournament_buy_in": 150,
             "tournament_date": "23 Aug, 2020",
             "tournament_name": "Las Vegas Live Night Hotel",
-            "results_link": "https://poker-society.herokuapp.com/results_link/234"
+            "results_link": "https://poker-society.herokuapp.com/results_link/234",
             "users": {
                 "sdfoij@yahoo.com": {
                     "position": 11,
@@ -318,7 +318,7 @@ def attach(app):
 
 
             sign = '-' if total_swap_earnings < 0 else '+'
-            send_email('swap_results','hernanjkd@gmail.com',
+            send_email('swap_results',['hernanjkd@gmail.com','gherndon5@gmail.com'],
                 data={
                     'tournament_date': results['tournament_date'],
                     'tournament_name': results['tournament_name'],
