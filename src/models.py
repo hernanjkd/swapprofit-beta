@@ -49,6 +49,7 @@ class Profiles(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     nickname = db.Column(db.String(100))
     hendon_url = db.Column(db.String(200))
+    pokersociety_id = db.Column(db.Integer)
     profile_pic_url = db.Column(db.String(250), default=None)
     roi_rating = db.Column(db.Float, default=0)
     total_swaps = db.Column(db.Integer, default=0)
