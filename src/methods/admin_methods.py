@@ -219,8 +219,6 @@ def attach(app):
         results = {
             "tournament_id": 45,
             "tournament_buy_in": 150,
-            "tournament_date": "23 Aug, 2020",
-            "tournament_name": "Las Vegas Live Night Hotel",
             "users": {
                 "sdfoij@yahoo.com": {
                     "position": 11,
@@ -320,8 +318,8 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             send_email('swap_results',['hernanjkd@gmail.com','gherndon5@gmail.com'],
                 data={
-                    'tournament_date': r['tournament_date'],
-                    'tournament_name': r['tournament_name'],
+                    'tournament_date': trmnt.start_at,
+                    'tournament_name': trmnt.name,
                     'results_link': trmnt.results_link,
                     'total_swaps': swap_number,
                     'total_swap_earnings': f'{sign}${str(abs(total_swap_earnings))}',
