@@ -221,7 +221,6 @@ def attach(app):
             "tournament_buy_in": 150,
             "tournament_date": "23 Aug, 2020",
             "tournament_name": "Las Vegas Live Night Hotel",
-            "results_link": "https://poker-society.herokuapp.com/results_link/234",
             "users": {
                 "sdfoij@yahoo.com": {
                     "position": 11,
@@ -232,20 +231,21 @@ def attach(app):
         }
         '''
 
-        results  = request.get_json()
+        r  = request.get_json()
 
         trmnt = Tournaments.query.get( 45 )
-        trmnt.results_link = results['results_link']
+        trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
+            '/results/tournament/' + str(r['tournament_id']))
         trmnt.status = 'closed'
         db.session.commit()
 
-        for email, user_result in results['users'].items():
+        for email, user_result in r['users'].items():
             
             user = Profiles.query.filter( 
                         Profiles.user.email == email ).first()
 
             # Consolidate swaps if multiple with same user
-            all_agreed_swaps = user.get_agreed_swaps( results['tournament_id'] )
+            all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
             swaps = {}
         
             for swap in all_agreed_swaps:
@@ -277,10 +277,10 @@ def attach(app):
                 recipient_email = swap.recipient_user.user.email
                 recipient = Profiles.query.filter( Profiles.user.email == recipient_email )
 
-                entry_fee = results['tournament_buy_in']
+                entry_fee = r['tournament_buy_in']
                 profit_sender = user_result['winnings'] - entry_fee
                 amount_owed_sender = profit_sender * swap['percentage'] / 100
-                earning_recipient = results[ recipient_email ]['winnings']
+                earning_recipient = r[ recipient_email ]['winnings']
                 profit_recipient = earning_recipient - entry_fee
                 amount_owed_recipient = profit_recipient * swap['counter_percentage'] / 100
 
@@ -320,9 +320,9 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             send_email('swap_results',['hernanjkd@gmail.com','gherndon5@gmail.com'],
                 data={
-                    'tournament_date': results['tournament_date'],
-                    'tournament_name': results['tournament_name'],
-                    'results_link': results['results_link'],
+                    'tournament_date': r['tournament_date'],
+                    'tournament_name': r['tournament_name'],
+                    'results_link': trmnt.results_link,
                     'total_swaps': swap_number,
                     'total_swap_earnings': f'{sign}${str(abs(total_swap_earnings))}',
                     'render_swaps': render_swaps,
