@@ -221,7 +221,7 @@ def attach(app):
             "tournament_buy_in": 150,
             "users": {
                 "sdfoij@yahoo.com": {
-                    "position": 11,
+                    "place": 11,
                     "winnings": 200,
                     "total_winning_swaps": 34
                 }
