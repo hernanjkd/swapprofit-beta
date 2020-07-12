@@ -230,14 +230,15 @@ def attach(app):
         '''
 
         r  = request.get_json()
-
+        print(r)
+        return 'all good'
         trmnt = Tournaments.query.get( 45 )
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
         trmnt.status = 'closed'
         db.session.commit()
 
-        for email, user_result in r['users'].items():
+        for email, user_r in r['users'].items():
             
             user = Profiles.query.filter( 
                         Profiles.user.email == email ).first()
@@ -276,7 +277,7 @@ def attach(app):
                 recipient = Profiles.query.filter( Profiles.user.email == recipient_email )
 
                 entry_fee = r['tournament_buy_in']
-                profit_sender = user_result['winnings'] - entry_fee
+                profit_sender = user_r['winnings'] - entry_fee
                 amount_owed_sender = profit_sender * swap['percentage'] / 100
                 earning_recipient = r[ recipient_email ]['winnings']
                 profit_recipient = earning_recipient - entry_fee
@@ -287,7 +288,7 @@ def attach(app):
                     'amount_of_swaps': msg(swap['count']) if swap['count'] > 1 else '',
                     'entry_fee': entry_fee,
                     
-                    'total_earnings_sender': user_result['winnings'],
+                    'total_earnings_sender': user_r['winnings'],
                     'swap_percentage_sender': swap['percentage'],
                     'swap_profit_sender': profit_sender,
                     'amount_owed_sender': amount_owed_sender,
@@ -307,10 +308,10 @@ def attach(app):
 
             # Update user and buy ins
             user.calculate_total_swaps_save()
-            user.roi_rating = user_result['total_winning_swaps'] / user.total_swaps * 100
+            user.roi_rating = user_r['total_winning_swaps'] / user.total_swaps * 100
 
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
-            buyin.place = user_result['position']
+            buyin.place = user_r['position']
 
             db.session.commit()
 
