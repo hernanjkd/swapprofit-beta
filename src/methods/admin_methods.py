@@ -230,8 +230,7 @@ def attach(app):
         '''
 
         r  = request.get_json()
-        print(r)
-        return 'all good'
+        
         trmnt = Tournaments.query.get( 45 )
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
@@ -317,7 +316,7 @@ def attach(app):
 
 
             sign = '-' if total_swap_earnings < 0 else '+'
-            send_email('swap_results',['hernanjkd@gmail.com','gherndon5@gmail.com'],
+            send_email('swap_results',['hernanjkd@gmail.com'],#'gherndon5@gmail.com'],
                 data={
                     'tournament_date': trmnt.start_at,
                     'tournament_name': trmnt.name,
@@ -328,6 +327,9 @@ def attach(app):
                     'roi_rating': user.roi_rating,
                     'swap_rating': user.swap_rating
                 })
+
+            print('DONE')
+            return jsonify('message':'One loop terminated'), 200
 
 
 
