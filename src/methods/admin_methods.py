@@ -11,6 +11,7 @@ import seeds
 import utils
 import json
 import os
+import re
 
 
 def attach(app):
@@ -280,11 +281,17 @@ def attach(app):
                     raise APIException( 'User not found with id: '+ recipient_id )
 
 
-                entry_fee = r['tournament_buyin']
-                profit_sender = f"{user_r['winnings']} - {entry_fee}"
+                # Tournament buyin could be "$200" "$0++" "Day 2"
+                regex = re.search( r'\$\s*(\d+)', r['tournament_buyin'] )
+                entry_fee = int( regex.group(1) ) if regex is not None else 0
+
+                # Winnings are integers, but in case they are a string, ex "Satellite"
+                to_int = lambda x: x if isinstance(x, int) else 0
+
+                profit_sender = to_int( user_r['winnings'] ) - entry_fee
                 amount_owed_sender = profit_sender * swap_data['percentage'] / 100
-                earning_recipient = r[ swap_data['recipient_email'] ]['winnings']
-                profit_recipient = earning_recipient - entry_fee
+                recipient_winnings = r['users'][ swap_data['recipient_email'] ]['winnings']
+                profit_recipient = to_int( recipient_winnings ) - entry_fee
                 amount_owed_recipient = profit_recipient * swap['counter_percentage'] / 100
 
                 swap_data = {
