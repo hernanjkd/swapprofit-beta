@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
+from notifications import send_email
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions
 from datetime import datetime
@@ -212,7 +213,7 @@ def attach(app):
 
 
 
-    @app.route('/results', methods=['POST'])
+    @app.route('/results/update', methods=['POST'])
     def get_results():
         
         '''
@@ -238,7 +239,11 @@ def attach(app):
         db.session.commit()
 
         for email, user_r in r['users'].items():
-            
+            from models import Users
+            prof = Users.query.filter( Users.email == email ).first()
+            print(prof)
+            return 'done'
+
             user = Profiles.query.filter( 
                         Profiles.user.email == email ).first()
 
@@ -329,7 +334,7 @@ def attach(app):
                 })
 
             print('DONE')
-            return jsonify('message':'One loop terminated'), 200
+            return jsonify({'message':'One loop terminated'}), 200
 
 
 
