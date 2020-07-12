@@ -219,7 +219,7 @@ def attach(app):
         '''
         results = {
             "tournament_id": 45,
-            "tournament_buy_in": 150,
+            "tournament_buyin": 150,
             "users": {
                 "sdfoij@yahoo.com": {
                     "place": 11,
@@ -272,17 +272,18 @@ def attach(app):
             render_swaps = ''
             swap_number = 1
 
-            for swap in swaps:
-                recipient = Profiles.query.filter( 
-                    Profiles.user.has( Users.email == swap['recipient_email'] )).first()
-                if recipient is None:
-                    raise APIException( 'User not found with email: '+ swap['recipient_email'] )
-                
+            # Go thru the consolidated swaps to create the email templates
+            for recipient_id, swap_data in swaps.items():
 
-                entry_fee = r['tournament_buy_in']
-                profit_sender = user_r['winnings'] - entry_fee
-                amount_owed_sender = profit_sender * swap['percentage'] / 100
-                earning_recipient = r[ swap['recipient_email'] ]['winnings']
+                recipient = Profiles.query.get( recipient_id )
+                if recipient is None:
+                    raise APIException( 'User not found with id: '+ recipient_id )
+
+
+                entry_fee = r['tournament_buyin']
+                profit_sender = f"{user_r['winnings']} - {entry_fee}"
+                amount_owed_sender = profit_sender * swap_data['percentage'] / 100
+                earning_recipient = r[ swap_data['recipient_email'] ]['winnings']
                 profit_recipient = earning_recipient - entry_fee
                 amount_owed_recipient = profit_recipient * swap['counter_percentage'] / 100
 
