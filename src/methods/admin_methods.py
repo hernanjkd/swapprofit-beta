@@ -4,7 +4,7 @@ from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
 from notifications import send_email
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
-    Transactions
+    Transactions, Users
 from datetime import datetime
 import requests
 import seeds
@@ -239,35 +239,31 @@ def attach(app):
         db.session.commit()
 
         for email, user_r in r['users'].items():
-            from models import Users
-            prof = Users.query.filter( Users.email == email ).first()
-            print(prof)
-            return 'done'
 
             user = Profiles.query.filter( 
-                        Profiles.user.email == email ).first()
+                Profiles.user.has( Users.email == email )).first()
+            if user is None:
+                raise APIException('User not found with email: '+ email)
 
             # Consolidate swaps if multiple with same user
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
             swaps = {}
-        
+            
             for swap in all_agreed_swaps:
                 id = str( swap.recipient_id )
                 if id not in swaps:
                     swaps[id] = {
                         'count': 1,
                         'percentage': swap.percentage,
-                        'counter_percentage': swap.counter_swap.percentage
+                        'counter_percentage': swap.counter_swap.percentage,
+                        'recipient_email': swap.recipient_user.user.email
                     }
                 else:
-                    x = swaps[id]
-                    swaps[id] = {
-                        'count': x['count'] + 1,
-                        'percentage': x['percentage'] + swap.percentage,
-                        'counter_percentage': x['counter_percentage'] + \
-                                                swap.counter_swap.percentage
-                    }
-
+                    swaps[id]['count'] += 1
+                    swaps[id]['percentage'] += swap.percentage
+                    swaps[id]['counter_percentage'] += swap.counter_swap.percentage
+                        
+            
             # Create the swap templates
             msg = lambda x: \
                 f'You have {x} swaps with this person for the following total amounts:'
@@ -277,13 +273,16 @@ def attach(app):
             swap_number = 1
 
             for swap in swaps:
-                recipient_email = swap.recipient_user.user.email
-                recipient = Profiles.query.filter( Profiles.user.email == recipient_email )
+                recipient = Profiles.query.filter( 
+                    Profiles.user.has( Users.email == swap['recipient_email'] )).first()
+                if recipient is None:
+                    raise APIException( 'User not found with email: '+ swap['recipient_email'] )
+                
 
                 entry_fee = r['tournament_buy_in']
                 profit_sender = user_r['winnings'] - entry_fee
                 amount_owed_sender = profit_sender * swap['percentage'] / 100
-                earning_recipient = r[ recipient_email ]['winnings']
+                earning_recipient = r[ swap['recipient_email'] ]['winnings']
                 profit_recipient = earning_recipient - entry_fee
                 amount_owed_recipient = profit_recipient * swap['counter_percentage'] / 100
 
