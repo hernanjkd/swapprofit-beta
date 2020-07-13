@@ -234,17 +234,19 @@ def attach(app):
         r  = request.get_json()
         
         trmnt = Tournaments.query.get( r['tournament_id'] )
+        if trmnt is None:
+            raise APIException('Tournament not found with id: '+ r['tournament_id'], 404)
+
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
-        trmnt.status = 'closed'
-        db.session.commit()
+
 
         for email, userdata in r['users'].items():
 
             user = Profiles.query.filter( 
                 Profiles.user.has( email=email )).first()
             if user is None:
-                raise APIException('User not found with email: '+ email)
+                raise APIException('User not found with email: '+ email, 404)
 
             # Consolidate swaps if multiple with same user
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
@@ -290,7 +292,7 @@ def attach(app):
 
                 recipient = Profiles.query.get( recipient_id )
                 if recipient is None:
-                    raise APIException( 'User not found with id: '+ recipient_id )
+                    raise APIException('User not found with id: '+ recipient_id, 404)
 
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
@@ -306,7 +308,7 @@ def attach(app):
                 profit_recipient = to_int( recipient_winnings ) - entry_fee
                 amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
 
-                # Only used in the amount_of_swaps 5 lines below
+                # Only used in the amount_of_swaps a few lines below
                 msg = lambda x: \
                     f'You have {x} swaps with this person for the following total amounts:'
 
@@ -328,20 +330,22 @@ def attach(app):
                     'amount_owed_recipient': amount_owed_recipient
                 }
                 
+                # return jsonify(swap_data), 200
+
+
                 total_swap_earnings -= amount_owed_sender
                 total_swap_earnings += amount_owed_recipient
                 render_swaps += render_template('swap.html', **swap_data)
                 swap_number += 1
 
+            print(render_swaps)
+            return 'piki'
+
             # Update user and buy ins
             user.calculate_total_swaps_save()
             user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
-            print('user.id',user.id)
-            print('trmnt.id',trmnt.id)
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
-            print(buyin)
-            return 'check'
-            buyin.place = userdata['place']
+            buyin.place = 1#userdata['place']
 
             db.session.commit()
 
@@ -361,6 +365,10 @@ def attach(app):
 
             print('DONE')
             return jsonify({'message':'One loop terminated'}), 200
+
+
+        trmnt.status = 'closed'
+        db.session.commit()
 
 
 
