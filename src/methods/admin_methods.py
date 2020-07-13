@@ -330,7 +330,7 @@ def attach(app):
                     'amount_owed_recipient': amount_owed_recipient
                 }
                 
-                # return jsonify(swap_data), 200
+                return jsonify(swap_data), 200
 
 
                 total_swap_earnings -= amount_owed_sender
@@ -338,8 +338,8 @@ def attach(app):
                 render_swaps += render_template('swap.html', **swap_data)
                 swap_number += 1
 
-            print(render_swaps)
-            return 'piki'
+            # print(render_swaps)
+            # return 'check'
 
             # Update user and buy ins
             user.calculate_total_swaps_save()
