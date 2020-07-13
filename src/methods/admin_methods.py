@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
@@ -218,7 +218,7 @@ def attach(app):
     def get_results():
         
         '''
-        results = {
+        {
             "tournament_id": 45,
             "tournament_buyin": 150,
             "users": {
@@ -233,16 +233,16 @@ def attach(app):
 
         r  = request.get_json()
         
-        trmnt = Tournaments.query.get( 45 )
+        trmnt = Tournaments.query.get( r['tournament_id'] )
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
         trmnt.status = 'closed'
         db.session.commit()
 
-        for email, user_r in r['users'].items():
+        for email, userdata in r['users'].items():
 
             user = Profiles.query.filter( 
-                Profiles.user.has( Users.email == email )).first()
+                Profiles.user.has( email=email )).first()
             if user is None:
                 raise APIException('User not found with email: '+ email)
 
@@ -251,6 +251,22 @@ def attach(app):
             swaps = {}
             
             for swap in all_agreed_swaps:
+                '''
+                {
+                    "2": {
+                        "count": 2,
+                        "counter_percentage": 11,
+                        "percentage": 11,
+                        "recipient_email": "katz234@gmail.com"
+                    },
+                    "4": {
+                        "count": 1,
+                        "counter_percentage": 7,
+                        "percentage": 5,
+                        "recipient_email": "mikitapoker@gmail.com"
+                    }
+                }
+                '''
                 id = str( swap.recipient_id )
                 if id not in swaps:
                     swaps[id] = {
@@ -263,18 +279,14 @@ def attach(app):
                     swaps[id]['count'] += 1
                     swaps[id]['percentage'] += swap.percentage
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
-                        
             
-            # Create the swap templates
-            msg = lambda x: \
-                f'You have {x} swaps with this person for the following total amounts:'
             
             total_swap_earnings = 0
             render_swaps = ''
             swap_number = 1
 
             # Go thru the consolidated swaps to create the email templates
-            for recipient_id, swap_data in swaps.items():
+            for recipient_id, swapdata in swaps.items():
 
                 recipient = Profiles.query.get( recipient_id )
                 if recipient is None:
@@ -288,26 +300,30 @@ def attach(app):
                 # Winnings are integers, but in case they are a string, ex "Satellite"
                 to_int = lambda x: x if isinstance(x, int) else 0
 
-                profit_sender = to_int( user_r['winnings'] ) - entry_fee
-                amount_owed_sender = profit_sender * swap_data['percentage'] / 100
-                recipient_winnings = r['users'][ swap_data['recipient_email'] ]['winnings']
+                profit_sender = to_int( userdata['winnings'] ) - entry_fee
+                amount_owed_sender = profit_sender * swapdata['percentage'] / 100
+                recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
                 profit_recipient = to_int( recipient_winnings ) - entry_fee
-                amount_owed_recipient = profit_recipient * swap['counter_percentage'] / 100
+                amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
+
+                # Only used in the amount_of_swaps 5 lines below
+                msg = lambda x: \
+                    f'You have {x} swaps with this person for the following total amounts:'
 
                 swap_data = {
                     'swap_number': swap_number,
-                    'amount_of_swaps': msg(swap['count']) if swap['count'] > 1 else '',
+                    'amount_of_swaps': msg(swapdata['count']) if swapdata['count'] > 1 else '',
                     'entry_fee': entry_fee,
                     
-                    'total_earnings_sender': user_r['winnings'],
-                    'swap_percentage_sender': swap['percentage'],
+                    'total_earnings_sender': userdata['winnings'],
+                    'swap_percentage_sender': swapdata['percentage'],
                     'swap_profit_sender': profit_sender,
                     'amount_owed_sender': amount_owed_sender,
 
-                    'recipient_name': f'{recipient.firt_name} {recipient.last_name}',
+                    'recipient_name': f'{recipient.first_name} {recipient.last_name}',
                     'recipient_profile_pic_url': recipient.profile_pic_url,
-                    'total_earnings_recipient': earning_recipient,
-                    'swap_percentage_recipient': swap['counter_percentage'],
+                    'total_earnings_recipient': recipient_winnings,
+                    'swap_percentage_recipient': swapdata['counter_percentage'],
                     'swap_profit_recipient': profit_recipient,
                     'amount_owed_recipient': amount_owed_recipient
                 }
@@ -319,10 +335,13 @@ def attach(app):
 
             # Update user and buy ins
             user.calculate_total_swaps_save()
-            user.roi_rating = user_r['total_winning_swaps'] / user.total_swaps * 100
-
+            user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
+            print('user.id',user.id)
+            print('trmnt.id',trmnt.id)
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
-            buyin.place = user_r['position']
+            print(buyin)
+            return 'check'
+            buyin.place = userdata['place']
 
             db.session.commit()
 

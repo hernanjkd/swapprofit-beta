@@ -452,12 +452,6 @@ class Devices(db.Model):
 
 
 
-# Keep track of the results that have been uploaded
-class Results(db.Model):
-    tournament_id = db.Column(db.Integer, primary_key=True)
-
-
-
 class ChatStatus(enum.Enum):
     opened = 'opened'
     closed = 'closed'
