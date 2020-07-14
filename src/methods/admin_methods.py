@@ -283,7 +283,7 @@ def attach(app):
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
             
                 # Set payment due date for each swap
-                # swap.due_at = 
+                swap.due_at = datetime.utcnow() + timedelta()
             
             total_swap_earnings = 0
             render_swaps = []
@@ -299,7 +299,7 @@ def attach(app):
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
                 regex = re.search( r'\$\s*(\d+)', r['tournament_buyin'] )
-                entry_fee = int( regex.group(1) ) if regex is not None else 0
+                entry_fee = int( regex.group(1) ) if regex else 0
 
                 # Winnings are integers, but in case they are a string, ex "Satellite"
                 to_int = lambda x: x if isinstance(x, int) else 0
@@ -320,7 +320,7 @@ def attach(app):
                     'total_earnings_sender': '{:,}'.format( userdata['winnings'] ),
                     'swap_percentage_sender': swapdata['percentage'],
                     'swap_profit_sender': '{:,}'.format( profit_sender ),
-                    'amount_owed_sender': '{:,}'.format( amount_owed_sender ),
+                    'amount_owed_sender': '{:,}'.format( round(amount_owed_sender) ),
 
                     'recipient_first_name': recipient.first_name,
                     'recipient_last_name': recipient.last_name,
@@ -328,9 +328,9 @@ def attach(app):
                     'total_earnings_recipient': '{:,}'.format( recipient_winnings ),
                     'swap_percentage_recipient': swapdata['counter_percentage'],
                     'swap_profit_recipient': '{:,}'.format( profit_recipient ),
-                    'amount_owed_recipient': '{:,}'.format( amount_owed_recipient )
+                    'amount_owed_recipient': '{:,}'.format( round(amount_owed_recipient) )
                 })
-
+                
                 total_swap_earnings -= amount_owed_sender
                 total_swap_earnings += amount_owed_recipient
                 swap_number += 1
@@ -346,26 +346,26 @@ def attach(app):
 
             # Update user and buy ins
             user.calculate_total_swaps_save()
-            roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
-            user.roi_rating = round( roi_rating, 2 )
+            user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
             buyin.place = userdata['place']
 
 
             db.session.commit()
 
-
+            
             sign = '-' if total_swap_earnings < 0 else '+'
+            
             send_email('swap_results',['hernanjkd@gmail.com'],#'gherndon5@gmail.com'],
                 data={
                     'tournament_date': trmnt.start_at,
                     'tournament_name': trmnt.name,
                     'results_link': trmnt.results_link,
                     'total_swaps': swap_number,
-                    'total_swap_earnings': f'{sign}${str(abs(total_swap_earnings))}',
+                    'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
                     'render_swaps': render_swaps,
-                    'roi_rating': user.roi_rating,
-                    'swap_rating': user.swap_rating
+                    'roi_rating': round( user.roi_rating ),
+                    'swap_rating': round( user.swap_rating, 1 )
                 })
 
             print('DONE')
