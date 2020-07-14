@@ -247,7 +247,7 @@ def attach(app):
                 Profiles.user.has( email=email )).first()
             if user is None:
                 raise APIException('User not found with email: '+ email, 404)
-
+            
             # Consolidate swaps if multiple with same user
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
             swaps = {}
@@ -284,7 +284,7 @@ def attach(app):
             
             
             total_swap_earnings = 0
-            render_swaps = ''
+            render_swaps = []
             swap_number = 1
 
             # Go thru the consolidated swaps to create the email templates
@@ -312,7 +312,7 @@ def attach(app):
                 msg = lambda x: \
                     f'You have {x} swaps with this person for the following total amounts:'
 
-                swap_data = {
+                render_swaps.append({
                     'swap_number': swap_number,
                     'amount_of_swaps': msg(swapdata['count']) if swapdata['count'] > 1 else '',
                     'entry_fee': entry_fee,
@@ -328,24 +328,25 @@ def attach(app):
                     'swap_percentage_recipient': swapdata['counter_percentage'],
                     'swap_profit_recipient': profit_recipient,
                     'amount_owed_recipient': amount_owed_recipient
-                }
-                
-                return jsonify(swap_data), 200
-
+                })
 
                 total_swap_earnings -= amount_owed_sender
                 total_swap_earnings += amount_owed_recipient
-                render_swaps += render_template('swap.html', **swap_data)
                 swap_number += 1
 
-            # print(render_swaps)
-            # return 'check'
-
+            # return jsonify({
+            #     'total_winning_swaps': userdata['total_winning_swaps'],
+            #     'user.total_swaps': user.total_swaps,
+            #     'roi_rating': userdata['total_winning_swaps'] / user.total_swaps * 100,
+            #     'place': userdata['place'],
+            #     'userdata': userdata
+            # })            
             # Update user and buy ins
             user.calculate_total_swaps_save()
             user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
-            buyin.place = 1#userdata['place']
+            buyin.place = userdata['place']
+
 
             db.session.commit()
 
