@@ -5,7 +5,7 @@ from utils import APIException, role_jwt_required
 from notifications import send_email
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions, Users
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import seeds
 import utils
@@ -282,6 +282,8 @@ def attach(app):
                     swaps[id]['percentage'] += swap.percentage
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
             
+                # Set payment due date for each swap
+                # swap.due_at = 
             
             total_swap_earnings = 0
             render_swaps = []
