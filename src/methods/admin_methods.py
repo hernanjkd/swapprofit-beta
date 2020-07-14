@@ -308,26 +308,25 @@ def attach(app):
                 profit_recipient = to_int( recipient_winnings ) - entry_fee
                 amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
 
-                # Only used in the amount_of_swaps a few lines below
-                msg = lambda x: \
-                    f'You have {x} swaps with this person for the following total amounts:'
 
                 render_swaps.append({
                     'swap_number': swap_number,
-                    'amount_of_swaps': msg(swapdata['count']) if swapdata['count'] > 1 else '',
+                    'amount_of_swaps': swapdata['count'],
                     'entry_fee': entry_fee,
                     
-                    'total_earnings_sender': userdata['winnings'],
+                    'sender_first_name': user.first_name,
+                    'total_earnings_sender': '{:,}'.format( userdata['winnings'] ),
                     'swap_percentage_sender': swapdata['percentage'],
-                    'swap_profit_sender': profit_sender,
-                    'amount_owed_sender': amount_owed_sender,
+                    'swap_profit_sender': '{:,}'.format( profit_sender ),
+                    'amount_owed_sender': '{:,}'.format( amount_owed_sender ),
 
-                    'recipient_name': f'{recipient.first_name} {recipient.last_name}',
+                    'recipient_first_name': recipient.first_name,
+                    'recipient_last_name': recipient.last_name,
                     'recipient_profile_pic_url': recipient.profile_pic_url,
-                    'total_earnings_recipient': recipient_winnings,
+                    'total_earnings_recipient': '{:,}'.format( recipient_winnings ),
                     'swap_percentage_recipient': swapdata['counter_percentage'],
-                    'swap_profit_recipient': profit_recipient,
-                    'amount_owed_recipient': amount_owed_recipient
+                    'swap_profit_recipient': '{:,}'.format( profit_recipient ),
+                    'amount_owed_recipient': '{:,}'.format( amount_owed_recipient )
                 })
 
                 total_swap_earnings -= amount_owed_sender
@@ -340,10 +339,13 @@ def attach(app):
             #     'roi_rating': userdata['total_winning_swaps'] / user.total_swaps * 100,
             #     'place': userdata['place'],
             #     'userdata': userdata
-            # })            
+            # })
+
+
             # Update user and buy ins
             user.calculate_total_swaps_save()
-            user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
+            roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
+            user.roi_rating = round( roi_rating, 2 )
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
             buyin.place = userdata['place']
 

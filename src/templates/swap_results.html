@@ -595,7 +595,7 @@ line-height:150% !important;
 </table>
 
 
-{{% for data in render_swaps %}}
+{% for data in render_swaps %}
 <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width: 100%;border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
     <tbody class="mcnTextBlockOuter">
         <tr>
@@ -615,12 +615,47 @@ line-height:150% !important;
                        
                             <div style="text-align: center;"><span style="color:#000000"><span style="font-size:24px"><strong>SWAP #{{ data.swap_number }}<br>
 <br>
-<img data-file-id="365" height="150" src="https://gallery.mailchimp.com/f698d28e3edb52b050b1f46b9/images/d5fdfbbd-a47c-4299-9d92-2367eba4baa3.jpg" style="border: 0px;width: 150px;height: 150px;margin: 0px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;" width="150"></strong></span></span><br>
+<img data-file-id="365" height="150" src="{{ data.recipient_profile_pic_url }}" style="border: 0px;width: 150px;height: 150px;margin: 0px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;" width="150"></strong></span></span><br>
 <br>
 <span style="color:#000000"><strong><span style="font-size:20px">{{ data.swap_recipient_name }}</span></strong></span><br>
-{{ data.amount_of_swaps }}
+{% if data.amount_of_swaps|int > 1 %}
+You have {{ data.amount_of_swaps }} swaps with this person for the following total amounts:
+{% endif %}
 <br>
-<img data-file-id="573" height="147" src="https://gallery.mailchimp.com/f698d28e3edb52b050b1f46b9/images/c5036f1f-fea8-4c77-9ddd-c232f1eb0b2f.jpg" style="border: 0px;width: 354px;height: 147px;margin: 0px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;" width="354"></div>
+</div>
+<table>
+    <tr>
+        <td></td>
+        <td>{{ data.sender_first_name }}</td>
+        <td>{{ data.recipient_first_name }}</td>
+    </tr>
+    <tr>
+        <td>Swap %</td>
+        <td>{{ data.swap_percentage_sender }}</td>
+        <td>{{ data.swap_percentage_recipient }}</td>
+    </tr>
+    <tr>
+        <td>Entry Fee:</td>
+        <td>${{ data.entry_fee }}</td>
+        <td>${{ data.entry_fee }}</td>
+    </tr>
+    <tr>
+        <td>Total Earnings:</td>
+        <td>${{ data.total_earnings_sender }}</td>
+        <td>${{ data.total_earnings_recipient }}</td>
+    </tr>
+    <tr>
+        <td>Swap Profit:</td>
+        <td>${{ data.swap_profit_sender }}</td>
+        <td>${{ data.swap_profit_recipient }}</td>
+    </tr>
+    <tr>
+        <td>Amount Owed:</td>
+        <td>${{ data.amount_owed_sender }}</td>
+        <td>${{ data.amount_owed_recipient }}</td>
+    </tr>
+</table>
+
 
                         </td>
                     </tr>
@@ -637,7 +672,7 @@ line-height:150% !important;
         </tr>
     </tbody>
 </table>
-{{% endfor %}}
+{% endfor %}
 
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnBoxedTextBlock" style="min-width: 100%;border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
