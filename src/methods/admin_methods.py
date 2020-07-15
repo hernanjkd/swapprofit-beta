@@ -334,14 +334,6 @@ def attach(app):
                 total_swap_earnings += amount_owed_recipient
                 total_amount_of_swaps += swapdata['count']
 
-            # return jsonify({
-            #     'total_winning_swaps': userdata['total_winning_swaps'],
-            #     'user.total_swaps': user.total_swaps,
-            #     'roi_rating': userdata['total_winning_swaps'] / user.total_swaps * 100,
-            #     'place': userdata['place'],
-            #     'userdata': userdata
-            # })
-
 
             # Update user and buy ins
             user.calculate_total_swaps_save()

@@ -902,8 +902,6 @@ def attach(app):
     @role_jwt_required(['user'])
     def set_swap_paid(user_id, id):
 
-        sender = Profiles.query.get(user_id)
-
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
 
@@ -911,7 +909,7 @@ def attach(app):
         swap = Swaps.query.get(id)
         if req['tournament_id'] !=  swap.tournament_id \
             or req['recipient_id'] != swap.recipient_id:
-            raise APIException('IDs do not match', 400)
+            raise APIException('Swap data does not match json data', 400)
 
         if swap.status._value_ != 'agreed':
             raise APIException('This swap has not been agreed upon', 400)
@@ -919,11 +917,21 @@ def attach(app):
         if swap.paid == True:
             raise APIException('This swap is already paid', 400)
 
-        swap.paid = True
+        # Set to paid all the swaps with that user for that trmnt
+        swaps = Swaps.query.filter_by(
+            tournament_id = req['tournament_id'],
+            recipient_id = req['recipient_id']
+        )
+
+        for swap in swaps:
+            if swap.status._value_ == 'agreed':
+                swap.paid = True
+
+        # Calculate new Swap Rating
 
         db.session.commit()
 
-        return jsonify({'message':'Swap has been paid'})
+        return jsonify({'message':'Swap/s has been paid'})
 
 
 
