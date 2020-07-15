@@ -286,8 +286,8 @@ def attach(app):
                 swap.due_at = datetime.utcnow() + timedelta()
             
             total_swap_earnings = 0
+            total_amount_of_swaps = 0
             render_swaps = []
-            swap_number = 1
 
             # Go thru the consolidated swaps to create the email templates
             for recipient_id, swapdata in swaps.items():
@@ -312,7 +312,6 @@ def attach(app):
 
 
                 render_swaps.append({
-                    'swap_number': swap_number,
                     'amount_of_swaps': swapdata['count'],
                     'entry_fee': entry_fee,
                     
@@ -333,7 +332,7 @@ def attach(app):
                 
                 total_swap_earnings -= amount_owed_sender
                 total_swap_earnings += amount_owed_recipient
-                swap_number += 1
+                total_amount_of_swaps += swapdata['count']
 
             # return jsonify({
             #     'total_winning_swaps': userdata['total_winning_swaps'],
@@ -355,20 +354,22 @@ def attach(app):
 
             
             sign = '-' if total_swap_earnings < 0 else '+'
-            
-            send_email('swap_results',['hernanjkd@gmail.com'],#'gherndon5@gmail.com'],
+            s = 's' if total_amount_of_swaps > 1 else ''
+
+            send_email('swap_results',['hernanjkd@gmail.com'],# 'gherndon5@gmail.com','loustadler@hotmail.com','a@4geeksacademy.com'],
                 data={
-                    'tournament_date': trmnt.start_at,
+                    'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
                     'tournament_name': trmnt.name,
                     'results_link': trmnt.results_link,
-                    'total_swaps': swap_number,
+                    'total_swaps': f"{total_amount_of_swaps} swap{s}",
+                    'total_swappers': f"{len(swaps)} {'people' if len(swaps) > 1 else 'person'}",
                     'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
                     'render_swaps': render_swaps,
                     'roi_rating': round( user.roi_rating ),
                     'swap_rating': round( user.swap_rating, 1 )
                 })
 
-            print('DONE')
+            
             return jsonify({'message':'One loop terminated'}), 200
 
 

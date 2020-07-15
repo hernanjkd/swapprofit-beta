@@ -556,7 +556,7 @@ line-height:150% !important;
                             <table border="0" cellspacing="0" class="mcnTextContentContainer" width="100%" style="min-width: 100% !important;background-color: #FFFFFF;border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
                                 <tbody><tr>
                                     <td valign="top" class="mcnTextContent" style="padding: 18px;color: #F2F2F2;font-family: Helvetica;font-size: 14px;font-weight: normal;text-align: center;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;word-break: break-word;line-height: 150%;">
-                                        <span style="font-size:24px"><span style="color:#000000"><strong>You made {{ amount_of_swaps }} in this event:</strong></span></span>
+                                        <span style="font-size:24px"><span style="color:#000000"><strong>You made {{ total_swaps }} in this event with {{ total_swappers }}:</strong></span></span>
                                     </td>
                                 </tr>
                             </tbody></table>
@@ -613,13 +613,14 @@ line-height:150% !important;
                        
                         <td valign="top" class="mcnTextContent" style="padding-top: 0;padding-right: 18px;padding-bottom: 9px;padding-left: 18px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;word-break: break-word;color: #757575;font-family: Helvetica;font-size: 16px;line-height: 150%;text-align: center;">
                        
-                            <div style="text-align: center;"><span style="color:#000000"><span style="font-size:24px"><strong>SWAP #{{ data.swap_number }}<br>
+                            <div style="text-align: center;"><span style="color:#000000"><span style="font-size:24px"><strong>{{ data.recipient_first_name }}<br>
 <br>
 <img data-file-id="365" height="150" src="{{ data.recipient_profile_pic_url }}" style="border: 0px;width: 150px;height: 150px;margin: 0px;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;" width="150"></strong></span></span><br>
 <br>
-<span style="color:#000000"><strong><span style="font-size:20px">{{ data.swap_recipient_name }}</span></strong></span><br>
 {% if data.amount_of_swaps|int > 1 %}
-You have {{ data.amount_of_swaps }} swaps with this person for the following total amounts:
+    <span style="color:#000000"><strong><span style="font-size:20px">
+        You have {{ data.amount_of_swaps }} swaps with this person for the following total amounts:
+    </span></strong></span><br>
 {% endif %}
 <br>
 </div>
