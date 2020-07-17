@@ -240,6 +240,9 @@ def attach(app):
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
 
+        # Var to set swap due date
+        due_date = datetime.utcnow() + timedelta()
+
 
         for email, userdata in r['users'].items():
 
@@ -283,7 +286,7 @@ def attach(app):
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
             
                 # Set payment due date for each swap
-                swap.due_at = datetime.utcnow() + timedelta()
+                swap.due_at = due_date
             
             total_swap_earnings = 0
             total_amount_of_swaps = 0
