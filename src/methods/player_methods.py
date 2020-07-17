@@ -905,7 +905,7 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
 
-        # Security validation
+        # Security validation for single swap
         swap = Swaps.query.get(id)
         if req['tournament_id'] !=  swap.tournament_id \
             or req['recipient_id'] != swap.recipient_id:
@@ -917,17 +917,22 @@ def attach(app):
         if swap.paid == True:
             raise APIException('This swap is already paid', 400)
 
-        # Set to paid all the swaps with that user for that trmnt
+        # Set to paid all the swaps with that user and that trmnt
         swaps = Swaps.query.filter_by(
             tournament_id = req['tournament_id'],
-            recipient_id = req['recipient_id']
+            recipient_id = req['recipient_id'],
+            status = 'agreed'
         )
-
-        for swap in swaps:
-            if swap.status._value_ == 'agreed':
-                swap.paid = True
+        for s in swaps:
+            if s.status._value_ == 'agreed':
+                s.paid = True
 
         # Calculate new Swap Rating
+        now = datetime.utcnow()
+        if swap.due_at < now:
+            swap_rating = 5
+        elif (now - swap.due_at) < timedelta(hours=96):
+            swap_rating = 4
 
         db.session.commit()
 
