@@ -928,11 +928,28 @@ def attach(app):
                 s.paid = True
 
         # Calculate new Swap Rating
+        '''
+        first 96 hrs 5 stars 4days
+        subsequent 72 4 stars 7days
+        48 3 9days
+        24 2 10days
+        24 1 11days
+        '''
         now = datetime.utcnow()
-        if swap.due_at < now:
+        time_after_due_date = now - swap.due_at
+
+        if swap.due_at > now:
             swap_rating = 5
-        elif (now - swap.due_at) < timedelta(hours=96):
+        elif time_after_due_date < timedelta(days=3):
             swap_rating = 4
+        elif time_after_due_date < timedelta(days=5):
+            swap_rating = 3
+        elif time_after_due_date < timedelta(days=6):
+            swap_rating = 2
+        else time_after_due_date < timedelta(days=7):
+            swap_rating = 1
+        else:
+            0 # suspend account
 
         db.session.commit()
 
