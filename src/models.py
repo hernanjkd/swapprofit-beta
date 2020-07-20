@@ -122,6 +122,15 @@ class Profiles(db.Model):
         self.total_swaps = swap_count
         return swap_count
 
+    def calculate_swap_rating(self):
+        all_paid_swaps = Swaps.query.filter_by(
+            sender_id = self.id,
+            paid = True )
+        total_swap_ratings = 0
+        for swap in all_paid_swaps:
+            total_swap_ratings += swap.swap_rating
+        return total_swap_ratings / all_paid_swaps.count()
+
     # swaps that need coin reservation: pending, incoming, counter_incoming
     def get_reserved_coins(self):
         status_to_consider = ['pending','incoming','counter_incoming']
