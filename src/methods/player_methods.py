@@ -938,6 +938,11 @@ def attach(app):
         now = datetime.utcnow()
         time_after_due_date = now - swap.due_at
 
+        all_paid_swaps = Swaps.query.filter_by(
+            sender_id = user_id,
+            paid = True
+        ).count()
+
         if swap.due_at > now:
             swap_rating = 5
         elif time_after_due_date < timedelta(days=3):
