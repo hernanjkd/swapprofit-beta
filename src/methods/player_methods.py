@@ -917,51 +917,56 @@ def attach(app):
         if swap.paid == True:
             raise APIException('This swap is already paid', 400)
 
-        # def swap_rating(swap):
-            # Calculate new Swap Rating
-            # '''
-            # 4 days -> 5 stars
-            # 7 days -> 4 stars
-            # 9 days -> 3 stars
-            # 10 days -> 2 stars
-            # 11 days -> 1 star
-            # 11+ days -> suspension
-            # '''
-            # now = datetime.utcnow()
-            # time_after_due_date = now - swap.due_at
+        # Calculate swap rating for these swaps
+        '''
+             4 days -> 5 stars
+             7 days -> 4 stars
+             9 days -> 3 stars
+            10 days -> 2 stars
+            11 days -> 1 star
+            11+days -> suspension
+        '''
+        now = datetime.utcnow()
+        time_after_due_date = now - swap.due_at
 
-            # all_paid_swaps = Swaps.query.filter_by(
-            #     sender_id = user_id,
-            #     paid = True
-            # ).count()
+        all_paid_swaps = Swaps.query.filter_by(
+            sender_id = user_id,
+            paid = True
+        ).count()
 
-            # if swap.due_at > now:
-            #     swap_rating = 5
-            # elif time_after_due_date < timedelta(days=3):
-            #     swap_rating = 4
-            # elif time_after_due_date < timedelta(days=5):
-            #     swap_rating = 3
-            # elif time_after_due_date < timedelta(days=6):
-            #     swap_rating = 2
-            # else time_after_due_date < timedelta(days=7):
-            #     swap_rating = 1
-            # else:
-            #     0 # suspend account
+        if swap.due_at > now:
+            swap_rating = 5
+        elif time_after_due_date < timedelta(days=3):
+            swap_rating = 4
+        elif time_after_due_date < timedelta(days=5):
+            swap_rating = 3
+        elif time_after_due_date < timedelta(days=6):
+            swap_rating = 2
+        elif time_after_due_date < timedelta(days=7):
+            swap_rating = 1
+        
+        # Suspend account
+        else:
+            swap_rating = 0
+            user = Users.query.get( user_id )
+            user.status = 'suspended'
+
 
         # Set to paid and add swap_rating to all the swaps with that user and that trmnt
-        # swaps = Swaps.query.filter_by(
-        #     tournament_id = req['tournament_id'],
-        #     recipient_id = req['recipient_id'],
-        #     status = 'agreed'
-        # )
-        # for s in swaps:
-        #     if s.status._value_ == 'agreed':
+        swaps_to_pay = Swaps.query.filter_by(
+            tournament_id = req['tournament_id'],
+            recipient_id = req['recipient_id'],
+            status = 'agreed'
+        )
+        for swap in swaps_to_pay:
+            swap.swap_rating = swap_rating
+            swap.paid = True
 
-        #         s.swap_rating = swap_rating()
-        #         s.paid = True
+        db.session.commit()
 
-
-        # db.session.commit()
+        user = Profiles.query.get( user_id )
+        user.swap_rating = user.calculate_overall_swap_rating_save()
+        db.session.commit()
 
         return jsonify({'message':'Swap/s has been paid'})
 

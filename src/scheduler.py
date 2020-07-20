@@ -9,7 +9,7 @@ engine = create_engine( os.environ.get('DATABASE_URL'))
 Session = sessionmaker( bind=engine )
 session = Session()
 
-'''
+
 close_time = utils.designated_trmnt_close_time()
 trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.status == 'open') \
@@ -49,7 +49,4 @@ for buyin in buyins:
     session.delete(buyin)
 
 session.commit()
-'''
 
-y = session.query(m.Swaps).filter_by(sender_id=1)
-print(y.count())

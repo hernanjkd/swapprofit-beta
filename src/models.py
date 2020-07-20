@@ -122,7 +122,7 @@ class Profiles(db.Model):
         self.total_swaps = swap_count
         return swap_count
 
-    def calculate_swap_rating(self):
+    def calculate_overall_swap_rating(self):
         all_paid_swaps = Swaps.query.filter_by(
             sender_id = self.id,
             paid = True )
