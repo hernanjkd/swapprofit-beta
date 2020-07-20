@@ -917,7 +917,7 @@ def attach(app):
         if swap.paid == True:
             raise APIException('This swap is already paid', 400)
 
-        # Set to paid all the swaps with that user and that trmnt
+        # Set to paid and add swap_rating to all the swaps with that user and that trmnt
         swaps = Swaps.query.filter_by(
             tournament_id = req['tournament_id'],
             recipient_id = req['recipient_id'],
@@ -925,6 +925,7 @@ def attach(app):
         )
         for s in swaps:
             if s.status._value_ == 'agreed':
+                s.swap_rating = swap_rating
                 s.paid = True
 
         # Calculate new Swap Rating
