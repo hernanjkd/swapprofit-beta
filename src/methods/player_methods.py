@@ -917,47 +917,51 @@ def attach(app):
         if swap.paid == True:
             raise APIException('This swap is already paid', 400)
 
+        # def swap_rating(swap):
+            # Calculate new Swap Rating
+            # '''
+            # 4 days -> 5 stars
+            # 7 days -> 4 stars
+            # 9 days -> 3 stars
+            # 10 days -> 2 stars
+            # 11 days -> 1 star
+            # 11+ days -> suspension
+            # '''
+            # now = datetime.utcnow()
+            # time_after_due_date = now - swap.due_at
+
+            # all_paid_swaps = Swaps.query.filter_by(
+            #     sender_id = user_id,
+            #     paid = True
+            # ).count()
+
+            # if swap.due_at > now:
+            #     swap_rating = 5
+            # elif time_after_due_date < timedelta(days=3):
+            #     swap_rating = 4
+            # elif time_after_due_date < timedelta(days=5):
+            #     swap_rating = 3
+            # elif time_after_due_date < timedelta(days=6):
+            #     swap_rating = 2
+            # else time_after_due_date < timedelta(days=7):
+            #     swap_rating = 1
+            # else:
+            #     0 # suspend account
+
         # Set to paid and add swap_rating to all the swaps with that user and that trmnt
-        swaps = Swaps.query.filter_by(
-            tournament_id = req['tournament_id'],
-            recipient_id = req['recipient_id'],
-            status = 'agreed'
-        )
-        for s in swaps:
-            if s.status._value_ == 'agreed':
-                s.swap_rating = swap_rating
-                s.paid = True
+        # swaps = Swaps.query.filter_by(
+        #     tournament_id = req['tournament_id'],
+        #     recipient_id = req['recipient_id'],
+        #     status = 'agreed'
+        # )
+        # for s in swaps:
+        #     if s.status._value_ == 'agreed':
 
-        # Calculate new Swap Rating
-        '''
-        first 96 hrs 5 stars 4days
-        subsequent 72 4 stars 7days
-        48 3 9days
-        24 2 10days
-        24 1 11days
-        '''
-        now = datetime.utcnow()
-        time_after_due_date = now - swap.due_at
+        #         s.swap_rating = swap_rating()
+        #         s.paid = True
 
-        all_paid_swaps = Swaps.query.filter_by(
-            sender_id = user_id,
-            paid = True
-        ).count()
 
-        if swap.due_at > now:
-            swap_rating = 5
-        elif time_after_due_date < timedelta(days=3):
-            swap_rating = 4
-        elif time_after_due_date < timedelta(days=5):
-            swap_rating = 3
-        elif time_after_due_date < timedelta(days=6):
-            swap_rating = 2
-        else time_after_due_date < timedelta(days=7):
-            swap_rating = 1
-        else:
-            0 # suspend account
-
-        db.session.commit()
+        # db.session.commit()
 
         return jsonify({'message':'Swap/s has been paid'})
 
