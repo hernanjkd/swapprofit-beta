@@ -171,6 +171,7 @@ class Swaps(db.Model):
     percentage = db.Column(db.Integer, nullable=False)
     due_at = db.Column(db.DateTime, default=None)
     paid = db.Column(db.Boolean, default=False)
+    swap_rating = db.Column(db.Integer)
     cost = db.Column(db.Integer, default=1)
     status = db.Column(db.Enum(SwapStatus), default=SwapStatus.pending)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
