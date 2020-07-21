@@ -225,6 +225,8 @@ def attach(app):
                     "sdfoij@yahoo.com": {
                         "place": 11,
                         "winnings": 200,
+
+                        # this comes from the results table in poker society
                         "total_winning_swaps": 34
                     }
                 }
@@ -240,7 +242,20 @@ def attach(app):
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
 
-        # Var to set swap due date
+        
+        # Add all players that haven't won but have swaps in this trmnt
+        all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id )
+        for swap in all_swaps_in_trmnt:
+            email = swap.sender_user.user.email
+            if email not in r['users']:
+                r['users'][email] = {
+                    'place': None,
+                    'winnings': None,
+                    'total_winning_swaps': 
+                }
+        
+        
+        # Variable to set swap due date
         due_date = datetime.utcnow() + timedelta()
 
 
@@ -255,6 +270,12 @@ def attach(app):
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
             swaps = {}
             
+
+            # If user has no swaps, don't send email
+            if len(list(all_agreed_swaps)) == 0:
+                continue
+
+
             for swap in all_agreed_swaps:
                 '''
                     {
@@ -308,18 +329,11 @@ def attach(app):
                 to_int = lambda x: x if isinstance(x, int) else 0
                 
                 profit_sender = to_int( userdata['winnings'] ) - entry_fee
-                amount_owed_sender = profit_sender * swapdata['percentage'] / 100
+                amount_owed_sender = profit_sender * swapdata['percentage'] / 100                
                 
-                # If recipient has no winnings, give him 0
-                if 'recipient_email' in r['users']:
-                    recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
-                    profit_recipient = to_int( recipient_winnings ) - entry_fee
-                    amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
-                else:
-                    recipient_winnings = 0
-                    profit_recipient = 0
-                    amount_owed_recipient = 0
-                
+                recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
+                profit_recipient = to_int( recipient_winnings ) - entry_fee
+                amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
 
 
                 render_swaps.append({
@@ -351,6 +365,7 @@ def attach(app):
             user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
             buyin.place = userdata['place']
+            buyin.winnings = userdata['winnings']
 
 
             db.session.commit()
@@ -373,7 +388,6 @@ def attach(app):
             #     })
 
             
-            # return jsonify({'message':'One loop terminated'}), 200
 
 
         trmnt.status = 'closed'
