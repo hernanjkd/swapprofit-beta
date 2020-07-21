@@ -218,17 +218,17 @@ def attach(app):
     def get_results():
         
         '''
-        {
-            "tournament_id": 45,
-            "tournament_buyin": 150,
-            "users": {
-                "sdfoij@yahoo.com": {
-                    "place": 11,
-                    "winnings": 200,
-                    "total_winning_swaps": 34
+            {
+                "tournament_id": 45,
+                "tournament_buyin": 150,
+                "users": {
+                    "sdfoij@yahoo.com": {
+                        "place": 11,
+                        "winnings": 200,
+                        "total_winning_swaps": 34
+                    }
                 }
             }
-        }
         '''
 
         r  = request.get_json()
@@ -257,20 +257,20 @@ def attach(app):
             
             for swap in all_agreed_swaps:
                 '''
-                {
-                    "2": {
-                        "count": 2,
-                        "counter_percentage": 11,
-                        "percentage": 11,
-                        "recipient_email": "katz234@gmail.com"
-                    },
-                    "4": {
-                        "count": 1,
-                        "counter_percentage": 7,
-                        "percentage": 5,
-                        "recipient_email": "mikitapoker@gmail.com"
+                    {
+                        "2": {
+                            "count": 2,
+                            "counter_percentage": 11,
+                            "percentage": 11,
+                            "recipient_email": "katz234@gmail.com"
+                        },
+                        "4": {
+                            "count": 1,
+                            "counter_percentage": 7,
+                            "percentage": 5,
+                            "recipient_email": "mikitapoker@gmail.com"
+                        }
                     }
-                }
                 '''
                 id = str( swap.recipient_id )
                 if id not in swaps:
@@ -306,12 +306,20 @@ def attach(app):
 
                 # Winnings are integers, but in case they are a string, ex "Satellite"
                 to_int = lambda x: x if isinstance(x, int) else 0
-
+                
                 profit_sender = to_int( userdata['winnings'] ) - entry_fee
                 amount_owed_sender = profit_sender * swapdata['percentage'] / 100
-                recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
-                profit_recipient = to_int( recipient_winnings ) - entry_fee
-                amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
+                
+                # If recipient has no winnings, give him 0
+                if 'recipient_email' in r['users']:
+                    recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
+                    profit_recipient = to_int( recipient_winnings ) - entry_fee
+                    amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
+                else:
+                    recipient_winnings = 0
+                    profit_recipient = 0
+                    amount_owed_recipient = 0
+                
 
 
                 render_swaps.append({
@@ -351,25 +359,27 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
 
-            send_email('swap_results',['hernanjkd@gmail.com'],# 'gherndon5@gmail.com','loustadler@hotmail.com','a@4geeksacademy.com'],
-                data={
-                    'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
-                    'tournament_name': trmnt.name,
-                    'results_link': trmnt.results_link,
-                    'total_swaps': f"{total_amount_of_swaps} swap{s}",
-                    'total_swappers': f"{len(swaps)} {'people' if len(swaps) > 1 else 'person'}",
-                    'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
-                    'render_swaps': render_swaps,
-                    'roi_rating': round( user.roi_rating ),
-                    'swap_rating': round( user.swap_rating, 1 )
-                })
+            # send_email('swap_results',['hernanjkd@gmail.com'],# 'gherndon5@gmail.com','loustadler@hotmail.com','a@4geeksacademy.com'],
+            #     data={
+            #         'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
+            #         'tournament_name': trmnt.name,
+            #         'results_link': trmnt.results_link,
+            #         'total_swaps': f"{total_amount_of_swaps} swap{s}",
+            #         'total_swappers': f"{len(swaps)} {'people' if len(swaps) > 1 else 'person'}",
+            #         'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
+            #         'render_swaps': render_swaps,
+            #         'roi_rating': round( user.roi_rating ),
+            #         'swap_rating': round( user.swap_rating, 1 )
+            #     })
 
             
-            return jsonify({'message':'One loop terminated'}), 200
+            # return jsonify({'message':'One loop terminated'}), 200
 
 
         trmnt.status = 'closed'
         db.session.commit()
+
+        return jsonify({'message':'Results processed successfully'}), 200
 
 
 

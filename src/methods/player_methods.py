@@ -929,11 +929,6 @@ def attach(app):
         now = datetime.utcnow()
         time_after_due_date = now - swap.due_at
 
-        all_paid_swaps = Swaps.query.filter_by(
-            sender_id = user_id,
-            paid = True
-        ).count()
-
         if swap.due_at > now:
             swap_rating = 5
         elif time_after_due_date < timedelta(days=3):
@@ -965,7 +960,7 @@ def attach(app):
         db.session.commit()
 
         user = Profiles.query.get( user_id )
-        user.swap_rating = user.calculate_overall_swap_rating_save()
+        user.swap_rating = user.calculate_overall_swap_rating()
         db.session.commit()
 
         return jsonify({'message':'Swap/s has been paid'})
