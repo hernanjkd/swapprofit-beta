@@ -245,9 +245,15 @@ def attach(app):
         
         # Add all players that haven't won but have swaps in this trmnt
         all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id )
+        
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
+            
             if email not in r['users']:
+                total_winning_swaps = Swaps.query.filter(
+                    Swaps.sender_id == swap.sender_id,
+                    
+                )
                 r['users'][email] = {
                     'place': None,
                     'winnings': None,
@@ -380,7 +386,7 @@ def attach(app):
             #         'tournament_name': trmnt.name,
             #         'results_link': trmnt.results_link,
             #         'total_swaps': f"{total_amount_of_swaps} swap{s}",
-            #         'total_swappers': f"{len(swaps)} {'people' if len(swaps) > 1 else 'person'}",
+            #         'total_swappers': f"{len(swaps)} {'person' if len(swaps) == 1 else 'people'}",
             #         'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
             #         'render_swaps': render_swaps,
             #         'roi_rating': round( user.roi_rating ),
