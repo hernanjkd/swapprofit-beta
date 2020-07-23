@@ -66,8 +66,7 @@ def run():
         pokersociety_id=1,
         user=lou,
         roi_rating=78.3,
-        swap_rating=5,
-        total_swaps=275
+        swap_rating=5
     )
     db.session.add(lou)
     db.session.add( Transactions(
@@ -90,8 +89,7 @@ def run():
         pokersociety_id=3,
         user=cary,
         roi_rating=34.8,
-        swap_rating=4.3,
-        total_swaps=198
+        swap_rating=4.3
     )
     db.session.add(cary)
 
@@ -110,8 +108,7 @@ def run():
         pokersociety_id=2,
         user=kate,
         roi_rating=23.7,
-        swap_rating=5,
-        total_swaps=143
+        swap_rating=5
     )
     db.session.add(kate)
     db.session.add( Transactions(
@@ -134,8 +131,7 @@ def run():
         pokersociety_id=4,
         user=nikita,
         roi_rating=50.1,
-        swap_rating=3.9,
-        total_swaps=237
+        swap_rating=3.9
     )
     db.session.add(nikita)
     db.session.add( Transactions(
@@ -158,8 +154,7 @@ def run():
         pokersociety_id=8,
         user=brian,
         roi_rating=37.4,
-        swap_rating=4.9,
-        total_swaps=48
+        swap_rating=4.9
     )
     db.session.add(brian)
     db.session.add( Transactions(
@@ -182,8 +177,7 @@ def run():
         pokersociety_id=6,
         user=bobby,
         roi_rating=60.0,
-        swap_rating=5.0,
-        total_swaps=103
+        swap_rating=5.0
     )
     db.session.add(bobby)
     db.session.add( Transactions(
@@ -206,8 +200,7 @@ def run():
         pokersociety_id=5,
         user=perry,
         roi_rating=38.2,
-        swap_rating=4.5,
-        total_swaps=175
+        swap_rating=4.5
     )
     db.session.add(perry)
     db.session.add( Transactions(
@@ -230,8 +223,7 @@ def run():
         pokersociety_id=7,
         user=neal,
         roi_rating=62.4,
-        swap_rating=3.5,
-        total_swaps=97
+        swap_rating=3.5
     )
     db.session.add(neal)
 
