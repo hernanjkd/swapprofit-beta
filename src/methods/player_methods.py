@@ -200,7 +200,7 @@ def attach(app):
         user = Users.query.get( user_id )
         resp = requests.post( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/user',
             json={
-                'api_token': os.environ['POKERSOCIETY_API_TOKEN'],
+                'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
                 'email': user.email,
                 'password': user.password,
                 **prof_data

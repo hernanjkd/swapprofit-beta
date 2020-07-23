@@ -1,4 +1,5 @@
 import re
+import requests
 from flask import request, jsonify, render_template
 from flask_cors import CORS
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt
@@ -103,6 +104,13 @@ def attach(app):
         if user.status._value_ == 'invalid':
             user.status = 'valid'
             db.session.commit()
+
+        resp = requests.post( 
+            f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/email/user/{user.pokersociety_id}",
+            json={
+                'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
+                'email': user.email
+            })
 
         if jwt_data['role'] == 'first_time_validation':
             send_email(template='welcome', emails=user.email)
