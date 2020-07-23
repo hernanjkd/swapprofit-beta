@@ -109,7 +109,7 @@ class Profiles(db.Model):
         )
 
     def get_total_swaps(self):
-        swaps = Swaps.query.filter_by( status='agreed' )
+        swaps = Swaps.query.filter_by( status='agreed' ) \
             .filter( Swaps.result_winnings != None )
         return swaps.count()
 
