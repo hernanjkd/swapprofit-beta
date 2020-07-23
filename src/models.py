@@ -108,12 +108,17 @@ class Profiles(db.Model):
             , self.sending_swaps
         )
 
-    def get_total_swaps(self):
-        swaps = Swaps.query.filter_by( status='agreed' ) \
-            .filter( Swaps.result_winnings != None )
-        return swaps.count()
+    def calculate_roi_rating(self):
+        total_swaps = 0
+        winning_swaps = 0
+        for swap in self.sending_swaps:
+            if swap.status == 'agreed' and swap.result_winnings != None:
+                total_swaps += 1
+            if swap.result_winnings is True:
+                winning_swaps += 1
+        return winning_swaps / total_swaps * 100
 
-    def get_overall_swap_rating(self):
+    def calculate_swap_rating(self):
         all_paid_swaps = Swaps.query.filter_by(
             sender_id = self.id,
             paid = True )

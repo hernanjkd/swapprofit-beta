@@ -241,27 +241,22 @@ def attach(app):
 
         
         # Add all players that haven't won but have swaps in this trmnt
-        all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id )
-        
+        all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id ) \
+                                        .filter_by( status='agreed' )
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
-            
-            # if email not in r['users']:
-            #     total_winning_swaps = Swaps.query.filter(
-            #         Swaps.sender_id == swap.sender_id,
-
-            #     )
-            #     r['users'][email] = {
-            #         'place': None,
-            #         'winnings': None,
-            #         'total_winning_swaps': None
-            #     }
+            if email not in r['users']:
+                r['users'][email] = {
+                    'place': None,
+                    'winnings': None
+                }
         
         
         # Variable to set swap due date
         due_date = datetime.utcnow() + timedelta()
 
 
+        # Process each player's data.. update roi and swap rating.. send email
         for email, userdata in r['users'].items():
 
             user = Profiles.query.filter( 
@@ -309,9 +304,13 @@ def attach(app):
                     swaps[id]['percentage'] += swap.percentage
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
             
-                # Set payment due date for each swap
+                # Set payment due date and result_winnings for each swap
                 swap.due_at = due_date
+                swap.result_winnings = True if userdata['winnings'] != None else False
             
+            
+            db.session.commit()
+
             total_swap_earnings = 0
             total_amount_of_swaps = 0
             render_swaps = []
@@ -364,8 +363,8 @@ def attach(app):
 
 
             # Update user and buy ins
-            user.calculate_total_swaps_save()
-            user.roi_rating = userdata['total_winning_swaps'] / user.total_swaps * 100
+            user.roi_rating = user.calculate_roi_rating()
+
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
             buyin.place = userdata['place']
             buyin.winnings = userdata['winnings']

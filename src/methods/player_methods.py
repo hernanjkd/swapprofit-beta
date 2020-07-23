@@ -983,7 +983,7 @@ def attach(app):
         db.session.commit()
 
         user = Profiles.query.get( user_id )
-        user.swap_rating = user.calculate_overall_swap_rating()
+        user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
 
         return jsonify({'message':'Swap/s has been paid'})
