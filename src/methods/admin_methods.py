@@ -224,10 +224,7 @@ def attach(app):
                 "users": {
                     "sdfoij@yahoo.com": {
                         "place": 11,
-                        "winnings": 200,
-
-                        # this comes from the results table in poker society
-                        "total_winning_swaps": 34
+                        "winnings": 200
                     }
                 }
             }
@@ -249,16 +246,16 @@ def attach(app):
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
             
-            if email not in r['users']:
-                total_winning_swaps = Swaps.query.filter(
-                    Swaps.sender_id == swap.sender_id,
-                    
-                )
-                r['users'][email] = {
-                    'place': None,
-                    'winnings': None,
-                    'total_winning_swaps': 
-                }
+            # if email not in r['users']:
+            #     total_winning_swaps = Swaps.query.filter(
+            #         Swaps.sender_id == swap.sender_id,
+
+            #     )
+            #     r['users'][email] = {
+            #         'place': None,
+            #         'winnings': None,
+            #         'total_winning_swaps': None
+            #     }
         
         
         # Variable to set swap due date
