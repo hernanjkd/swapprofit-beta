@@ -52,7 +52,6 @@ class Profiles(db.Model):
     pokersociety_id = db.Column(db.Integer)
     profile_pic_url = db.Column(db.String(250), default=None)
     roi_rating = db.Column(db.Float, default=0)
-    total_swaps = db.Column(db.Integer, default=0)
     swap_rating = db.Column(db.Float, default=0)
     swap_availability_status = db.Column(db.Enum(SwapAvailabilityStatus), default=SwapAvailabilityStatus.active)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -109,20 +108,12 @@ class Profiles(db.Model):
             , self.sending_swaps
         )
 
-    def calculate_total_swaps_save(self):
-        no_repeat_list = []
-        swap_count = 0
-        for swap in self.sending_swaps:
-            if swap.status._value_ == 'agreed':
-                swap_id = f'{str(swap.sender_id)}.' \
-                    f'{str(swap.recipient_id)}.{str(swap.tournament_id)}'
-                if swap_id not in no_repeat_list:
-                    swap_count += 1
-                    no_repeat_list.append(swap_id)
-        self.total_swaps = swap_count
-        return swap_count
+    def get_total_swaps(self):
+        swaps = Swaps.query.filter_by( status='agreed' )
+            .filter( Swaps.result_winnings != None )
+        return swaps.count()
 
-    def calculate_overall_swap_rating(self):
+    def get_overall_swap_rating(self):
         all_paid_swaps = Swaps.query.filter_by(
             sender_id = self.id,
             paid = True )
@@ -150,7 +141,6 @@ class Profiles(db.Model):
             'profile_pic_url': self.profile_pic_url,
             'hendon_url': self.hendon_url,
             'roi_rating': self.roi_rating,
-            'total_swaps': self.total_swaps,
             'swap_rating': self.swap_rating,
             'coins': self.get_coins(),
             'swap_availability_status': self.swap_availability_status._value_,
@@ -181,7 +171,7 @@ class Swaps(db.Model):
     due_at = db.Column(db.DateTime, default=None)
     paid = db.Column(db.Boolean, default=False)
     swap_rating = db.Column(db.Integer)
-    result_winnings = db.Column(db.Boolean, default=False)
+    result_winnings = db.Column(db.Boolean, default=None)
     cost = db.Column(db.Integer, default=1)
     status = db.Column(db.Enum(SwapStatus), default=SwapStatus.pending)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
