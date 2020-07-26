@@ -101,21 +101,22 @@ class Profiles(db.Model):
         }
 
     def get_agreed_swaps(self, tournament_id):
-        return filter(
+        return list(filter(
             lambda swap: \
                 swap.tournament_id == tournament_id and \
                 swap.status._value_ == 'agreed' \
-            , self.sending_swaps
-        )
+            , self.sending_swaps ))
 
     def calculate_roi_rating(self):
         total_swaps = 0
         winning_swaps = 0
         for swap in self.sending_swaps:
-            if swap.status == 'agreed' and swap.result_winnings != None:
+            if swap.status == SwapStatus.agreed and swap.result_winnings != None:
                 total_swaps += 1
             if swap.result_winnings is True:
                 winning_swaps += 1
+        if total_swaps == 0:
+            return 0
         return winning_swaps / total_swaps * 100
 
     def calculate_swap_rating(self):

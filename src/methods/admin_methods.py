@@ -258,7 +258,7 @@ def attach(app):
 
         # Process each player's data.. update roi and swap rating.. send email
         for email, userdata in r['users'].items():
-
+            
             user = Profiles.query.filter( 
                 Profiles.user.has( email=email )).first()
             if user is None:
@@ -268,12 +268,11 @@ def attach(app):
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
             swaps = {}
             
-
             # If user has no swaps, don't send email
-            if len(list(all_agreed_swaps)) == 0:
+            if len(all_agreed_swaps) == 0:
                 continue
 
-
+            
             for swap in all_agreed_swaps:
                 '''
                     {
@@ -303,11 +302,11 @@ def attach(app):
                     swaps[id]['count'] += 1
                     swaps[id]['percentage'] += swap.percentage
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
-            
+                
                 # Set payment due date and result_winnings for each swap
                 swap.due_at = due_date
                 swap.result_winnings = True if userdata['winnings'] != None else False
-            
+                
             
             db.session.commit()
 
@@ -333,7 +332,8 @@ def attach(app):
                 profit_sender = to_int( userdata['winnings'] ) - entry_fee
                 amount_owed_sender = profit_sender * swapdata['percentage'] / 100                
                 
-                recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings']
+                # recipient_winnings can be None
+                recipient_winnings = r['users'][ swapdata['recipient_email'] ]['winnings'] or 0
                 profit_recipient = to_int( recipient_winnings ) - entry_fee
                 amount_owed_recipient = profit_recipient * swapdata['counter_percentage'] / 100
 
@@ -364,7 +364,7 @@ def attach(app):
 
             # Update user and buy ins
             user.roi_rating = user.calculate_roi_rating()
-
+            
             buyin = Buy_ins.get_latest( user.id, trmnt.id )
             buyin.place = userdata['place']
             buyin.winnings = userdata['winnings']
@@ -375,7 +375,7 @@ def attach(app):
             
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
-
+            
             # send_email('swap_results',['hernanjkd@gmail.com'],# 'gherndon5@gmail.com','loustadler@hotmail.com','a@4geeksacademy.com'],
             #     data={
             #         'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
