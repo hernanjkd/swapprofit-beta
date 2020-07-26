@@ -376,7 +376,7 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
             
-            send_email('swap_results',['gherndon5@gmail.com'], #'loustadler@hotmail.com','a@4geeksacademy.com'],
+            send_email('swap_results',['hernanjkd@gmail.com'], #['gherndon5@gmail.com'], #'loustadler@hotmail.com','a@4geeksacademy.com'],
                 data={
                     'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
                     'tournament_name': trmnt.name,
