@@ -150,7 +150,7 @@ class Profiles(db.Model):
             'email': self.user.email,
             'profile_pic_url': self.profile_pic_url,
             'hendon_url': self.hendon_url,
-            'total_swaps': self.get_agreed_swaps(),
+            'total_swaps': len( self.get_agreed_swaps() ),
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
             'coins': self.get_coins(),
