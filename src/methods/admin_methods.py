@@ -376,18 +376,18 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
             
-            send_email('swap_results',['gherndon5@gmail.com'], #'loustadler@hotmail.com','a@4geeksacademy.com'],
-                data={
-                    'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
-                    'tournament_name': trmnt.name,
-                    'results_link': trmnt.results_link,
-                    'total_swaps': f"{total_amount_of_swaps} swap{s}",
-                    'total_swappers': f"{len(swaps)} {'person' if len(swaps) == 1 else 'people'}",
-                    'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
-                    'render_swaps': render_swaps,
-                    'roi_rating': round( user.roi_rating ),
-                    'swap_rating': round( user.swap_rating, 1 )
-                })
+            # send_email('swap_results',['gherndon5@gmail.com'], #'loustadler@hotmail.com','a@4geeksacademy.com'],
+            #     data={
+            #         'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
+            #         'tournament_name': trmnt.name,
+            #         'results_link': trmnt.results_link,
+            #         'total_swaps': f"{total_amount_of_swaps} swap{s}",
+            #         'total_swappers': f"{len(swaps)} {'person' if len(swaps) == 1 else 'people'}",
+            #         'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
+            #         'render_swaps': render_swaps,
+            #         'roi_rating': round( user.roi_rating ),
+            #         'swap_rating': round( user.swap_rating, 1 )
+            #     })
 
             
 
