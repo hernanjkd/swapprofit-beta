@@ -610,46 +610,41 @@ def attach(app):
 
 
 
-
+    # Endpoint to get the player ids that have swaps in the trmnt
     @app.route('/users/tournament/<int:id>', methods=['POST'])
     def get_all_users_in_trmnt(id):
         
-        # r  = request.get_json()
+        r  = request.get_json()
 
-        # # Security token check
-        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-        #     return jsonify({'error':'API token does not match'})        
+        # Security token check
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':'API token does not match'})        
 
         trmnt = Tournaments.query.get( id )
         if trmnt is None:
-            return jsonify({'error':'Tournament not found'})
+            return jsonify({'error':'Tournament not found with id: '+str(id)})
 
-        trmnt = Tournaments.query.filter_by(
-            name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties'
-        ).first()
-        
-        # users = Profiles.query \
-        #             .filter(
-        #                 Profiles.sending_swaps.any(
-        #                     Swaps.tournament.has(
-        #                         Tournaments.latitude == 39.801105 )))
-                    # .filter(
-                    #     Profiles.sending_swaps.any(
-                    #         Swaps.status == 'counter_incoming' )) \
-                    # .filter( 
-                    #     Profiles.buy_ins.any(
-                    #         Buy_ins.flight.has(
-                    #             Flights.tournament.has(
-                    #                 Tournaments.latitude == 39.801105 )))) \
+        trmnt_data = {
+            'name': trmnt.name,
+            'casino': trmnt.casino,
+            'start date': trmnt.start_at
+        }
 
-        good = []
+        users = [trmnt_data]
+
         for swap in trmnt.swaps:
-            name = swap.sender_user.first_name
-            if swap.status._value_ == 'counter_incoming':
-                if name not in good:
-                    good.append(name)
+            user = swap.sender_user
+            data = {
+                'email': user.user.email,
+                'first name': user.first_name,
+                'last name': user.last_name,
+                'ID (poker society)': user.pokersociety_id }
+            if swap.status._value_ == 'agreed':
+                if data not in users:
+                    users.append(data)
 
-        return jsonify(good)
+
+        return jsonify(users)
 
 
     return app
