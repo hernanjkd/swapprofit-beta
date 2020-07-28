@@ -219,6 +219,7 @@ def attach(app):
         
         '''
             {
+                "api_token": "oidf8wy373apudk",
                 "tournament_id": 45,
                 "tournament_buyin": 150,
                 "users": {
@@ -231,10 +232,16 @@ def attach(app):
         '''
 
         r  = request.get_json()
+
+        # Security token check
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':'API Token does not match'})
+        
         
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
-            raise APIException('Tournament not found with id: '+ r['tournament_id'], 404)
+            return jsonify(
+                {'error':'Tournament not found with id: '+ r['tournament_id']})
 
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
@@ -262,7 +269,8 @@ def attach(app):
             user = Profiles.query.filter( 
                 Profiles.user.has( email=email )).first()
             if user is None:
-                raise APIException('User not found with email: '+ email, 404)
+                return jsonify(
+                    {'error':'User not found with email: '+ email})
             
             # Consolidate swaps if multiple with same user
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
@@ -319,7 +327,8 @@ def attach(app):
 
                 recipient = Profiles.query.get( recipient_id )
                 if recipient is None:
-                    raise APIException('User not found with id: '+ recipient_id, 404)
+                    return jsonify(
+                        {'error':'User not found with id: '+ recipient_id})
 
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
@@ -601,6 +610,46 @@ def attach(app):
 
 
 
+
+    @app.route('/users/tournament/<int:id>', methods=['POST'])
+    def get_all_users_in_trmnt(id):
+        
+        # r  = request.get_json()
+
+        # # Security token check
+        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+        #     return jsonify({'error':'API token does not match'})        
+
+        trmnt = Tournaments.query.get( id )
+        if trmnt is None:
+            return jsonify({'error':'Tournament not found'})
+
+        trmnt = Tournaments.query.filter_by(
+            name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties'
+        ).first()
+        
+        # users = Profiles.query \
+        #             .filter(
+        #                 Profiles.sending_swaps.any(
+        #                     Swaps.tournament.has(
+        #                         Tournaments.latitude == 39.801105 )))
+                    # .filter(
+                    #     Profiles.sending_swaps.any(
+                    #         Swaps.status == 'counter_incoming' )) \
+                    # .filter( 
+                    #     Profiles.buy_ins.any(
+                    #         Buy_ins.flight.has(
+                    #             Flights.tournament.has(
+                    #                 Tournaments.latitude == 39.801105 )))) \
+
+        good = []
+        for swap in trmnt.swaps:
+            name = swap.sender_user.first_name
+            if swap.status._value_ == 'counter_incoming':
+                if name not in good:
+                    good.append(name)
+
+        return jsonify(good)
 
 
     return app
