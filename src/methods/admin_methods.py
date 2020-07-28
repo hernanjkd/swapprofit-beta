@@ -219,6 +219,7 @@ def attach(app):
         
         '''
             {
+                "api_token": "oidf8wy373apudk",
                 "tournament_id": 45,
                 "tournament_buyin": 150,
                 "users": {
@@ -231,10 +232,16 @@ def attach(app):
         '''
 
         r  = request.get_json()
+
+        # Security token check
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':'API Token does not match'})
+        
         
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
-            raise APIException('Tournament not found with id: '+ r['tournament_id'], 404)
+            return jsonify(
+                {'error':'Tournament not found with id: '+ r['tournament_id']})
 
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
@@ -262,7 +269,8 @@ def attach(app):
             user = Profiles.query.filter( 
                 Profiles.user.has( email=email )).first()
             if user is None:
-                raise APIException('User not found with email: '+ email, 404)
+                return jsonify(
+                    {'error':'User not found with email: '+ email})
             
             # Consolidate swaps if multiple with same user
             all_agreed_swaps = user.get_agreed_swaps( r['tournament_id'] )
@@ -319,7 +327,8 @@ def attach(app):
 
                 recipient = Profiles.query.get( recipient_id )
                 if recipient is None:
-                    raise APIException('User not found with id: '+ recipient_id, 404)
+                    return jsonify(
+                        {'error':'User not found with id: '+ recipient_id})
 
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
@@ -376,18 +385,18 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
             
-            # send_email('swap_results',['hernanjkd@gmail.com'],# 'gherndon5@gmail.com','loustadler@hotmail.com','a@4geeksacademy.com'],
-            #     data={
-            #         'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
-            #         'tournament_name': trmnt.name,
-            #         'results_link': trmnt.results_link,
-            #         'total_swaps': f"{total_amount_of_swaps} swap{s}",
-            #         'total_swappers': f"{len(swaps)} {'person' if len(swaps) == 1 else 'people'}",
-            #         'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
-            #         'render_swaps': render_swaps,
-            #         'roi_rating': round( user.roi_rating ),
-            #         'swap_rating': round( user.swap_rating, 1 )
-            #     })
+            send_email('swap_results',['gherndon5@gmail.com'], #'loustadler@hotmail.com','a@4geeksacademy.com'],
+                data={
+                    'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),
+                    'tournament_name': trmnt.name,
+                    'results_link': trmnt.results_link,
+                    'total_swaps': f"{total_amount_of_swaps} swap{s}",
+                    'total_swappers': f"{len(swaps)} {'person' if len(swaps) == 1 else 'people'}",
+                    'total_swap_earnings': f'{sign}${"{:,.2f}".format( abs(total_swap_earnings) )}',
+                    'render_swaps': render_swaps,
+                    'roi_rating': round( user.roi_rating ),
+                    'swap_rating': round( user.swap_rating, 1 )
+                })
 
             
 
@@ -601,6 +610,39 @@ def attach(app):
 
 
 
+
+    @app.route('/users/tournament/<int:id>', methods=['POST'])
+    def get_all_users_in_trmnt(id):
+        
+        r  = request.get_json()
+
+        # Security token check
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':'API token does not match'})        
+
+        trmnt = Tournaments.query.get( id )
+        if trmnt is None:
+            return jsonify({'error':'Tournament not found with id: '+str(id)})
+
+        trmnt_data = {
+            'name': trmnt.name,
+            'casino': trmnt.casino,
+            'start date': trmnt.start_at
+        }
+        users = [trmnt_data]    
+        for swap in trmnt.swaps:
+            user = swap.sender_user
+            data = {
+                'email': user.user.email,
+                'first name': user.first_name,
+                'last name': user.last_name,
+                'ID (poker society)': user.pokersociety_id }
+            if swap.status._value_ == 'agreed':
+                if data not in users:
+                    users.append(data)
+
+
+        return jsonify(users)
 
 
     return app
