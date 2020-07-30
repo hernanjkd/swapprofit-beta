@@ -942,21 +942,22 @@ def attach(app):
 
         # Calculate swap rating for these swaps
         '''
-             4 days -> 5 stars
-             7 days -> 4 stars
-             9 days -> 3 stars
-            10 days -> 2 stars
-            11 days -> 1 star
-            11+days -> suspension
+            swap.due_at is 2 days after results come in
+            2 days -> 5 stars
+            4 days -> 4 stars
+            6 days -> 3 stars
+            8 days -> 2 stars
+            9 days -> 1 star
+            10+ days -> suspension (naughty list)
         '''
         now = datetime.utcnow()
         time_after_due_date = now - swap.due_at
 
         if swap.due_at > now:
             swap_rating = 5
-        elif time_after_due_date < timedelta(days=3):
+        elif time_after_due_date < timedelta(days=2):
             swap_rating = 4
-        elif time_after_due_date < timedelta(days=5):
+        elif time_after_due_date < timedelta(days=4):
             swap_rating = 3
         elif time_after_due_date < timedelta(days=6):
             swap_rating = 2
