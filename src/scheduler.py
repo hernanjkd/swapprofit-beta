@@ -5,11 +5,12 @@ from sqlalchemy import create_engine, func, asc, or_
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 
-engine = create_engine( os.environ.get('DATABASE_URL'))
+engine = create_engine( os.environ.get('DATABASE_URL') )
 Session = sessionmaker( bind=engine )
 session = Session()
 
 
+# Set tournaments to waiting for results, cancel all pending swaps
 close_time = utils.designated_trmnt_close_time()
 trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.status == 'open') \
@@ -39,6 +40,7 @@ if trmnts is not None:
             session.commit()
 
 
+
 # Delete buy-ins created before close time with status 'pending'
 buyins = session.query(m.Buy_ins) \
     .filter_by( status = 'pending' ) \
@@ -50,3 +52,53 @@ for buyin in buyins:
 
 session.commit()
 
+
+
+# Calculate Swap Rating and suspend users
+'''
+    swap.due_at is 2 days after results come in
+    2 days -> 5 stars
+    4 days -> 4 stars
+    6 days -> 3 stars
+    8 days -> 2 stars
+    9 days -> 1 star
+    10+ days -> suspension (naughty list)
+'''
+swaps = session.query(m.Swaps) \
+    .filter( m.Swaps.due_at != None ) \
+    .filter( m.Swaps.paid == False )
+
+now = datetime.utcnow()
+
+for swap in swaps:
+    user = session.query(m.Users).get( swap.sender_id )
+    time_after_due_date = now - swap.due_at
+    
+    if swap.due_at > now:
+        swap_rating = 5
+    elif time_after_due_date < timedelta(days=2):
+        swap_rating = 4
+    elif time_after_due_date < timedelta(days=4):
+        swap_rating = 3
+    elif time_after_due_date < timedelta(days=6):
+        swap_rating = 2
+    elif time_after_due_date < timedelta(days=7):
+        swap_rating = 1
+
+    # Suspend account
+    else:
+        swap_rating = 0
+        user.status = 'suspended'
+        
+
+    if swap.swap_rating != swap_rating:
+        print('updating swap_rating for user', user.id)
+        print(f'from {swap.swap_rating} to {swap_rating}')
+        swap.swap_rating = swap_rating
+        session.commit()
+
+        user.swap_rating = user.calculate_swap_rating()
+        session.commit()
+
+        if swap_rating == 0:
+            print('suspending user', user.id)

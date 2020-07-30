@@ -311,8 +311,9 @@ def attach(app):
                     swaps[id]['percentage'] += swap.percentage
                     swaps[id]['counter_percentage'] += swap.counter_swap.percentage
                 
-                # Set payment due date and result_winnings for each swap
+                # Set payment due date, swap_rating and result_winnings for each swap
                 swap.due_at = due_date
+                swap.swap_rating = 5
                 swap.result_winnings = True if userdata['winnings'] != None else False
                 
             
