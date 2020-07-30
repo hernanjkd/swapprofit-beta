@@ -260,7 +260,7 @@ def attach(app):
         
         
         # Variable to set swap due date
-        due_date = datetime.utcnow() + timedelta()
+        due_date = datetime.utcnow() + timedelta(days=2)
 
 
         # Process each player's data.. update roi and swap rating.. send email
@@ -625,12 +625,11 @@ def attach(app):
             return jsonify({'error':'Tournament not found with id: '+str(id)})
 
         trmnt_data = {
-            'name': trmnt.name,
+            'tournament name': trmnt.name,
             'casino': trmnt.casino,
-            'start date': trmnt.start_at
-        }
+            'start date': trmnt.start_at }
 
-        users = [trmnt_data]
+        users = [ trmnt_data ]
 
         for swap in trmnt.swaps:
             user = swap.sender_user
