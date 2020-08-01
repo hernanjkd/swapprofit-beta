@@ -942,6 +942,7 @@ def run():
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
         status='agreed',
+        swap_rating=2,
         paid=True
     )
     s2 = Swaps(
@@ -2339,6 +2340,7 @@ def run():
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
         status='agreed',
+        swap_rating=4,
         paid=True
     )
     s2 = Swaps(
@@ -2809,6 +2811,7 @@ def run():
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
         status='agreed',
+        swap_rating=3,
         paid=True
     )
     s2 = Swaps(
@@ -3274,6 +3277,7 @@ def run():
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
         status='agreed',
+        swap_rating=1,
         paid=True
     )
     s2 = Swaps(
@@ -3737,6 +3741,7 @@ def run():
         percentage=5,
         due_at=(oldvegas.start_at + timedelta(days=4)),
         status='agreed',
+        swap_rating=5,
         paid=True
     )
     s2 = Swaps(
