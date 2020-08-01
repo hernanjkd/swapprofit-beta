@@ -12,48 +12,47 @@ session = Session()
 
 
 # Set tournaments to waiting for results, cancel all pending swaps
-# close_time = utils.designated_trmnt_close_time()
-# trmnts = session.query(m.Tournaments) \
-#     .filter( m.Tournaments.status == 'open') \
-#     .filter( m.Tournaments.flights.any(
-#         m.Flights.start_at < close_time
-#     ))
+close_time = utils.designated_trmnt_close_time()
+trmnts = session.query(m.Tournaments) \
+    .filter( m.Tournaments.status == 'open') \
+    .filter( m.Tournaments.flights.any(
+        m.Flights.start_at < close_time
+    ))
 
-# if trmnts is not None:
-#     for trmnt in trmnts:
-#         latest_flight = trmnt.flights.pop()
-#         if latest_flight.start_at < close_time:
+if trmnts is not None:
+    for trmnt in trmnts:
+        latest_flight = trmnt.flights.pop()
+        if latest_flight.start_at < close_time:
             
-#             # This tournament is over: change status and clean swaps
-#             print('update tournament status to "waiting_results", id:', trmnt.id)
-#             trmnt.status = 'waiting_results'
-#             swaps = session.query(m.Swaps) \
-#                 .filter_by( tournament_id = trmnt.id ) \
-#                 .filter( or_( 
-#                     m.Swaps.status == 'pending', 
-#                     m.Swaps.status == 'incoming',
-#                     m.Swaps.status == 'counter_incoming' ) )
+            # This tournament is over: change status and clean swaps
+            print('update tournament status to "waiting_results", id:', trmnt.id)
+            trmnt.status = 'waiting_results'
+            swaps = session.query(m.Swaps) \
+                .filter_by( tournament_id = trmnt.id ) \
+                .filter( or_( 
+                    m.Swaps.status == 'pending', 
+                    m.Swaps.status == 'incoming',
+                    m.Swaps.status == 'counter_incoming' ) )
 
-#             for swap in swaps:
-#                 print('update swap status to "canceled", id:', swap.id)
-#                 swap.status = 'canceled'
+            for swap in swaps:
+                print('update swap status to "canceled", id:', swap.id)
+                swap.status = 'canceled'
 
-#             session.commit()
+            session.commit()
 
 
 
-# # Delete buy-ins created before close time with status 'pending'
-# buyins = session.query(m.Buy_ins) \
-#     .filter_by( status = 'pending' ) \
-#     .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+# Delete buy-ins created before close time with status 'pending'
+buyins = session.query(m.Buy_ins) \
+    .filter_by( status = 'pending' ) \
+    .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
 
-# for buyin in buyins:
-#     print('deleting buy-in', buyin.id)
-#     session.delete(buyin)
+for buyin in buyins:
+    print('deleting buy-in', buyin.id)
+    session.delete(buyin)
 
-# session.commit()
+session.commit()
 
-log = []
 
 # Calculate Swap Rating and suspend users
 '''
@@ -98,7 +97,6 @@ for swap in swaps:
         
 
     if swap.swap_rating != swap_rating:
-        log.append({'id':swap.id, 'swap_rating':swap_rating})
         print(f'updating swap.id {swap.id} from {swap.swap_rating} to {swap_rating}')
         swap.swap_rating = swap_rating
         session.commit()
@@ -113,11 +111,6 @@ def calculate_swap_rating(user_id):
         .filter( m.Swaps.due_at != None )
     total_swap_ratings = 0
     for swap in swaps:
-        print('swap rating', swap.id, swap_rating)
-        if swap.swap_rating is None:
-            print('Nonetype swap', swap.id)
-            if {'id':swap.id,'swap_rating':swap_rating} in log:
-                print('CHECK',{'id':swap.id,'swap_rating':swap_rating})
         total_swap_ratings += swap.swap_rating
     return total_swap_ratings / swaps.count()
 
