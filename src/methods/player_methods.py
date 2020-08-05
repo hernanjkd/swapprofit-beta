@@ -85,7 +85,7 @@ def attach(app):
         if user is None:
             raise APIException('User not found', 404)
 
-        user.password = utils.sha256(req['password'])
+        user.password = utils.sha256( req['password'] )
 
         db.session.commit()
 
@@ -107,6 +107,7 @@ def attach(app):
 
             send_email('reset_password_link', emails=req['email'], 
                 data={'link':utils.jwt_link(user.id, 'users/reset_password/', req['email'])})
+            
             return jsonify({
                 'message': 'A link has been sent to your email to reset the password'
             }), 200
