@@ -1,6 +1,6 @@
 import os
 import utils
-import models
+import models as m
 import requests
 import cloudinary
 import cloudinary.uploader
@@ -30,17 +30,15 @@ def attach(app):
         ))
        
 
-    @app.route('/testing', methods=['GET'])
+    @app.route('/testing', methods=['POST'])
     def first_endpoint():
-        Tournaments = models.Tournaments
-        t = Tournaments.query.filter(
-            Tournaments.name.ilike('%Hialeah - $50,000 Guaranteed%')
-        ).first()
-        f = [x.start_at for x in t.flights]
-        return jsonify({
-            'trmnt': t.start_at,
-            'flights': f
-        })
+        pass
+        # r = request.get_json()
+        # user = m.Users.query.filter_by(email=r['email']).first()
+        # if user.password == utils.sha256(r['password']):
+        #     return 'true'
+        # else: return 'false'
+        
 
 
     @app.route('/mailgun', methods=['POST'])

@@ -52,7 +52,7 @@ def attach(app):
         return jsonify({'message': 'Please verify your new email'}), 200
 
 
-
+    
     @app.route('/users/reset_password/<token>', methods=['GET','PUT'])
     def html_reset_password(token):
 
@@ -81,11 +81,11 @@ def attach(app):
         user = Users.query.filter_by(
             id = jwt_data['sub'],
             email = req['email']
-        )
+        ).first()
         if user is None:
             raise APIException('User not found', 404)
 
-        user.password = utils.sha256(req['password'])
+        user.password = utils.sha256( req['password'] )
 
         db.session.commit()
 
@@ -105,8 +105,9 @@ def attach(app):
             if user is None:
                 raise APIException('This email is not registered', 400)
 
-            send_email('reset_password_link', emails=req['email'], 
+            send_email('reset_password_link', emails='hernanjkd@gmail.com',#req['email'], 
                 data={'link':utils.jwt_link(user.id, 'users/reset_password/', req['email'])})
+            
             return jsonify({
                 'message': 'A link has been sent to your email to reset the password'
             }), 200
