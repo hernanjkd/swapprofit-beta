@@ -105,7 +105,7 @@ def attach(app):
             if user is None:
                 raise APIException('This email is not registered', 400)
 
-            send_email('reset_password_link', emails='hernanjkd@gmail.com',#req['email'], 
+            send_email('reset_password_link', emails=req['email'], 
                 data={'link':utils.jwt_link(user.id, 'users/reset_password/', req['email'])})
             
             return jsonify({
