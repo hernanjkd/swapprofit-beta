@@ -35,7 +35,6 @@ def run():
     # LOAD FILES
     # actions.load_tournament_file()
 
-
     # latest_trmnt_id = db.session.query( func.max( Tournaments.id)).scalar()
     # db.session.execute(
     #     "ALTER SEQUENCE tournaments_id_seq RESTART WITH " + 
@@ -3804,5 +3803,5 @@ def run():
 
     db.session.commit()
 
-    
+
     return
