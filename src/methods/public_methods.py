@@ -9,6 +9,7 @@ from notifications import send_email
 
 def attach(app):
 
+    # CREATE USER
     @app.route('/users', methods=['POST'])
     def register_user():
 
@@ -50,7 +51,7 @@ def attach(app):
         return jsonify({'message': 'Please verify your email'}), 200
 
 
-
+    # USER LOGIN
     @app.route('/users/token', methods=['POST'])
     def login():
 
@@ -87,7 +88,7 @@ def attach(app):
         }), 200
 
 
-
+    # CREATE VALIDATE TOKEN
     @app.route('/users/validate/<token>', methods=['GET'])
     def validate(token):
 

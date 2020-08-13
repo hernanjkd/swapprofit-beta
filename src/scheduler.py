@@ -4,6 +4,7 @@ import models as m
 from sqlalchemy import create_engine, func, asc, or_
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
+from notifications import send_email, send_fcm
 
 
 engine = create_engine( os.environ.get('DATABASE_URL') )
@@ -23,7 +24,23 @@ if trmnts is not None:
     for trmnt in trmnts:
         latest_flight = trmnt.flights.pop()
         if latest_flight.start_at < close_time:
-            
+          # for flight in trmnt.flights:
+          #   for buy_in in flight.buy_ins:
+            #   user_id = buy_in.user_id
+            #   send_fcm(
+            #     user_id = user_id,
+            #     title = "Event Ended",
+            #     body = tournament.name +' closed at ' + close_time,
+            #     data = {
+            #         'id': tournament.id,
+            #         'buyin_id': buyin and buyin.id,
+            #         'alert': tournament.name +' closed at' + close_time,
+            #         'type': 'results',
+            #         'initialPath': 'Swap Results',
+            #         'finalPath': 'Profit Results'
+            #     }
+            # )
+              
             # This tournament is over: change status and clean swaps
             print('update tournament status to "waiting_results", id:', trmnt.id)
             trmnt.status = 'waiting_results'
@@ -39,6 +56,39 @@ if trmnts is not None:
                 swap.status = 'canceled'
 
             session.commit()
+
+
+  # now_time = datetime.utcnow()
+  # trmntsOpen = session.query(m.Tournaments) \
+    # .filter( m.Tournaments.status == 'open') \
+    # .filter(  m.Tournaments.flights.any(
+      #     m.Flights.start_at < close_time
+      # ))
+    # .filter( m.Tournaments.start_at < now_time )
+
+  # if trmntsOpen is not None:
+  #   for trmnt in trmntsOpen:
+      # if trmnt.start_at < now_time:
+        # for flight in trmnt.flights:
+          # for buy_in in flight.buy_ins:
+            #   user_id = buy_in.user_id
+            #   send_fcm(
+            #     user_id = user_id,
+            #     title = "Event Started",
+            #     body = trmnt.name +' opened at ' + trmnt.start_at,
+            #     data = {
+            #         'id': trmnt.id,
+            #         'alert': trmnt.name +' opened at' + trmnt.start_at,
+            #         'type': 'event',
+            #         'initialPath': 'Event Results',
+            #         'finalPath': 'Event Lobby'
+            #     }
+            # )
+
+        #print('update tournament status to "OPENED", id:', trmnt.id)
+
+    # session.commit()
+
 
 
 

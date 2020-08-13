@@ -92,7 +92,7 @@ def attach(app):
         return jsonify({'message': 'Your password has been updated'}), 200
 
 
-
+    # RESET PASSWORD
     @app.route('/users/me/password', methods=['PUT'])
     def reset_password():
 
@@ -152,7 +152,7 @@ def attach(app):
 
 
 
-    # id can be the user id, 'me' or 'all'
+    # GET A PROFILE
     @app.route('/profiles/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_profiles(user_id, id):
@@ -178,7 +178,7 @@ def attach(app):
         return jsonify(user.serialize()), 200
 
 
-
+    # CREATE A PROFILE
     @app.route('/profiles', methods=['POST'])
     @role_jwt_required(['user'])
     def register_profile(user_id):
@@ -233,7 +233,7 @@ def attach(app):
         return jsonify({'message':'ok'}), 200
 
          
-      
+    # UPDATE MY PROFILE
     @app.route('/profiles/me', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_profile(user_id):
@@ -251,7 +251,28 @@ def attach(app):
         return jsonify(prof.serialize())
 
 
+    # UPDATE MY NICKNAME
+    @app.route('profiles/me/nickname', methods=['PUT'])
+    def update_nickname(user_id):
 
+      prof = Profiles.query.get(user_id)
+
+      req = request.get_json()
+      utils.check_params(req, 'old_nickname', 'new_nickname')
+
+      if req['old_nickname'] == req['new_nickname']:
+        raise APIException('Your new nickname is the same as your current nickname')
+      if len( req['new_nickname'] ) < 1:
+        raise APIException('Your new nickname must be at least 1 character long')
+
+      prof.nickname = (req['new_nickname'])
+
+      db.session.commit()
+
+      return jsonify({'message': 'Your nickname has been changed'}), 200
+
+
+    # UPDATE PROFILE PICTURE
     @app.route('/profiles/image', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_profile_image(user_id):
@@ -282,7 +303,7 @@ def attach(app):
         return jsonify({'profile_pic_url': result['secure_url']}), 200
 
 
-
+    # GET MY MOST RECENT BUYIN
     @app.route('/me/buy_ins', methods=['GET'])
     @role_jwt_required(['user'])
     def get_buy_in(user_id):
@@ -294,7 +315,7 @@ def attach(app):
         return jsonify(buyin.serialize()), 200
 
 
-
+    # CREATE BUYIN
     @app.route('/me/buy_ins/flight/<int:id>/image', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_buyin_image(user_id, id):
@@ -448,7 +469,7 @@ def attach(app):
             # })
 
         
-
+    # UPDATE BUYIN 
     @app.route('/me/buy_ins/<int:id>', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_buy_in(user_id, id):
@@ -524,7 +545,7 @@ def attach(app):
         return jsonify({'buy_in': buyin.serialize()})
 
 
-
+    # GET SPECIFIC TOURNAMENT
     @app.route('/tournaments/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_tournaments(user_id, id):
@@ -632,7 +653,7 @@ def attach(app):
         raise APIException('Invalid id', 400)
 
 
-
+    # CREATE A SWAP
     @app.route('/me/swaps', methods=['POST'])
     @role_jwt_required(['user'])
     def create_swap(user_id):
@@ -748,7 +769,7 @@ def attach(app):
         }), 200
 
 
-
+    # UPDATE SWAP
     @app.route('/me/swaps/<int:id>', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_swap(user_id, id):
@@ -912,7 +933,7 @@ def attach(app):
         ])
 
 
-
+    # GET ACTION
     @app.route('/swaps/me/tournament/<int:id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_swaps_actions(user_id, id):
@@ -922,7 +943,7 @@ def attach(app):
         return jsonify(prof.get_swaps_actions(id))
 
 
-
+    # UPDATE SWAP PAID STATUS
     @app.route('/users/me/swaps/<int:id>/done', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_paid(user_id, id):
@@ -992,7 +1013,7 @@ def attach(app):
         return jsonify({'message':'Swap/s has been paid'})
 
 
-
+    # GET SWAP TRACKER (CURRENT/UPCOMING)
     @app.route('/me/swap_tracker', methods=['GET'])
     @role_jwt_required(['user'])
     def swap_tracker(user_id):
@@ -1013,7 +1034,7 @@ def attach(app):
         return jsonify( swap_trackers )
 
 
-
+    # ADD COINS TO PROFILE
     @app.route('/me/transactions', methods=['POST'])
     @role_jwt_required(['user'])
     def add_coins(user_id):
@@ -1033,7 +1054,7 @@ def attach(app):
         return jsonify({'total_coins': user.get_coins()})
 
 
-
+    # GET TRANSACTIONS
     @app.route('/users/me/transactions/report', methods=['GET'])
     @role_jwt_required(['user'])
     def transaction_report(user_id):
