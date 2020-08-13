@@ -252,24 +252,24 @@ def attach(app):
 
 
     # UPDATE MY NICKNAME
-    @app.route('profiles/me/nickname', methods=['PUT'])
-    def update_nickname(user_id):
+    # @app.route('profiles/me/nickname', methods=['PUT'])
+    # def update_nickname(user_id):
 
-      prof = Profiles.query.get(user_id)
+    #   prof = Profiles.query.get(user_id)
 
-      req = request.get_json()
-      utils.check_params(req, 'old_nickname', 'new_nickname')
+    #   req = request.get_json()
+    #   utils.check_params(req, 'old_nickname', 'new_nickname')
 
-      if req['old_nickname'] == req['new_nickname']:
-        raise APIException('Your new nickname is the same as your current nickname')
-      if len( req['new_nickname'] ) < 1:
-        raise APIException('Your new nickname must be at least 1 character long')
+    #   if req['old_nickname'] == req['new_nickname']:
+    #     raise APIException('Your new nickname is the same as your current nickname')
+    #   if len( req['new_nickname'] ) < 1:
+    #     raise APIException('Your new nickname must be at least 1 character long')
 
-      prof.nickname = (req['new_nickname'])
+    #   prof.nickname = (req['new_nickname'])
 
-      db.session.commit()
+    #   db.session.commit()
 
-      return jsonify({'message': 'Your nickname has been changed'}), 200
+    #   return jsonify({'message': 'Your nickname has been changed'}), 200
 
 
     # UPDATE PROFILE PICTURE
@@ -323,9 +323,11 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        # if flight is None or flight.start_at < close_time:
-        #     raise APIException(
-        #         "Cannot buy into this flight. It either has ended, or does not exist")
+
+        # Comment out to be able to buy into any flight
+        if flight is None or flight.start_at < close_time:
+            raise APIException(
+                "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
