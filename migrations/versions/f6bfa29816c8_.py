@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: f70116565aba
+Revision ID: f6bfa29816c8
 Revises: 
-Create Date: 2020-07-13 17:31:41.412419
+Create Date: 2020-08-13 05:30:32.091667
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f70116565aba'
+revision = 'f6bfa29816c8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -65,7 +65,6 @@ def upgrade():
     sa.Column('pokersociety_id', sa.Integer(), nullable=True),
     sa.Column('profile_pic_url', sa.String(length=250), nullable=True),
     sa.Column('roi_rating', sa.Float(), nullable=True),
-    sa.Column('total_swaps', sa.Integer(), nullable=True),
     sa.Column('swap_rating', sa.Float(), nullable=True),
     sa.Column('swap_availability_status', sa.Enum('active', 'unavailable', name='swapavailabilitystatus'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -122,6 +121,8 @@ def upgrade():
     sa.Column('percentage', sa.Integer(), nullable=False),
     sa.Column('due_at', sa.DateTime(), nullable=True),
     sa.Column('paid', sa.Boolean(), nullable=True),
+    sa.Column('swap_rating', sa.Integer(), nullable=True),
+    sa.Column('result_winnings', sa.Boolean(), nullable=True),
     sa.Column('cost', sa.Integer(), nullable=True),
     sa.Column('status', sa.Enum('agreed', 'pending', 'incoming', 'rejected', 'canceled', 'counter_incoming', name='swapstatus'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),

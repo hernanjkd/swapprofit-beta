@@ -105,7 +105,7 @@ def attach(app):
             if user is None:
                 raise APIException('This email is not registered', 400)
 
-            send_email('reset_password_link', emails='hernanjkd@gmail.com',#req['email'], 
+            send_email('reset_password_link', emails=req['email'], 
                 data={'link':utils.jwt_link(user.id, 'users/reset_password/', req['email'])})
             
             return jsonify({
@@ -243,7 +243,8 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req)
 
-        utils.update_table(prof, req, ignore=['profile_pic_url'])
+        utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id',
+                                                'roi_rating','swap_rating'])
 
         db.session.commit()
 
@@ -301,9 +302,11 @@ def attach(app):
         close_time = utils.designated_trmnt_close_time()
 
         flight = Flights.query.get( id )
-        # if flight is None or flight.start_at < close_time:
-        #     raise APIException(
-        #         "Cannot buy into this flight. It either has ended, or does not exist")
+
+        # Comment out to be able to buy into any flight
+        if flight is None or flight.start_at < close_time:
+            raise APIException(
+                "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,

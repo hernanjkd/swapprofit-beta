@@ -33,18 +33,17 @@ def run():
 
 
     # LOAD FILES
-    actions.load_tournament_file()
+    # actions.load_tournament_file()
 
+    # latest_trmnt_id = db.session.query( func.max( Tournaments.id)).scalar()
+    # db.session.execute(
+    #     "ALTER SEQUENCE tournaments_id_seq RESTART WITH " + 
+    #     str(latest_trmnt_id + 1) )
 
-    latest_trmnt_id = db.session.query( func.max( Tournaments.id)).scalar()
-    db.session.execute(
-        "ALTER SEQUENCE tournaments_id_seq RESTART WITH " + 
-        str(latest_trmnt_id + 1) )
-
-    latest_flight_id = db.session.query( func.max( Flights.id)).scalar()
-    db.session.execute(
-        "ALTER SEQUENCE flights_id_seq RESTART WITH " +
-        str(latest_flight_id + 1) )
+    # latest_flight_id = db.session.query( func.max( Flights.id)).scalar()
+    # db.session.execute(
+    #     "ALTER SEQUENCE flights_id_seq RESTART WITH " +
+    #     str(latest_flight_id + 1) )
     
  
     ########################
@@ -3803,4 +3802,6 @@ def run():
 
 
     db.session.commit()
+
+
     return
