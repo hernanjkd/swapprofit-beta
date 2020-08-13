@@ -250,27 +250,6 @@ def attach(app):
         return jsonify(prof.serialize())
 
 
-    # UPDATE MY NICKNAME
-    @app.route('profiles/me/nickname', methods=['PUT'])
-    def update_nickname(user_id):
-
-      prof = Profiles.query.get(user_id)
-
-      req = request.get_json()
-      utils.check_params(req, 'old_nickname', 'new_nickname')
-
-      if req['old_nickname'] == req['new_nickname']:
-        raise APIException('Your new nickname is the same as your current nickname')
-      if len( req['new_nickname'] ) < 1:
-        raise APIException('Your new nickname must be at least 1 character long')
-
-      prof.nickname = (req['new_nickname'])
-
-      db.session.commit()
-
-      return jsonify({'message': 'Your nickname has been changed'}), 200
-
-
     # UPDATE PROFILE PICTURE
     @app.route('/profiles/image', methods=['PUT'])
     @role_jwt_required(['user'])
