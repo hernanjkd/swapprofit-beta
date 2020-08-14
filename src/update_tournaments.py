@@ -10,10 +10,10 @@ engine = create_engine( os.environ.get('DATABASE_URL'))
 Session = sessionmaker( bind=engine )
 session = Session()
 
-resp = requests.get( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/update' )
+resp = requests.get( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/update?span=all' )
 
 if not resp.ok:
-    print( r.content.decode("utf-8")[-233:] )
+    print( resp.content.decode("utf-8")[-233:] )
     exit()
 
 
