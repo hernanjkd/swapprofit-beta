@@ -95,6 +95,7 @@ def attach(app):
 
             db.session.commit()
 
+        return 'Tournaments updated successfully'
 
 
 
