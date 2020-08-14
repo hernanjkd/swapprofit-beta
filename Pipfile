@@ -36,5 +36,4 @@ init="flask db init"
 migrate="flask db migrate"
 upgrade="flask db upgrade"
 test='PYTHONPATH=./src; pytest'
-diagram="python3 diagram.py"
 deploy="echo 'Please follow this 3 steps to deploy: https://github.com/4GeeksAcademy/flask-rest-hello/blob/master/README.md#deploy-your-website-to-heroku' "
