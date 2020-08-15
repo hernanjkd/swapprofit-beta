@@ -1,4 +1,5 @@
 import re
+import os
 import requests
 from flask import request, jsonify, render_template
 from flask_cors import CORS
@@ -88,7 +89,7 @@ def attach(app):
         }), 200
 
 
-    # CREATE VALIDATE TOKEN
+    # VALIDATE EMAIL BY CHECKING THE TOKEN SENT IN EMAIL
     @app.route('/users/validate/<token>', methods=['GET'])
     def validate(token):
 
@@ -96,25 +97,29 @@ def attach(app):
 
         accepted_roles = ['first_time_validation','email_change']
         if jwt_data['role'] not in accepted_roles:
-            raise APIException('Incorrect token', 400)
+            return 'Incorrect token'
 
         user = Users.query.get(jwt_data['sub'])
         if user is None:
-            raise APIException('Invalid key payload', 400)
+            return 'Invalid key payload'
 
         if user.status._value_ == 'invalid':
             user.status = 'valid'
             db.session.commit()
 
-        resp = requests.post( 
-            f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/email/user/{user.pokersociety_id}",
-            json={
-                'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
-                'email': user.email
-            })
-
+        # First time validating email, send welcome email
         if jwt_data['role'] == 'first_time_validation':
             send_email(template='welcome', emails=user.email)
+
+        # If user just updating email, update the email in Poker Society
+        if jwt_data['role'] == 'email_change':
+            prof = Profiles.query.get( user.id )
+            resp = requests.post( 
+                f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/email/user/{prof.pokersociety_id}",
+                json={
+                    'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
+                    'email': user.email
+                })
 
         return render_template('email_validated_success.html')
 

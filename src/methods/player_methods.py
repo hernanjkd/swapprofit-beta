@@ -21,7 +21,7 @@ from notifications import send_email, send_fcm
 
 def attach(app):
     
-    
+    # UPDATE EMAIL
     @app.route('/users/me/email', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_email(user_id):
@@ -52,12 +52,13 @@ def attach(app):
         return jsonify({'message': 'Please verify your new email'}), 200
 
 
-    
+    # TEMPLATE TO CREATE AND SAVE NEW PASSWORD IF FORGOTTEN
     @app.route('/users/reset_password/<token>', methods=['GET','PUT'])
     def html_reset_password(token):
 
         jwt_data = decode_jwt(token)
         
+        # Create new password in a template
         if request.method == 'GET':
             user = Users.query.filter_by(
                 id = jwt_data['sub'], 
@@ -71,7 +72,7 @@ def attach(app):
                 email = jwt_data['role']
             )
         
-        # request.method == 'PUT'
+        # Save the new password that was chosen above
         req = request.get_json()
         utils.check_params(req, 'email', 'password')
 
