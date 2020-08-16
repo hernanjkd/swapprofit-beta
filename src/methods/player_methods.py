@@ -183,10 +183,10 @@ def attach(app):
     @app.route('/profiles', methods=['POST'])
     @role_jwt_required(['user'])
     def register_profile(user_id):
-
+        
         prof = Profiles.query.get( user_id )
         if prof is not None:
-            raise APIException('A profile already exists with "id": '+user_id, 400)
+            raise APIException('A profile already exists with "id": '+str(user_id), 400)
 
         req = request.get_json()
         utils.check_params(req, 'first_name', 'last_name', 'device_token')
@@ -212,8 +212,8 @@ def attach(app):
             raise APIException('Error creating user in Poker Society', 500)
 
         data = resp.json()
-
-
+        
+        
         db.session.add( Profiles(
             id = user_id,
             pokersociety_id = data['pokersociety_id'],
