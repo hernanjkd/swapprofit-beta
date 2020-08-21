@@ -74,19 +74,20 @@ for trmnt in trmnts:
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
-            print('Send notification that trmnt closed to user id: ', user.id)
+            buyin = m.Buy_ins.get_latest(
+                user_id=user.id, tournament_id=trmnt.id )
+            print('Sending notification that trmnt closed to user id: ', user.id)
             send_fcm(
                 user_id = user.id,
                 title = "Event Ended",
                 body = f'{trmnt.name} closed at {close_time}',
                 data = {
                     'id': trmnt.id,
-                    # 'buyin_id': buyin and buyin.id,
+                    'buy_in': buyin and buyin.id,
                     'alert': f'{trmnt.name} closed at {close_time}',
                     'type': 'results',
                     'initialPath': 'Swap Results',
-                    'finalPath': 'Profit Results'
-                }
+                    'finalPath': 'Profit Results' }
             )
 
 
@@ -106,18 +107,20 @@ for trmnt in trmnts:
 
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        print('Send notification that trmnt started to user, id: ', user.id)
+        buyin = m.Buy_ins.get_latest(
+            user_id=user.id, tournament_id=trmnt.id )
+        print('Sending notification that trmnt started to user, id: ', user.id)
         send_fcm(
             user_id = user.id,
             title = "Event Started",
             body = trmnt.name +' opened at ' + trmnt.start_at,
             data = {
                 'id': trmnt.id,
+                'buy_in': buyin and buyin.id,
                 'alert': trmnt.name +' opened at' + trmnt.start_at,
                 'type': 'event',
                 'initialPath': 'Event Results',
-                'finalPath': 'Event Lobby'
-            }
+                'finalPath': 'Event Lobby' }
         )
 
 
@@ -181,7 +184,7 @@ for swap in swaps:
         
 
     if swap.swap_rating != swap_rating:
-        print(f'Updating swap.id {swap.id} from {swap.swap_rating} to {swap_rating}')
+        print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
         swap.swap_rating = swap_rating
         session.commit()
         
@@ -200,5 +203,5 @@ def calculate_swap_rating(user_id):
 
 for user in users_to_update_swaprating:
     user.swap_rating = calculate_swap_rating( user.id )
-    print(f'Updating swap_rating for user {user.id} to {user.swap_rating}')
+    print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
     session.commit()

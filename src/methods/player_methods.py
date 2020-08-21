@@ -905,8 +905,8 @@ def attach(app):
                     'alert': msg,
                     'type': 'swap',
                     'initialPath': 'SwapDashboard',
-                    'finalPath': 'SwapOffer'
-            })
+                    'finalPath': 'SwapOffer' }
+            )
 
 
         return jsonify([
