@@ -55,7 +55,7 @@ for trmnt in trmnts:
     if latest_flight.start_at < close_time:
             
         # This tournament is over: change status and clean swaps
-        print('update tournament status to "waiting_results", id:', trmnt.id)
+        print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
         swaps = session.query(m.Swaps) \
             .filter_by( tournament_id = trmnt.id ) \
@@ -65,7 +65,7 @@ for trmnt in trmnts:
                 m.Swaps.status == 'counter_incoming' ) )
 
         for swap in swaps:
-            print('update swap status to "canceled", id:', swap.id)
+            print('Update swap status to "canceled", id:', swap.id)
             swap.status = 'canceled'
 
         session.commit()
@@ -74,6 +74,7 @@ for trmnt in trmnts:
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
+            print('Send notification that trmnt closed to user id: ', user.id)
             send_fcm(
                 user_id = user.id,
                 title = "Event Ended",
@@ -101,10 +102,11 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at > _4mins_ago )
 
 for trmnt in trmnts:
-    print(f'Tournament just started with id: {trmnt.id}')
+    print('Tournament just started with id: ', trmnt.id)
 
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
+        print('Send notification that trmnt started to user, id: ', user.id)
         send_fcm(
             user_id = user.id,
             title = "Event Started",
@@ -128,7 +130,7 @@ buyins = session.query(m.Buy_ins) \
     .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
 
 for buyin in buyins:
-    print('deleting buy-in', buyin.id)
+    print('Deleting buy-in', buyin.id)
     session.delete(buyin)
 
 session.commit()
@@ -173,13 +175,13 @@ for swap in swaps:
         swap_rating = 0
         user_account = session.query(m.Users).get( user.id )
         if user_account.status._value_ != 'suspended':
-            print('suspending user', user.id)
+            print('Suspending user', user.id)
             user_account.status = 'suspended'
             session.commit()
         
 
     if swap.swap_rating != swap_rating:
-        print(f'updating swap.id {swap.id} from {swap.swap_rating} to {swap_rating}')
+        print(f'Updating swap.id {swap.id} from {swap.swap_rating} to {swap_rating}')
         swap.swap_rating = swap_rating
         session.commit()
         
@@ -198,5 +200,5 @@ def calculate_swap_rating(user_id):
 
 for user in users_to_update_swaprating:
     user.swap_rating = calculate_swap_rating( user.id )
-    print(f'updating swap_rating for user {user.id} to {user.swap_rating}')
+    print(f'Updating swap_rating for user {user.id} to {user.swap_rating}')
     session.commit()
