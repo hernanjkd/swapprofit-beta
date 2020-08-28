@@ -56,7 +56,7 @@ def run():
         status='valid'
     )
     db.session.add(johnDoe)
-    lou = Profiles(
+    johnDoe = Profiles(
         first_name='John', 
         last_name='Doe',
         nickname='',
