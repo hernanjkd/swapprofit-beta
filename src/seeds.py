@@ -64,8 +64,8 @@ def run():
         profile_pic_url='https://www.hartvillethriftshoppe.org/sites/default/files/styles/basic_page/public/male_silhouette_0_0.jpg?itok=PN7U5Zf3',
         pokersociety_id=1,
         user=johnDoe,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(johnDoe)
     db.session.add( Transactions(
@@ -87,8 +87,8 @@ def run():
         profile_pic_url='https://pokerdb.thehendonmob.com/pictures/carykatzpic.png',
         pokersociety_id=2,
         user=cary,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(cary)
     db.session.add( Transactions(
@@ -110,8 +110,8 @@ def run():
         profile_pic_url='https://pokerdb.thehendonmob.com/pictures/Lou_Stadler_Winner.JPG',
         pokersociety_id=3,
         user=lou,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(lou)
     db.session.add( Transactions(
@@ -133,8 +133,8 @@ def run():
         profile_pic_url='https://i.imgur.com/qIq2VPH.jpg',
         pokersociety_id=4,
         user=perry,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(perry)
     db.session.add( Transactions(
@@ -156,8 +156,8 @@ def run():
         profile_pic_url='https://i.imgur.com/PYNkNgc.jpg',
         pokersociety_id=5,
         user=neal,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(neal)
     db.session.add( Transactions(
@@ -179,8 +179,8 @@ def run():
         profile_pic_url='https://i.imgur.com/1bMetyL.jpg',
         pokersociety_id=6,
         user=brian,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(brian)
     db.session.add( Transactions(
@@ -203,8 +203,8 @@ def run():
         profile_pic_url='https://i.imgur.com/ZMo8UJ8.jpg',
         pokersociety_id=7,
         user=bobby,
-        roi_rating=0,
-        swap_rating=0
+        roi_rating=0.0,
+        swap_rating=0.0
     )
     db.session.add(bobby)
     db.session.add( Transactions(
