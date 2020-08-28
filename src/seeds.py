@@ -63,7 +63,7 @@ def run():
         hendon_url='',
         profile_pic_url='https://www.hartvillethriftshoppe.org/sites/default/files/styles/basic_page/public/male_silhouette_0_0.jpg?itok=PN7U5Zf3',
         pokersociety_id=1,
-        user=lou,
+        user=johnDoe,
         roi_rating=0,
         swap_rating=0
     )
