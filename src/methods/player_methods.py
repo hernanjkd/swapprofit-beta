@@ -305,9 +305,9 @@ def attach(app):
         flight = Flights.query.get( id )
 
         # Comment out to be able to buy into any flight
-        # if flight is None or flight.start_at < close_time:
-        #     raise APIException(
-        #         "Cannot buy into this flight. It either has ended, or does not exist")
+        if flight is None or flight.start_at < close_time:
+            raise APIException(
+                "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
