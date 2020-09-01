@@ -253,7 +253,7 @@ class Tournaments(db.Model):
     swaps = db.relationship('Swaps', back_populates='tournament')
 
     def __repr__(self):
-        return f'<Tournament {self.name}>'
+        return f'<Tournament {self.id} {self.name}>'
 
     @staticmethod
     def get_live_upcoming(user_id=False):

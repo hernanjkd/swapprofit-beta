@@ -54,8 +54,8 @@ def attach(app):
     @app.route('/tournaments/update')
     def update_tournaments():
 
-        # Update from days ago or hours ago
-        span = request.args.get('span')
+        # Update from days ago or hours ago, default to 1 hour ago
+        span = request.args.get('span') # days, hours
         amount = request.args.get('amount')
 
         if None not in [span, amount]:
@@ -75,9 +75,11 @@ def attach(app):
             trmntjson = d['tournament']
             trmnt = Tournaments.query.get( trmntjson['id'] )
             if trmnt is None:
+                print(f'Adding trmnt id: {trmntjson["id"]}')
                 db.session.add( Tournaments(
                     **{col:val for col,val in trmntjson.items()} ))
             else:
+                print(f'Updating trmnt id: {trmntjson["id"]}')
                 for col,val in trmntjson.items():
                     if getattr(trmnt, col) != val:
                         setattr(trmnt, col, val)
@@ -86,9 +88,11 @@ def attach(app):
             for flightjson in d['flights']:
                 flight = Flights.query.get( flightjson['id'] )
                 if flight is None:
+                    print(f'Adding flight id: {flightjson["id"]}')
                     db.session.add( Flights(
                         **{col:val for col,val in flightjson.items()} ))
                 else:
+                    print(f'Updating flight id: {flightjson["id"]}')
                     for col,val in flightjson.items():
                         if getattr(flight, col) != val:
                             setattr(flight, col, val)

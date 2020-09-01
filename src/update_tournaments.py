@@ -25,9 +25,11 @@ for d in data:
     trmntjson = d['tournament']
     trmnt = session.query( m.Tournaments ).get( trmntjson['id'] )
     if trmnt is None:
+        print(f'Adding trmnt id: {trmntjson["id"]}')
         session.add( m.Tournaments(
             **{col:val for col,val in trmntjson.items()} ))
     else:
+        print(f'Updating trmnt id: {trmntjson["id"]}')
         for col,val in trmntjson.items():
             if getattr(trmnt, col) != val:
                 setattr(trmnt, col, val)
@@ -36,9 +38,11 @@ for d in data:
     for flightjson in d['flights']:
         flight = session.query( m.Flights ).get( flightjson['id'] )
         if flight is None:
+            print(f'Adding flight id: {flightjson["id"]}')
             session.add( m.Flights(
                 **{col:val for col,val in flightjson.items()} ))
         else:
+            print(f'Updating flight id: {flightjson["id"]}')
             for col,val in flightjson.items():
                 if getattr(flight, col) != val:
                     setattr(flight, col, val)

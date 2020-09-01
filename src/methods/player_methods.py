@@ -305,9 +305,9 @@ def attach(app):
         flight = Flights.query.get( id )
 
         # Comment out to be able to buy into any flight
-        if flight is None or flight.start_at < close_time:
-            raise APIException(
-                "Cannot buy into this flight. It either has ended, or does not exist")
+        # if flight is None or flight.start_at < close_time:
+        #     raise APIException(
+        #         "Cannot buy into this flight. It either has ended, or does not exist")
 
         buyin = Buy_ins(
             user_id = user_id,
@@ -380,16 +380,20 @@ def attach(app):
         
         # Check casino name
         trmnt_casino = flight.tournament.casino
+        print()
+        print(trmnt_casino)
+        print()
         validation['casino'] = {
             'ocr': regex_data['casino'],
             'database': trmnt_casino,
-            'valid': True 
+            'valid': trmnt_casino is not None
         }
         casino_names = regex_data['casino'].split(' ')
-        for name in casino_names:
-            if name.lower() not in trmnt_casino.lower():
-                validation['casino']['valid'] = False
-                break
+        if trmnt_casino is not None:
+            for name in casino_names:
+                if name.lower() not in trmnt_casino.lower():
+                    validation['casino']['valid'] = False
+                    break
 
         # Check date
         regex_timestamp = regex_data['receipt_timestamp']
@@ -418,37 +422,6 @@ def attach(app):
             'validation': validation,
             'ocr_data': ocr_data
         })
-
-        # def check_code():
-            # pass
-            # if receipt_data['tournament_name'] is None or receipt_data['date'] is None:
-            #     raise APIException('Can not read picture, take another', 500)
-
-            # # Validate buyin receipt w tournament name and flight start_at
-            # now = datetime.utcnow
-            # if (now - buyin.flight.start_at) > timedelta(hours=17) and \
-            #     receipt_data['tournament_name'] != buyin.flight.tournament.name:
-            
-            #     send_email(template='wrong_receipt', emails=buyin.user.user.email,
-            #         data={
-            #             'receipt_url': buyin.receipt_img_url,
-            #             'tournament_date': buyin.flight.tournament.start_at,
-            #             'tournament_name': buyin.flight.tournament.name,
-            #             'upload_time': result['created_at']
-            #         })
-            #     raise APIException('Wrong receipt was upload', 400)
-
-            # return jsonify({
-            #     'buyin_id': buyin.id,
-            #     'ocr_data': {
-            #         'player_name': f'{buyin.user.first_name} {buyin.user.last_name}',
-            #         'date_on_receipt': '12/03/19',
-            #         'buyin_amount': '150.00',
-            #         'seat': 8,
-            #         'table': 198,
-            #         'account_number': '2081669'
-            #     }
-            # })
 
         
     # UPDATE BUYIN 
@@ -551,6 +524,9 @@ def attach(app):
             # Filter current and future flights and order by default desc
             else:
                 flights = Flights.get(history=False)
+                if flights is None:
+                    return jsonify([])
+
                 flights = flights.order_by(
                     Flights.start_at.asc() if order_method is None else order_method )
 
