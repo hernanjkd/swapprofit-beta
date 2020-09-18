@@ -96,6 +96,29 @@ def run():
         user=cary
     ))
 
+    gabe = Users(
+        email='gherndon5@gmail.com',
+        password=sha256('casper5'),
+        status='valid'
+    )
+    db.session.add(gabe)
+    cary = Profiles(
+        first_name='Gabriel', 
+        last_name='Herndon',
+        nickname='',
+        hendon_url='',
+        profile_pic_url='https://d1we5yax8fyln6.cloudfront.net/sites/stage32.com/files/imagecache/head_shot_500/headshots/3a160ee8689722fd93f3999b10d2b8d9_1428609546_l.jpg',
+        pokersociety_id=2,
+        user=gabe,
+        roi_rating=0.0,
+        swap_rating=0.0
+    )
+    db.session.add(gabe)
+    db.session.add( Transactions(
+        coins=5,
+        user=gabe
+    ))
+
     lou = Users(
         email='lou@pokersociety.com',
         password=sha256('swaptest'),
