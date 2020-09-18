@@ -102,7 +102,7 @@ def run():
         status='valid'
     )
     db.session.add(gabe)
-    cary = Profiles(
+    gabe = Profiles(
         first_name='Gabriel', 
         last_name='Herndon',
         nickname='',
