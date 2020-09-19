@@ -123,6 +123,28 @@ for trmnt in trmnts:
                 'finalPath': 'Event Lobby' }
         )
 
+    # LOG
+    import requests
+    
+    domain = os.environ['MAILGUN_DOMAIN']
+    requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+        auth=(
+            'api',
+            os.environ.get('MAILGUN_API_KEY')),
+        data={
+            'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+            'to': ['hernanjkd@gmail.com','gherndon5@gmail.com'],
+            'subject': 'Testing',
+            'text': 'Sending text email',
+            'html': f'''
+                <div>trmnt.id {trmnt.id}</div><br />
+                <div>{trmnt.start_at} trmnt.start_at</div>
+                <div>{time} datetime.utcnow()</div>
+                <div>{_4mins_ago} _4mins_ago</div>
+                <div>{_4mins_ahead} _4mins_ahead</div>
+            '''
+    })
+
 
 
 ###############################################################################
