@@ -96,6 +96,29 @@ def run():
         user=cary
     ))
 
+    gabe = Users(
+        email='gherndon5@gmail.com',
+        password=sha256('casper5'),
+        status='valid'
+    )
+    db.session.add(gabe)
+    gabe = Profiles(
+        first_name='Gabriel', 
+        last_name='Herndon',
+        nickname='',
+        hendon_url='',
+        profile_pic_url='https://d1we5yax8fyln6.cloudfront.net/sites/stage32.com/files/imagecache/head_shot_500/headshots/3a160ee8689722fd93f3999b10d2b8d9_1428609546_l.jpg',
+        pokersociety_id=3,
+        user=gabe,
+        roi_rating=0.0,
+        swap_rating=0.0
+    )
+    db.session.add(gabe)
+    db.session.add( Transactions(
+        coins=5,
+        user=gabe
+    ))
+
     lou = Users(
         email='lou@pokersociety.com',
         password=sha256('swaptest'),
@@ -108,7 +131,7 @@ def run():
         nickname='Lou',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=207424',
         profile_pic_url='https://pokerdb.thehendonmob.com/pictures/Lou_Stadler_Winner.JPG',
-        pokersociety_id=3,
+        pokersociety_id=4,
         user=lou,
         roi_rating=0.0,
         swap_rating=0.0
@@ -131,7 +154,7 @@ def run():
         nickname='',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=371190',
         profile_pic_url='https://i.imgur.com/qIq2VPH.jpg',
-        pokersociety_id=4,
+        pokersociety_id=5,
         user=perry,
         roi_rating=0.0,
         swap_rating=0.0
@@ -154,7 +177,7 @@ def run():
         nickname='',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=506855',
         profile_pic_url='https://i.imgur.com/PYNkNgc.jpg',
-        pokersociety_id=5,
+        pokersociety_id=6,
         user=neal,
         roi_rating=0.0,
         swap_rating=0.0
@@ -177,7 +200,7 @@ def run():
         nickname='',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=239802',
         profile_pic_url='https://i.imgur.com/1bMetyL.jpg',
-        pokersociety_id=6,
+        pokersociety_id=7,
         user=brian,
         roi_rating=0.0,
         swap_rating=0.0
@@ -201,7 +224,7 @@ def run():
         nickname='',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=187837',
         profile_pic_url='https://i.imgur.com/ZMo8UJ8.jpg',
-        pokersociety_id=7,
+        pokersociety_id=8,
         user=bobby,
         roi_rating=0.0,
         swap_rating=0.0
