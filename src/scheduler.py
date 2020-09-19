@@ -99,8 +99,8 @@ _4mins_ago = datetime.utcnow() - timedelta(minutes=4)
 _4mins_ahead = datetime.utcnow() + timedelta(minutes=4)
 
 trmnts = session.query(m.Tournaments) \
-    .filter( m.Tournaments.start_at < _4mins_ahead and m.Tournaments.start_at > _4mins_ago) \
-    # .filter( m.Tournaments.start_at > _4mins_ago )
+    .filter( m.Tournaments.start_at < _4mins_ahead) \
+    .filter( m.Tournaments.start_at > _4mins_ago )
 
 for trmnt in trmnts:
     print('Tournament just started with id: ', trmnt.id)
