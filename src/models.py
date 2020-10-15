@@ -508,6 +508,12 @@ class Chats(db.Model):
         return Chats.query.filter_by( **chatjson() ).first() or \
                Chats.query.filter_by( **chatjson(flip=True) ).first()
 
+    @staticmethod
+    def getMine(user1_id):
+        chatjson = lambda flip=False: {
+            'user1_id': user1_id }
+        return Chats.query.filter_by( **chatjson() ).first()
+
     def serialize(self):
         return {
             'id': self.id,

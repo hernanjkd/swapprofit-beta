@@ -1052,7 +1052,7 @@ def attach(app):
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
-        chat = Chats.get(user_id)
+        chat = Chats.getMine(user_id)
         if chat is None:
             raise APIException('You have no chats')
         return jsonify( chat.serialize() )
