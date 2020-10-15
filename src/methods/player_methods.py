@@ -1053,11 +1053,11 @@ def attach(app):
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
         # chats = Chats.getMine(user_id)
-        report = Chats.query 
+        chat = Chats.query 
                     # .filter( Transactions.created_at > month_ago ) \
                     # .order_by( Chats.created_at.desc() )
 
-        return jsonify([x.serialize() for x in report])
+        return jsonify([x.serialize() for x in chat])
         # my_chats= []
         # if chats is not None:
         #     for chat in chats:
