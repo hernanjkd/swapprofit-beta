@@ -1052,14 +1052,18 @@ def attach(app):
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
-        chats = Chats.getMine(user_id)
+        # chats = Chats.getMine(user_id)
+        report = Chats.query 
+                    # .filter( Transactions.created_at > month_ago ) \
+                    # .order_by( Chats.created_at.desc() )
 
-        my_chats= []
-        if chats is not None:
-            for c in chats:
-                json = actions.swap_tracker_json( trmnt, user_id )
-                chats.append( json )        
-            return jsonify( my_chats )
+        return jsonify([x.serialize() for x in report])
+        # my_chats= []
+        # if chats is not None:
+        #     for chat in chats:
+        #         json = actions.swap_tracker_json( chat, user_id )
+        #         my_chats.append( json )        
+        #     return jsonify( my_chats )
 
 
     @app.route('/chats/<int:chat_id>')
