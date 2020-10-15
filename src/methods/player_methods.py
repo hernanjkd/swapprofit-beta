@@ -1027,6 +1027,7 @@ def attach(app):
 
 
 
+
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
     def create_chat(user_id):
@@ -1048,6 +1049,13 @@ def attach(app):
 
         return jsonify( chat.serialize() )
 
+    @app.route('/me/chats', methods=['GET'])
+    @role_jwt_required(['user'])
+    def get_my_chats(user_id):
+        chat = Chats.get(user_id)
+        if chat is None:
+            raise APIException('You have no chats')
+        return jsonify( chat.serialize() )
 
 
     @app.route('/chats/<int:chat_id>')
