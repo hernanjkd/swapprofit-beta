@@ -512,7 +512,7 @@ class Chats(db.Model):
     def getMine(user1_id):
         chatjson = lambda flip=False: {
             'user1_id': user1_id }
-        return Chats.query.filter_by( **chatjson() ).all()
+        return Chats.query.filter_by( **chatjson() )
 
     def serialize(self):
         return {

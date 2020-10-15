@@ -1052,10 +1052,14 @@ def attach(app):
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
-        chat = Chats.getMine(user_id)
-        if chat is None:
-            raise APIException('You have no chats')
-        return jsonify( chat.serialize() )
+        chats = Chats.getMine(user_id)
+
+        my_chats= []
+        if chats is not None:
+            for c in chats:
+                json = actions.swap_tracker_json( trmnt, user_id )
+                chats.append( json )        
+            return jsonify( my_chats )
 
 
     @app.route('/chats/<int:chat_id>')
