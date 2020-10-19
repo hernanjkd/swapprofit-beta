@@ -1053,13 +1053,18 @@ def attach(app):
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
         # chats = Chats.getMine(user_id)
-        chat = Chats.query \
-            .filter( Chats.user1_id == user_id or Chats.user2_id == user_id ) \
+        chat1 = Chats.query \
+            .filter( Chats.user1_id ) 
+        chat2 = Chats.query \
+            .filter( Chats.user1_id ) 
+        chat3 = [] \
+            .append(chat1) \
+            .append(chat2) \
             .order_by( Chats.created_at.desc() )
         
-        print('chat',chat)
+        print('chat',chat3)
 
-        return jsonify([x.serialize() for x in chat])
+        return jsonify([x.serialize() for x in chat3])
         # my_chats= []
         # if chats is not None:
         #     for chat in chats:
