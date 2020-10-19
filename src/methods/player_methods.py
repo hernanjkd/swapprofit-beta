@@ -1055,7 +1055,7 @@ def attach(app):
         # chats = Chats.getMine(user_id)
         chat = Chats.query \
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
-            .order_by( Chats.created_at.desc() )
+            .order_by( Chats.updated_at.desc() )
         
         return jsonify([x.serialize() for x in chat])
         # my_chats= []
