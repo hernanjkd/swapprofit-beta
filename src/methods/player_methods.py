@@ -1054,15 +1054,14 @@ def attach(app):
     def get_my_chats(user_id):
         # chats = Chats.getMine(user_id)
         chat1 = Chats.query \
-            .filter( Chats.user1_id == user_id ) \
-            .order_by( Chats.created_at.desc() )
-        # chat2 = Chats.query \
-        #     .filter( Chats.user2_id == user_id ) 
+            .filter( Chats.user1_id == user_id ) 
+        chat2 = Chats.query \
+            .filter( Chats.user2_id == user_id ) 
         # chat3 = [] 
         # chat3.append(chat1) \
         #     .append(chat2) \
         
-        print('chat',chat1)
+        print('THIS MY CHAT',chat1)
 
         return jsonify([x.serialize() for x in chat1])
         # my_chats= []
