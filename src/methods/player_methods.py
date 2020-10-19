@@ -1086,7 +1086,7 @@ def attach(app):
     @role_jwt_required(['user'])
     def send_message(user_id, chat_id):
 
-        req = utils.check_params( request.get_json(), 'message' )
+        req = utils.check_params( request.get_json(), 'user_id', 'message' )
 
         # messages have a 100 char limit, make sure to break it up
 
@@ -1100,7 +1100,7 @@ def attach(app):
 
         a_title = f'{sender.get_name()}'
         send_fcm(
-                user_id = user_id,
+                user_id = req['user_id'],
                 title = a_title,
                 body = req['message'],
                 data = {
