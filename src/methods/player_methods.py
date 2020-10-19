@@ -1054,9 +1054,9 @@ def attach(app):
     def get_my_chats(user_id):
         # chats = Chats.getMine(user_id)
         chat1 = Chats.query \
-            .filter( Chats.user1_id ) 
+            .filter( Chats.user1_id == user_id ) 
         chat2 = Chats.query \
-            .filter( Chats.user1_id ) 
+            .filter( Chats.user2_id == user_id ) 
         chat3 = [] \
             .append(chat1) \
             .append(chat2) \
