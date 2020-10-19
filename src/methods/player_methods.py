@@ -1096,6 +1096,20 @@ def attach(app):
             message = req['message']
         ))
         db.session.commit()
+        sender = Profiles.query.get(user_id)
+
+        a_title = f'{sender.get_name()}'
+        send_fcm(
+                user_id = user_id,
+                title = a_title,
+                body = req['message'],
+                data = {
+                    'id': chat_id,
+                    'alert': req['message'],
+                    'type': 'chat',
+                    'initialPath': 'ContactsScreen',
+                    'finalPath': 'ChatScreen' }
+            )
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
 
