@@ -2,7 +2,7 @@ from utils import role_jwt_required
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin
 from models import (db, Users, Profiles, Tournaments, Flights, Swaps, Buy_ins,
-    Transactions, Devices)
+    Transactions, Devices, Chats)
 
 
 # @role_jwt_required(['user'])
@@ -21,5 +21,6 @@ def SetupAdmin(app):
     admin.add_view( ExcludedModelView( Buy_ins, db.session ))
     admin.add_view( ExcludedModelView( Transactions, db.session ))
     admin.add_view( ExcludedModelView( Devices, db.session ))
+    admin.add_view( ExcludedModelView( Chats, db.session ))
 
     return admin
