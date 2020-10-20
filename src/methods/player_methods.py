@@ -1088,7 +1088,7 @@ def attach(app):
 
 
     @app.route('/chats/<int:chat_id>')
-    @app.route('/chats/me/users/<int:user2_id>/tournaments/<int:trmnt_id>')
+    @app.route('/chats/me/users/<int:user2_id>')
     @role_jwt_required(['user'])
     def get_chat(user_id, user2_id=None, trmnt_id=None, chat_id=None):
 
