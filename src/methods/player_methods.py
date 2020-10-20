@@ -1086,7 +1086,7 @@ def attach(app):
     @role_jwt_required(['user'])
     def send_message(my_id, their_id, chat_id):
 
-        req = utils.check_params( request.get_json(), 'my_id', 'their_id', 'message' )
+        req = utils.check_params( request.get_json(), 'my_id', 'user_id', 'message' )
 
         # messages have a 100 char limit, make sure to break it up
 
