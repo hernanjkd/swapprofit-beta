@@ -1093,7 +1093,7 @@ def attach(app):
         print('got past req')
         db.session.add( Messages(
             chat_id = chat_id,
-            user_id = their_id,
+            user_id = req['their_id'],
             message = req['message']
         ))
         db.session.commit()
@@ -1103,7 +1103,7 @@ def attach(app):
         print('got Past sender')
         a_title = f'{sender.get_name()}'
         send_fcm(
-                user_id = their_id,
+                user_id = req['their_id'],
                 title = a_title,
                 body = req['message'],
                 data = {
