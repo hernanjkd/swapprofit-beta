@@ -1086,16 +1086,18 @@ def attach(app):
     @role_jwt_required(['user'])
     def send_message(my_id, their_id, chat_id):
 
-        req = utils.check_params( request.get_json(), 'my_id', 'user_id', 'message' )
+        req = utils.check_params( request.get_json(), 'my_id', 'their_id', 'message' )
 
         # messages have a 100 char limit, make sure to break it up
-
+        print('got past req')
         db.session.add( Messages(
             chat_id = chat_id,
             user_id = their_id,
             message = req['message']
         ))
         db.session.commit()
+        print('got past commit')
+
         sender = Profiles.query.get(my_id)
         print('got Past sender')
         a_title = f'{sender.get_name()}'
