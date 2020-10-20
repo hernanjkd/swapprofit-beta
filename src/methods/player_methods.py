@@ -1033,19 +1033,40 @@ def attach(app):
     def create_chat(user_id):
 
         req = request.get_json()
-        utils.check_params(req, 'user2_id', 'tournament_id')
+        utils.check_params(req, 'user2_id', 'message')
         
-        chat = Chats.get(user_id, req['user2_id'], req['tournament_id'])
+        chat = Chats.get(user_id, req['user2_id'])
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
         chat = Chats(
             user1_id = user_id,
-            user2_id = req['user2_id'],
-            tournament_id = req['tournament_id']
+            user2_id = req['user2_id']
         )
         db.session.add( chat )
         db.session.commit()
+
+        a_chat = chat.serialize()
+        message = Messages(
+            chat_id = a_chat.id,
+            user_id = user_id,
+            message = req['message']
+        )
+        db.session.add( message )
+        db.session.commit()
+        sender = Profiles.query.get(user_id)
+        a_title = f'{sender.get_name()}'
+        send_fcm(
+            user_id = req['user2_id'],
+            title = a_title,
+            body = req['message'],
+            data = {
+                'id': a_chat.id,
+                'alert': req['message'],
+                'type': 'chat',
+                'initialPath': 'ContactsScreen',
+                'finalPath': 'ChatScreen' }
+        )
 
         return jsonify( chat.serialize() )
 
