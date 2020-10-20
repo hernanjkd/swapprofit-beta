@@ -1100,7 +1100,7 @@ def attach(app):
 
         a_title = f'{sender.get_name()}'
         send_fcm(
-                user_id = req['user_id'],
+                user_id = user_id,
                 title = a_title,
                 body = req['message'],
                 data = {
