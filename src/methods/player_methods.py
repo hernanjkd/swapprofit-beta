@@ -1097,7 +1097,7 @@ def attach(app):
         ))
         db.session.commit()
         sender = Profiles.query.get(my_id)
-
+        print('got Past sender')
         a_title = f'{sender.get_name()}'
         send_fcm(
                 user_id = their_id,
