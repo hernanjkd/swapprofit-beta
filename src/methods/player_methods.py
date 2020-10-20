@@ -1093,7 +1093,7 @@ def attach(app):
         print('got past req')
         db.session.add( Messages(
             chat_id = chat_id,
-            user_id = req['their_id'],
+            user_id = user_id,
             message = req['message']
         ))
         db.session.commit()
