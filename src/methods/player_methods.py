@@ -1085,15 +1085,15 @@ def attach(app):
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
     @role_jwt_required(['user'])
     def send_message(user_id, their_id, chat_id):
+        print('got past first')
 
-        req = utils.check_params( request.get_json(), 'user_id', 'their_id', 'message' )
+        req = utils.check_params( request.get_json(), 'user_id', 'message' )
 
         # messages have a 100 char limit, make sure to break it up
         print('got past req')
         db.session.add( Messages(
             chat_id = chat_id,
             user_id = their_id,
-            their_id = their_id,
             message = req['message']
         ))
         db.session.commit()
