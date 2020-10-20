@@ -1100,7 +1100,7 @@ def attach(app):
         print('got past commit')
 
         sender = Profiles.query.get(user_id)
-        print('got Past sender')
+        print('got reciver', req['their_id'])
         a_title = f'{sender.get_name()}'
         send_fcm(
                 user_id = req['their_id'],
