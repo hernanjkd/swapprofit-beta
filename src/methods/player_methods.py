@@ -1087,7 +1087,7 @@ def attach(app):
     def send_message(user_id, chat_id):
         print('got past first')
 
-        req = utils.check_params( request.get_json(), 'message', 'their_d' )
+        req = utils.check_params( request.get_json(), 'message', 'their_id' )
 
         # messages have a 100 char limit, make sure to break it up
         print('got past req')
