@@ -1058,7 +1058,7 @@ def attach(app):
         a_title = f'{sender.get_name()}'
         send_fcm(
             user_id = req['user2_id'],
-            title = a_title,
+            title = a_title + 'started a chat with you',
             body = req['message'],
             data = {
                 'id': a_chat['id'],
