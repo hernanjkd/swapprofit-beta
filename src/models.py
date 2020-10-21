@@ -520,15 +520,15 @@ class Chats(db.Model):
         }
     def serialize2(self):
         the_last_message = [x.serialize() for x in self.messages]
-        x = the_last_message[-1]
+        # var x = the_last_message[-1].updated_at
         return {
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'status': self.status._value_,
             'created_at': self.created_at,
-            'updated_at': x.updated_at,
-            'last_message': x
+            'updated_at': self.updated_at,
+            'last_message': the_last_message[-1]
         }
 
 
