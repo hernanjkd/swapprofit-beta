@@ -1115,14 +1115,18 @@ def attach(app):
         print('got past first')
 
         req = utils.check_params( request.get_json(), 'message', 'their_id' )
-
+        the_message = req['message']
+        def chunkstring(string, length):
+            return (string[0+i:length+i] for i in range(0, len(string), length))
+        chunkedMessage = list(chunkstring(the_message, 100))
         # messages have a 100 char limit, make sure to break it up
         print('got past req')
-        db.session.add( Messages(
-            chat_id = chat_id,
-            user_id = user_id,
-            message = req['message']
-        ))
+        for x in chunkedMessage:
+            return db.session.add( Messages(
+                chat_id = chat_id,
+                user_id = user_id,
+                message = x
+            ))
         db.session.commit()
         print('got past commit')
 
@@ -1132,7 +1136,7 @@ def attach(app):
         send_fcm(
                 user_id = req['their_id'],
                 title = a_title,
-                body = req['message'],
+                body = chunkedMessage[0],
                 data = {
                     'id': chat_id,
                     'sender': user_id, 
