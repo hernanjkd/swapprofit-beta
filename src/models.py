@@ -519,7 +519,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
-            'messages': the_last_message[-1]
+            'last_message': the_last_message[-1]
         }
     def serialize2(self):
 
