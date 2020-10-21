@@ -527,7 +527,7 @@ class Chats(db.Model):
     def serialize2(self):
         the_last_message = [x.serialize() for x in self.messages]
         # y = the_last_message[-1]
-        # print('the_last_message', the_last_message)
+        print('the_last_message', the_last_message)
         # print('y', y)
 
         return {
@@ -537,7 +537,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'last_message': the_last_message
+            'last_message': [the_last_message[-1]]
         }
 
 
