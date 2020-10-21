@@ -1056,13 +1056,13 @@ def attach(app):
         for x in chunkedMessage:
             db.session.add( Messages(
                 chat_id = a_chat['id'],
-                user_id = user_id,
+                user_id = user1_id,
                 message = x
             ))
             db.session.commit()
         print('got past commit', chunkedMessage[0])
 
-        sender = Profiles.query.get(user_id)
+        sender = Profiles.query.get(user1_id)
         a_title = f'{sender.get_name()}'
         send_fcm(
             user_id = req['user2_id'],
@@ -1071,7 +1071,7 @@ def attach(app):
             data = {
                 'id': a_chat['id'],
                 'alert': chunkedMessage[0],
-                'sender': user_id,
+                'sender': user1_id,
                 'type': 'chat',
                 'initialPath': 'Contacts',
                 'finalPath': 'Chat' }
