@@ -473,7 +473,6 @@ class Chats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user1_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     user2_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
-    # tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
     status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -481,20 +480,16 @@ class Chats(db.Model):
     messages = db.relationship('Messages', back_populates='chat')
     user1 = db.relationship('Profiles', foreign_keys=[user1_id], backref='chats1')
     user2 = db.relationship('Profiles', foreign_keys=[user2_id], backref='chats2')
-    # tournament = db.relationship('Tournaments', backref='chats')
 
     def __init__(self, user1_id, user2_id):
         if user1_id == user2_id:
             raise utils.APIException('user1 and user2 must be different users', 400)
-        # trmnt = Tournaments.query.get( tournament_id )
-        # if trmnt is None:
-        #     raise utils.APIException('Tournament not found', 404)
+
         user2 = Users.query.get( user2_id )
         if user2 is None:
             raise utils.APIException('User2 not found', 404)
         self.user1_id = user1_id
         self.user2_id = user2_id
-        # self.tournament_id = tournament_id
 
     def __repr__(self):
         return f'<Chats user1={self.user1_id} user2={self.user2_id}>'
@@ -525,18 +520,15 @@ class Chats(db.Model):
         }
     def serialize2(self):
         the_last_message = [x.serialize() for x in self.messages]
-        # y = the_last_message[-1]
-        print('the_last_message', the_last_message)
-        # print('y', y)
-
+        x = the_last_message[-1]
         return {
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'status': self.status._value_,
             'created_at': self.created_at,
-            'updated_at': self.updated_at,
-            'last_message': the_last_message[-1]
+            'updated_at': x.updated_at,
+            'last_message': x
         }
 
 
