@@ -483,7 +483,7 @@ class Chats(db.Model):
     user2 = db.relationship('Profiles', foreign_keys=[user2_id], backref='chats2')
     # tournament = db.relationship('Tournaments', backref='chats')
 
-    def __init__(self, user1_id, user2_id, tournament_id):
+    def __init__(self, user1_id, user2_id):
         if user1_id == user2_id:
             raise utils.APIException('user1 and user2 must be different users', 400)
         # trmnt = Tournaments.query.get( tournament_id )
