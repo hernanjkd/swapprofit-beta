@@ -514,7 +514,6 @@ class Chats(db.Model):
         return Chats.query.filter_by( **chatjson() )
 
     def serialize(self):
-        the_last_message = [x.serialize() for x in self.messages]
         return {
             'id': self.id,
             'user1_id': self.user1_id,
@@ -537,7 +536,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'last_message': the_last_message
+            'last_message': the_last_message[-1]
         }
 
 
