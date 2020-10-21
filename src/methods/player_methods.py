@@ -1061,7 +1061,7 @@ def attach(app):
             title = a_title,
             body = req['message'],
             data = {
-                'id': a_chat.id,
+                'id': a_chat['id'],
                 'alert': req['message'],
                 'type': 'chat',
                 'initialPath': 'ContactsScreen',
