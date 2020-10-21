@@ -542,7 +542,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
-            'last_message': [x.serialize() for x in self.messages]
+            'last_message': the_last_message[-1]
         }
 
 class Messages(db.Model):
