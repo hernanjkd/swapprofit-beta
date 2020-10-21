@@ -1077,8 +1077,10 @@ def attach(app):
         chat = Chats.query \
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
-        
-        return jsonify([x.serialize3() for x in chat])
+        def takeSecond(elem):
+            return elem.updated_at
+        a_chat = [x.serialize3() for x in chat].sort( key=takeSecond )
+        return jsonify(a_chat)
         # my_chats= []
         # if chats is not None:
         #     for chat in chats:
