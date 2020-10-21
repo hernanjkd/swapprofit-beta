@@ -1066,11 +1066,11 @@ def attach(app):
         a_title = f'{sender.get_name()}'
         send_fcm(
             user_id = req['user2_id'],
-            title = a_title + 'started a chat with you',
+            title = a_title + ' started a chat with you',
             body = req['message'],
             data = {
                 'id': a_chat['id'],
-                'alert': req['message'],
+                'alert': chunkedMessage[0],
                 'sender': user_id,
                 'type': 'chat',
                 'initialPath': 'Contacts',
@@ -1148,7 +1148,7 @@ def attach(app):
                 data = {
                     'id': chat_id,
                     'sender': user_id, 
-                    'alert': req['message'],
+                    'alert': chunkedMessage[0],
                     'type': 'chat',
                     'initialPath': 'Contacts',
                     'finalPath': 'Chat' }
