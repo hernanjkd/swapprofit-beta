@@ -1048,7 +1048,7 @@ def attach(app):
 
         a_chat = chat.serialize2()
         message = Messages(
-            chat_id = a_chat.id,
+            chat_id = a_chat['id'],
             user_id = user_id,
             message = req['message']
         )
