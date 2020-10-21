@@ -1030,7 +1030,7 @@ def attach(app):
 
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
-    def create_chat(user1_id, user2_d):
+    def create_chat(user1_id, user2_id):
 
         req = request.get_json()
         utils.check_params(req, 'user2_id', 'message')
