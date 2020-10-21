@@ -1055,7 +1055,7 @@ def attach(app):
         print('got past req', chunkedMessage)
         for x in chunkedMessage:
             db.session.add( Messages(
-                chat_id = chat_id,
+                chat_id = a_chat['id'],
                 user_id = user_id,
                 message = x
             ))
