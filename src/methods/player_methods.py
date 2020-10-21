@@ -1046,7 +1046,7 @@ def attach(app):
         db.session.add( chat )
         db.session.commit()
 
-        a_chat = chat.serialize()
+        a_chat = chat.serialize2()
         message = Messages(
             chat_id = a_chat.id,
             user_id = user_id,
@@ -1078,7 +1078,7 @@ def attach(app):
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
         
-        return jsonify([x.serialize2() for x in chat])
+        return jsonify([x.serialize() for x in chat])
         # my_chats= []
         # if chats is not None:
         #     for chat in chats:
