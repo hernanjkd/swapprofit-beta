@@ -1063,9 +1063,10 @@ def attach(app):
             data = {
                 'id': a_chat['id'],
                 'alert': req['message'],
+                'sender': user_id,
                 'type': 'chat',
-                'initialPath': 'ContactsScreen',
-                'finalPath': 'ChatScreen' }
+                'initialPath': 'Contacts',
+                'finalPath': 'Chat' }
         )
 
         return jsonify( chat.serialize() )
