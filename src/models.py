@@ -529,7 +529,9 @@ class Chats(db.Model):
             'user2_id': self.user2_id,
             'status': self.status._value_,
             'created_at': self.created_at,
-            'updated_at':  self.updated_at
+            'updated_at':  self.updated_at,
+            'messages': [x.serialize() for x in self.messages]
+
         }
     def serialize3(self):
         the_last_message = [x.serialize() for x in self.messages]
