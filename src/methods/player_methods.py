@@ -1122,7 +1122,7 @@ def attach(app):
         # messages have a 100 char limit, make sure to break it up
         print('got past req', chunkedMessage)
         for x in chunkedMessage:
-            return db.session.add( Messages(
+            db.session.add( Messages(
                 chat_id = chat_id,
                 user_id = user_id,
                 message = x
