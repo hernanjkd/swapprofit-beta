@@ -1137,8 +1137,8 @@ def attach(app):
                     'sender': user_id, 
                     'alert': req['message'],
                     'type': 'chat',
-                    'initialPath': 'ContactsScreen',
-                    'finalPath': 'ChatScreen' }
+                    'initialPath': 'Contacts',
+                    'finalPath': 'Chat' }
             )
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
