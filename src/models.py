@@ -500,7 +500,7 @@ class Chats(db.Model):
         return f'<Chats user1={self.user1_id} user2={self.user2_id}>'
 
     @staticmethod
-    def get(user1_id, user2_id, tournament_id):
+    def get(user1_id, user2_id):
         chatjson = lambda flip=False: {
             'user1_id': user1_id if flip else user2_id,
             'user2_id': user2_id if flip else user1_id }
