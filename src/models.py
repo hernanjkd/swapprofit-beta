@@ -519,7 +519,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
-            'last_message': the_last_message[-1]
+            'messages': [x.serialize() for x in self.messages]
         }
     def serialize2(self):
 
@@ -531,7 +531,19 @@ class Chats(db.Model):
             'created_at': self.created_at,
             'updated_at':  self.updated_at
         }
-
+    def serialize3(self):
+        the_last_message = [x.serialize() for x in self.messages]
+        w = the_last_message[-1]['updated_at']
+        print('w', w)
+        return {
+            'id': self.id,
+            'user1_id': self.user1_id,
+            'user2_id': self.user2_id,
+            'status': self.status._value_,
+            'created_at': self.created_at,
+            'updated_at': w,
+            'last_message': [x.serialize() for x in self.messages]
+        }
 
 class Messages(db.Model):
     __tablename__ = 'messages'
