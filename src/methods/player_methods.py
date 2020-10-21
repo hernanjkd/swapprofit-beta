@@ -1080,7 +1080,9 @@ def attach(app):
         def takeSecond(elem):
             return elem['updated_at']
         a_chat = [x.serialize3() for x in chat]
+        print('a_chat', a_chat)
         e = a_chat.sort( key=takeSecond )
+        print('e', e)
         return jsonify(e)
         # my_chats= []
         # if chats is not None:
