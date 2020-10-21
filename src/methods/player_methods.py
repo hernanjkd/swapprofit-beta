@@ -1030,17 +1030,17 @@ def attach(app):
 
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
-    def create_chat(user_id):
+    def create_chat(user1_id, user2_d):
 
         req = request.get_json()
         utils.check_params(req, 'user2_id', 'message')
         
-        chat = Chats.get(user_id, req['user2_id'])
+        chat = Chats.get(user1_id, req['user2_id'])
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
         chat = Chats(
-            user1_id = user_id,
+            user1_id = user1_id,
             user2_id = req['user2_id']
         )
         db.session.add( chat )
