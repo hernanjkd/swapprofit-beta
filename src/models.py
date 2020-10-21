@@ -526,9 +526,9 @@ class Chats(db.Model):
         }
     def serialize2(self):
         the_last_message = [x.serialize() for x in self.messages]
-        y = the_last_message[-1]
-        print('the_last_message', the_last_message)
-        print('y', y)
+        # y = the_last_message[-1]
+        # print('the_last_message', the_last_message)
+        # print('y', y)
 
         return {
             'id': self.id,
