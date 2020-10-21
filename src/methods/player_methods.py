@@ -1047,13 +1047,21 @@ def attach(app):
         db.session.commit()
 
         a_chat = chat.serialize2()
-        message = Messages(
-            chat_id = a_chat['id'],
-            user_id = user_id,
-            message = req['message']
-        )
-        db.session.add( message )
-        db.session.commit()
+        the_message = req['message']
+        def chunkstring(string, length):
+            return (string[0+i:length+i] for i in range(0, len(string), length))
+        chunkedMessage = list(chunkstring(the_message, 100))
+        # messages have a 100 char limit, make sure to break it up
+        print('got past req', chunkedMessage)
+        for x in chunkedMessage:
+            db.session.add( Messages(
+                chat_id = chat_id,
+                user_id = user_id,
+                message = x
+            ))
+            db.session.commit()
+        print('got past commit')
+
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
         send_fcm(
