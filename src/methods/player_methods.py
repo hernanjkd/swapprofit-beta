@@ -1060,14 +1060,14 @@ def attach(app):
                 message = x
             ))
             db.session.commit()
-        print('got past commit')
+        print('got past commit', chunkedMessage[0])
 
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
         send_fcm(
             user_id = req['user2_id'],
             title = a_title + ' started a chat with you',
-            body = req['message'],
+            body = chunkedMessage[0],
             data = {
                 'id': a_chat['id'],
                 'alert': chunkedMessage[0],
@@ -1142,17 +1142,17 @@ def attach(app):
         print('got reciver', req['their_id'])
         a_title = f'{sender.get_name()}'
         send_fcm(
-                user_id = req['their_id'],
-                title = a_title,
-                body = chunkedMessage[0],
-                data = {
-                    'id': chat_id,
-                    'sender': user_id, 
-                    'alert': chunkedMessage[0],
-                    'type': 'chat',
-                    'initialPath': 'Contacts',
-                    'finalPath': 'Chat' }
-            )
+            user_id = req['their_id'],
+            title = a_title,
+            body = chunkedMessage[0],
+            data = {
+                'id': chat_id,
+                'sender': user_id, 
+                'alert': chunkedMessage[0],
+                'type': 'chat',
+                'initialPath': 'Contacts',
+                'finalPath': 'Chat' }
+        )
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
 
