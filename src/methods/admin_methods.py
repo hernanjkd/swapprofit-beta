@@ -424,7 +424,7 @@ def attach(app):
         return jsonify(prof.serialize())
 
     @app.route('/profiles/naughty/no/<int:user_id>', methods=['PUT'])
-    def naughty_list_add(user_id):
+    def naughty_list_minus(user_id):
         prof = Profiles.query.get(user_id)
         prof['naughty'] = False
         db.session.commit()
