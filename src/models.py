@@ -57,7 +57,7 @@ class Profiles(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     naughty = db.Column(db.Boolean, default=False)
-
+ 
     user = db.relationship('Users', back_populates='profile', uselist=False)
     buy_ins = db.relationship('Buy_ins', back_populates='user')
     transactions = db.relationship('Transactions', back_populates='user')
