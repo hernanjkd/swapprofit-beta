@@ -69,6 +69,7 @@ def upgrade():
     sa.Column('swap_availability_status', sa.Enum('active', 'unavailable', name='swapavailabilitystatus'), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('naughty', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
