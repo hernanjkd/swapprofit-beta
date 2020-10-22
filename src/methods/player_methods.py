@@ -1128,7 +1128,6 @@ def attach(app):
             return (string[0+i:length+i] for i in range(0, len(string), length))
         chunkedMessage = list(chunkstring(the_message, 100))
         # messages have a 100 char limit, make sure to break it up
-        print('got past req', chunkedMessage)
         for x in chunkedMessage:
             db.session.add( Messages(
                 chat_id = chat_id,
@@ -1136,11 +1135,18 @@ def attach(app):
                 message = x
             ))
             db.session.commit()
-        print('got past commit')
 
         sender = Profiles.query.get(user_id)
-        print('got reciver', req['their_id'])
         a_title = f'{sender.get_name()}'
+
+        print('the data going to message', 
+            "req['their_id']", a_title, chunkedMessage[0],
+            ['id', chat_id,
+                'sender', user_id, 
+                'alert', chunkedMessage[0],
+                'type', 'chat',
+                'initialPath', 'Contacts',
+                'finalPath', 'Chat' ])
         send_fcm(
             user_id = req['their_id'],
             title = a_title,
