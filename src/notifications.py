@@ -54,7 +54,8 @@ def send_fcm(user_id, title, body, data={}):
         message_body = body,
         data_message = data
     )
-    
+    print('result', result)
+
     if result['failure'] or not result['success']:
         raise APIException('Problem sending the notification')
 
