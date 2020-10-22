@@ -1052,7 +1052,6 @@ def attach(app):
             return (string[0+i:length+i] for i in range(0, len(string), length))
         chunkedMessage = list(chunkstring(the_message, 100))
         # messages have a 100 char limit, make sure to break it up
-        print('got past req', chunkedMessage)
         for x in chunkedMessage:
             db.session.add( Messages(
                 chat_id = a_chat['id'],
@@ -1060,10 +1059,18 @@ def attach(app):
                 message = x
             ))
             db.session.commit()
-        print('got past commit', chunkedMessage[0])
+        
 
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
+        print('the data going to message', 
+            "req['their_id']", a_title, chunkedMessage[0],
+            ['id', a_chat['id'],
+                'sender', user_id, 
+                'alert', chunkedMessage[0],
+                'type', 'chat',
+                'initialPath', 'Contacts',
+                'finalPath', 'Chat' ])
         send_fcm(
             user_id = req['user2_id'],
             title = a_title + ' started a chat with you',
@@ -1120,7 +1127,6 @@ def attach(app):
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
     @role_jwt_required(['user'])
     def send_message(user_id, chat_id):
-        print('got past first')
 
         req = utils.check_params( request.get_json(), 'message', 'their_id' )
         the_message = req['message']
@@ -1139,14 +1145,7 @@ def attach(app):
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
 
-        print('the data going to message', 
-            "req['their_id']", a_title, chunkedMessage[0],
-            ['id', chat_id,
-                'sender', user_id, 
-                'alert', chunkedMessage[0],
-                'type', 'chat',
-                'initialPath', 'Contacts',
-                'finalPath', 'Chat' ])
+        
         send_fcm(
             user_id = req['their_id'],
             title = a_title,
