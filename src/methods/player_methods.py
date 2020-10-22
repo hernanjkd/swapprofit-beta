@@ -1064,7 +1064,7 @@ def attach(app):
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
         print('the data going to message', 
-            "req['their_id']",req['their_id'], a_title, chunkedMessage[0],
+            "req['user2_id']",req['user2_id'], a_title, chunkedMessage[0],
             ['id', a_chat['id'],
                 'sender', user_id, 
                 'alert', chunkedMessage[0],
