@@ -1030,18 +1030,18 @@ def attach(app):
 
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
-    def create_chat(user1_id, user2_id):
+    def create_chat(user_id):
 
         req = request.get_json()
-        utils.check_params(req, 'message')
+        utils.check_params(req, 'message', 'user2_id')
         
-        chat = Chats.get(user1_id, user2_id)
+        chat = Chats.get(user_id, req['user2_id'])
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
         chat = Chats(
-            user1_id = user1_id,
-            user2_id = user2_id
+            user1_id = user_id,
+            user2_id = req['user2_id']
         )
         db.session.add( chat )
         db.session.commit()
@@ -1056,22 +1056,22 @@ def attach(app):
         for x in chunkedMessage:
             db.session.add( Messages(
                 chat_id = a_chat['id'],
-                user_id = user1_id,
+                user_id = user_id,
                 message = x
             ))
             db.session.commit()
         print('got past commit', chunkedMessage[0])
 
-        sender = Profiles.query.get(user1_id)
+        sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
         send_fcm(
-            user_id = user2_id,
+            user_id = req['user2_id'],
             title = a_title + ' started a chat with you',
             body = chunkedMessage[0],
             data = {
                 'id': a_chat['id'],
                 'alert': chunkedMessage[0],
-                'sender': user1_id,
+                'sender': user_id,
                 'type': 'chat',
                 'initialPath': 'Contacts',
                 'finalPath': 'Chat' }
