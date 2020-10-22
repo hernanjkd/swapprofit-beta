@@ -56,6 +56,7 @@ class Profiles(db.Model):
     swap_availability_status = db.Column(db.Enum(SwapAvailabilityStatus), default=SwapAvailabilityStatus.active)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    naughty = db.Column(db.Boolean, default=False)
 
     user = db.relationship('Users', back_populates='profile', uselist=False)
     buy_ins = db.relationship('Buy_ins', back_populates='user')
@@ -154,6 +155,7 @@ class Profiles(db.Model):
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
             'coins': self.get_coins(),
+            'naughty': self.naughty,
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,

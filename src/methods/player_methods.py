@@ -252,6 +252,7 @@ def attach(app):
         return jsonify(prof.serialize())
 
 
+
     # UPDATE PROFILE PICTURE
     @app.route('/profiles/image', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -433,10 +434,11 @@ def attach(app):
         utils.check_params(req)
 
         buyin = Buy_ins.query.get(id)
+        tournament = Tournaments.query.get(buyin['id'])
         if buyin is None:
             raise APIException('Buy-in not found', 404)
 
-
+        x = buyin.chips
         buyin_status = buyin.status._value_
 
         if buyin_status in ['cashed', 'busted']:
@@ -469,7 +471,25 @@ def attach(app):
                     })
 
                 db.session.commit()
-        
+
+                for tbuyin in tournament['buyins']:
+                    if len(tbuyin['agreed_swaps'] != 0):
+                        send_fcm(
+                            user_id = tbuyin['recipient_user']['id'],
+                            title = tbuyin['user_name'],
+                            body = tbuyin['user_name']+' bought back into the event.',
+                            data = {
+                                'swap_id':tbuyin['agreed_swaps'][0],
+                                'id': tbuyin.id,
+                                'alert': tbuyin['user_name']+' bought back into the event.',
+                                'type': 'buyin',
+                                'initialPath': 'SwapDashboard',
+                                'finalPath': 'SwapOffer'
+                            }
+                        )
+                    else:
+                        print('no')
+
                 return jsonify({'buy_in': buyin.serialize()})
 
             elif buyin_status == 'active':
@@ -495,7 +515,36 @@ def attach(app):
         if req.get('seat') is not None:
             buyin.seat = req['seat']
 
+        if (x != req['chips'] or x == 0):
+            for tbuyin in tournament['buyins']:
+                y
+                if(x ==0):
+                    y = ' just cashed out' 
+                else: 
+                    y = ' just updated their chips'
+                if len(tbuyin['agreed_swaps'] != 0):
+                    send_fcm(
+                        user_id = tbuyin['recipient_user']['id'],
+                        title = tbuyin['user_name'],
+                        body = tbuyin['user_name']+y,
+                        data = {
+                            'swap_id':tbuyin['agreed_swaps'][0],
+                            'id': tbuyin.id,
+                            'alert': tbuyin['user_name']+y,
+                            'type': 'buyin',
+                            'initialPath': 'SwapDashboard',
+                            'finalPath': 'SwapOffer'
+                        }
+                    )
+                else:
+                    print('no')
+        
+        else:
+            print('lol')
+        
         db.session.commit()
+
+
         
         return jsonify({'buy_in': buyin.serialize()})
 

@@ -414,6 +414,22 @@ def attach(app):
 
 
 
+    # 
+    @app.route('/profiles/naughty/yes/<int:user_id>', methods=['PUT'])
+    def naughty_list_add(user_id):
+        prof = Profiles.query.get(user_id)
+        prof['naughty'] = True
+        db.session.commit()
+
+        return jsonify(prof.serialize())
+
+    @app.route('/profiles/naughty/no/<int:user_id>', methods=['PUT'])
+    def naughty_list_add(user_id):
+        prof = Profiles.query.get(user_id)
+        prof['naughty'] = False
+        db.session.commit()
+
+        return jsonify(prof.serialize()) 
 
     @app.route('/users/<int:id>/devices')
     def get_user_device(id):
