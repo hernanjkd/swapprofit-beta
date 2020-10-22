@@ -1033,15 +1033,15 @@ def attach(app):
     def create_chat(user1_id, user2_id):
 
         req = request.get_json()
-        utils.check_params(req, 'user2_id', 'message')
+        utils.check_params(req, 'message')
         
-        chat = Chats.get(user1_id, req['user2_id'])
+        chat = Chats.get(user1_id, user2_id)
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
         chat = Chats(
             user1_id = user1_id,
-            user2_id = req['user2_id']
+            user2_id = user2_id
         )
         db.session.add( chat )
         db.session.commit()
@@ -1065,7 +1065,7 @@ def attach(app):
         sender = Profiles.query.get(user1_id)
         a_title = f'{sender.get_name()}'
         send_fcm(
-            user_id = req['user2_id'],
+            user_id = user2_id,
             title = a_title + ' started a chat with you',
             body = chunkedMessage[0],
             data = {
