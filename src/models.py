@@ -42,6 +42,10 @@ class SwapAvailabilityStatus(enum.Enum):
     active = 'active' 
     unavailable = 'unavailable'
 
+class NaughtyList(enum.Enum):
+    nice = 'nice' 
+    naughty = 'naughty'
+
 class Profiles(db.Model):
     __tablename__ = 'profiles'
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -56,7 +60,7 @@ class Profiles(db.Model):
     swap_availability_status = db.Column(db.Enum(SwapAvailabilityStatus), default=SwapAvailabilityStatus.active)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    naughty = db.Column(db.Boolean, default=False)
+    naughty = db.Column(db.Enum(NaughtyList), default=NaughtyList.nice)
 
  
     user = db.relationship('Users', back_populates='profile', uselist=False)
