@@ -14,3 +14,4 @@ tasks:
         pipenv install;
         pipenv run upgrade;
         pipenv run start;
+    

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b486b1734e8a53a81d1ba5c50dfe4098f515b30323c7e08500c9109072c07892"
+            "sha256": "520bd38413750d13371022f48fb5c1f112e0787da30f7bc8af8f2b8725335ece"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -316,6 +316,13 @@
             ],
             "version": "==0.4.3"
         },
+        "mysql": {
+            "hashes": [
+                "sha256:55e66b5e7b3823b1da5fb2a063e95a628fb850b2a0b76bdcd884faac5d2daa7d"
+            ],
+            "index": "pypi",
+            "version": "==0.0.2"
+        },
         "mysqlclient": {
             "hashes": [
                 "sha256:3f39855a4ad22805361e782cc4d1010ac74796225fa2d1c03cc16673ccdc983a",
@@ -341,6 +348,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==0.13.1"
+        },
+        "postgres": {
+            "hashes": [
+                "sha256:85649aed35fc109c8413ffa5d167ff003f76e978e726f65340bf949ab7cd22ab",
+                "sha256:ada2608527d56058ac2f72b5b0671a4893e04207d63059279ce9196436b98637"
+            ],
+            "index": "pypi",
+            "version": "==3.0.0"
         },
         "proto-plus": {
             "hashes": [
@@ -409,6 +424,14 @@
             ],
             "index": "pypi",
             "version": "==2.8.6"
+        },
+        "psycopg2-pool": {
+            "hashes": [
+                "sha256:529c4100db56a3522cf680ce8d89e71511e37c7e0b1f120ce0dde0f13c6e5844",
+                "sha256:de88615c24ddfc7ee314c566976cfed4bbb009211255f2773ea09e5f938ff400"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==1.1"
         },
         "py": {
             "hashes": [

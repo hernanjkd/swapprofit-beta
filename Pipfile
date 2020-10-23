@@ -26,6 +26,8 @@ pytest-flask-sqlalchemy = "*"
 cloudinary = "*"
 google-cloud-vision = "*"
 pyfcm = "*"
+mysql = "*"
+postgres = "*"
 
 [requires]
 python_version = "3.7"
