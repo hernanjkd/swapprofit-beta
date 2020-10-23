@@ -72,9 +72,6 @@ class Profiles(db.Model):
         quoted_nickname = f'"{self.nickname}"' if self.nickname != '' else ''
         return f'{self.first_name} {quoted_nickname} {self.last_name}'
 
-    def isNaughty(self):
-        return self.naughty
-
 
     def get_coins(self):
         total = 0
@@ -162,7 +159,7 @@ class Profiles(db.Model):
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'naughty': self.isNaughty(),
+            'naughty': self.isNaughty,
             'transactions': [x.serialize() for x in self.transactions],
             'devices': [x.serialize() for x in self.devices]
         }
