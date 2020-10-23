@@ -217,6 +217,7 @@ def attach(app):
         db.session.add( Profiles(
             id = user_id,
             pokersociety_id = data['pokersociety_id'],
+            naughty=False,
             **prof_data
         ))
         db.session.add( Devices(
