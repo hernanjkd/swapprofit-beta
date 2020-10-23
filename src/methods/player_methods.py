@@ -244,7 +244,7 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req)
 
-        utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id',
+        utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id', 'naughty',
                                                 'roi_rating','swap_rating'])
 
         db.session.commit()
