@@ -61,11 +61,12 @@ def run():
         last_name='Doe',
         nickname='',
         hendon_url='',
+        naughty ='nice',
         profile_pic_url='https://www.hartvillethriftshoppe.org/sites/default/files/styles/basic_page/public/male_silhouette_0_0.jpg?itok=PN7U5Zf3',
         pokersociety_id=1,
         user=johnDoe,
         roi_rating=0.0,
-        swap_rating=0.0
+        swap_rating=0.0,
     )
     db.session.add(johnDoe)
     db.session.add( Transactions(
@@ -87,6 +88,7 @@ def run():
         profile_pic_url='https://pokerdb.thehendonmob.com/pictures/carykatzpic.png',
         pokersociety_id=2,
         user=cary,
+        naughty ='nice',
         roi_rating=0.0,
         swap_rating=0.0
     )
@@ -110,6 +112,7 @@ def run():
         profile_pic_url='https://d1we5yax8fyln6.cloudfront.net/sites/stage32.com/files/imagecache/head_shot_500/headshots/3a160ee8689722fd93f3999b10d2b8d9_1428609546_l.jpg',
         pokersociety_id=3,
         user=gabe,
+        naughty ='nice',
         roi_rating=0.0,
         swap_rating=0.0
     )
@@ -133,6 +136,7 @@ def run():
         profile_pic_url='https://pokerdb.thehendonmob.com/pictures/Lou_Stadler_Winner.JPG',
         pokersociety_id=4,
         user=lou,
+        naughty ='nice',
         roi_rating=0.0,
         swap_rating=0.0
     )
@@ -152,6 +156,7 @@ def run():
         first_name='Perry', 
         last_name='Shiao',
         nickname='',
+        naughty ='nice',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=371190',
         profile_pic_url='https://i.imgur.com/qIq2VPH.jpg',
         pokersociety_id=5,
@@ -175,6 +180,7 @@ def run():
         first_name='Neal', 
         last_name='Corcoran',
         nickname='',
+        naughty ='nice',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=506855',
         profile_pic_url='https://i.imgur.com/PYNkNgc.jpg',
         pokersociety_id=6,
@@ -198,6 +204,7 @@ def run():
         first_name='Brian', 
         last_name='Gelrod',
         nickname='',
+        naughty ='nice',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=239802',
         profile_pic_url='https://i.imgur.com/1bMetyL.jpg',
         pokersociety_id=7,
@@ -222,6 +229,7 @@ def run():
         first_name='Bobby', 
         last_name='Leff',
         nickname='',
+        naughty ='nice',
         hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=187837',
         profile_pic_url='https://i.imgur.com/ZMo8UJ8.jpg',
         pokersociety_id=8,
