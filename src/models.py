@@ -155,7 +155,7 @@ class Profiles(db.Model):
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
             'coins': self.get_coins(),
-            'naughty': self.naughty,
+            'naughty': self.naughty._value_,
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
