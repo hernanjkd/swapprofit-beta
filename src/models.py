@@ -163,7 +163,7 @@ class Profiles(db.Model):
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'naughty': self.naughty,
+            'naughty': self.naughty._value_,
             'transactions': [x.serialize() for x in self.transactions],
             'devices': [x.serialize() for x in self.devices]
         }
