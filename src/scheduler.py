@@ -77,7 +77,7 @@ for trmnt in trmnts:
             buyin = m.Buy_ins.get_latest(
                 user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
-            if user.event_notification is True:
+            if user['event_update'] is True:
                 send_fcm(
                     user_id = user.id,
                     title = "Event Ended",
@@ -87,8 +87,8 @@ for trmnt in trmnts:
                         'buy_in': buyin and buyin.id,
                         'alert': f'{trmnt.name} closed at {close_time}',
                         'type': 'results',
-                        'initialPath': 'Swap Results',
-                        'finalPath': 'Profit Results' }
+                        'initialPath': 'Event Results',
+                        'finalPath': 'Swap Results' }
                 )
             else:
                 print("Not Sending")
@@ -112,7 +112,7 @@ for trmnt in trmnts:
         buyin = m.Buy_ins.get_latest(
             user_id=user.id, tournament_id=trmnt.id )
         print('Sending notification that trmnt started to user, id: ', user.id)
-        if user.event_notification is True:
+        if user['event_update'] is True:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
