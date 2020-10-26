@@ -475,19 +475,23 @@ def attach(app):
 
                 for tbuyin in tournament['buyins']:
                     if len(tbuyin['agreed_swaps'] != 0):
-                        send_fcm(
-                            user_id = tbuyin['recipient_user']['id'],
-                            title = tbuyin['user_name'],
-                            body = tbuyin['user_name']+' bought back into the event.',
-                            data = {
-                                'swap_id':tbuyin['agreed_swaps'][0],
-                                'id': tbuyin.id,
-                                'alert': tbuyin['user_name']+' bought back into the event.',
-                                'type': 'buyin',
-                                'initialPath': 'SwapDashboard',
-                                'finalPath': 'SwapOffer'
-                            }
-                        )
+                        a_prof = Profiles.query.get(tbuyin['recipient_user']['id'])
+                        if a_prof.buyin_update is True:
+                            send_fcm(
+                                user_id = tbuyin['recipient_user']['id'],
+                                title = tbuyin['user_name'],
+                                body = tbuyin['user_name']+' bought back into the event.',
+                                data = {
+                                    'swap_id':tbuyin['agreed_swaps'][0],
+                                    'id': tbuyin.id,
+                                    'alert': tbuyin['user_name']+' bought back into the event.',
+                                    'type': 'buyin',
+                                    'initialPath': 'SwapDashboard',
+                                    'finalPath': 'SwapOffer'
+                                }
+                            )
+                        else:
+                            print('not senfing')
                     else:
                         print('no')
 
@@ -518,25 +522,29 @@ def attach(app):
 
         if (x != req['chips'] or x == 0):
             for tbuyin in tournament['buyins']:
+                prof = Profiles.query.get(tbuyin['recipient_user']['id'])
                 y
-                if(x ==0):
+                if x ==0:
                     y = ' just cashed out' 
                 else: 
                     y = ' just updated their chips'
                 if len(tbuyin['agreed_swaps'] != 0):
-                    send_fcm(
-                        user_id = tbuyin['recipient_user']['id'],
-                        title = tbuyin['user_name'],
-                        body = tbuyin['user_name']+y,
-                        data = {
-                            'swap_id':tbuyin['agreed_swaps'][0],
-                            'id': tbuyin.id,
-                            'alert': tbuyin['user_name']+y,
-                            'type': 'buyin',
-                            'initialPath': 'SwapDashboard',
-                            'finalPath': 'SwapOffer'
-                        }
-                    )
+                    if prof.buyin_update is True:
+                        send_fcm(
+                            user_id = tbuyin['recipient_user']['id'],
+                            title = tbuyin['user_name'],
+                            body = tbuyin['user_name']+y,
+                            data = {
+                                'swap_id':tbuyin['agreed_swaps'][0],
+                                'id': tbuyin.id,
+                                'alert': tbuyin['user_name']+y,
+                                'type': 'buyin',
+                                'initialPath': 'SwapDashboard',
+                                'finalPath': 'SwapOffer'
+                            }
+                        )
+                    else:
+                        print("Not senfing")
                 else:
                     print('no')
         
@@ -548,6 +556,32 @@ def attach(app):
 
         
         return jsonify({'buy_in': buyin.serialize()})
+
+
+    # UPDATE NOTIFICATIONS
+    @app.route('/me/notification/setting/update', methods=['PUT'])
+    @role_jwt_required(['user'])
+    def update_notification(user_id):
+        prof = Profiles.query.get(user_id)
+
+        req = request.get_json()
+        utils.check_params(req, 'notification_type')
+
+        attribute = req['notification_type']
+
+        if attribute =='chat':
+            prof.chat_update =  not prof.chat_update
+        elif attribute =='swap':
+            prof.swap_update =  not prof.swap_update
+        elif attribute =='buyin':
+            prof.buyin_update = not prof.buyin_update
+        elif attribute =='event':
+            prof.event_update = not prof.event_update
+        else:
+            raise APIException('Invalid Notification Type: ' + req['notification_type'], 400)
+        
+        db.session.commit()
+        return jsonify(prof.serialize())
 
 
     # GET SPECIFIC TOURNAMENT
@@ -757,19 +791,22 @@ def attach(app):
         # Notification
         buyin = Buy_ins.get_latest(
             user_id=sender.id, tournament_id=swap.tournament_id )
-        send_fcm(
-            user_id = recipient.id,
-            title = "New Swap",
-            body = sender.get_name()+' wants to swap',
-            data = {
-                'id': counter_swap.id,
-                'buyin_id': buyin and buyin.id,
-                'alert': sender.get_name()+' wants to swap',
-                'type': 'swap',
-                'initialPath': 'SwapDashboard',
-                'finalPath': 'SwapOffer'
-            }
-        )
+        if recipient.swap_update is True:
+            send_fcm(
+                user_id = recipient.id,
+                title = "New Swap",
+                body = sender.get_name()+' wants to swap',
+                data = {
+                    'id': counter_swap.id,
+                    'buyin_id': buyin and buyin.id,
+                    'alert': sender.get_name()+' wants to swap',
+                    'type': 'swap',
+                    'initialPath': 'SwapDashboard',
+                    'finalPath': 'SwapOffer'
+                }
+            )
+        else:
+            print('Nope')
 
         return jsonify({
             'swap_id': swap.id,
@@ -921,18 +958,21 @@ def attach(app):
                 'agreed': ('Swap Agreed','agreed to')
             }
             msg = f'{sender.get_name()} {data[status][1]} your swap'
-            send_fcm(
-                user_id = recipient.id,
-                title = data[status][0],
-                body = msg,
-                data = {
-                    'id': counter_swap.id,
-                    'buyin_id': buyin and buyin.id,
-                    'alert': msg,
-                    'type': 'swap',
-                    'initialPath': 'SwapDashboard',
-                    'finalPath': 'SwapOffer' }
-            )
+            if recipient.swap_update is True:
+                send_fcm(
+                    user_id = recipient.id,
+                    title = data[status][0],
+                    body = msg,
+                    data = {
+                        'id': counter_swap.id,
+                        'buyin_id': buyin and buyin.id,
+                        'alert': msg,
+                        'type': 'swap',
+                        'initialPath': 'SwapDashboard',
+                        'finalPath': 'SwapOffer' }
+                )
+            else:
+                print("Not sending")
 
 
         return jsonify([
@@ -1121,18 +1161,22 @@ def attach(app):
                 'type', 'chat',
                 'initialPath', 'Contacts',
                 'finalPath', 'Chat' ])
-        send_fcm(
-            user_id = req['user2_id'],
-            title = a_title + ' started a chat with you',
-            body = chunkedMessage[0],
-            data = {
-                'id': a_chat['id'],
-                'alert': chunkedMessage[0],
-                'sender': user_id,
-                'type': 'chat',
-                'initialPath': 'Contacts',
-                'finalPath': 'Chat' }
-        )
+        a_prof = Profiles.query.get(req['user2_id'])
+        if a_prof.chat_update is True:
+            send_fcm(
+                user_id = req['user2_id'],
+                title = a_title + ' started a chat with you',
+                body = chunkedMessage[0],
+                data = {
+                    'id': a_chat['id'],
+                    'alert': chunkedMessage[0],
+                    'sender': user_id,
+                    'type': 'chat',
+                    'initialPath': 'Contacts',
+                    'finalPath': 'Chat' }
+            )
+        else:
+            print("not sending")
 
         return jsonify( chat.serialize() )
 
@@ -1193,19 +1237,22 @@ def attach(app):
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
 
-        
-        send_fcm(
-            user_id = req['their_id'],
-            title = a_title,
-            body = chunkedMessage[0],
-            data = {
-                'id': chat_id,
-                'sender': user_id, 
-                'alert': chunkedMessage[0],
-                'type': 'chat',
-                'initialPath': 'Contacts',
-                'finalPath': 'Chat' }
-        )
+        a_prof = Profiles.query.get(req['their_id'])
+        if a_prof.chat_update is True:
+            send_fcm(
+                user_id = req['their_id'],
+                title = a_title,
+                body = chunkedMessage[0],
+                data = {
+                    'id': chat_id,
+                    'sender': user_id, 
+                    'alert': chunkedMessage[0],
+                    'type': 'chat',
+                    'initialPath': 'Contacts',
+                    'finalPath': 'Chat' }
+            )
+        else:
+            print("Not sending")
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
 

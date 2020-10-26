@@ -62,6 +62,11 @@ class Profiles(db.Model):
     buy_ins = db.relationship('Buy_ins', back_populates='user')
     transactions = db.relationship('Transactions', back_populates='user')
     devices = db.relationship('Devices', back_populates='user')
+    buyin_update = db.Column(db.Boolean, default=True)
+    swap_update = db.Column(db.Boolean, default=True)
+    event_update = db.Column(db.Boolean, default=True)
+    chat_update = db.Column(db.Boolean, default=True)
+    
     # sending_swaps
     # receiving_swaps
 
@@ -160,6 +165,10 @@ class Profiles(db.Model):
             'created_at': self.created_at,
             'updated_at': self.updated_at,
             'naughty': self.naughty,
+            'swap_update': self.swap_update,
+            'buyin_update': self.buyin_update,
+            'chat_update': self.chat_update,
+            'event_update': self.event_update,
             'transactions': [x.serialize() for x in self.transactions],
             'devices': [x.serialize() for x in self.devices]
         }

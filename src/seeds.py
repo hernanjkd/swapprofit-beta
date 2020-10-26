@@ -918,25 +918,25 @@ def run():
     #   PAST TOURNAMENT
     ######################
 
-    oldvegas = Tournaments(
-        casino='Casino',
-        name='RRPO #21 - NLH $100,000 Guaranteed - Day 1A',
-        address='2211 N Rampart Blvd',
-        city='Las Vegas',
-        state='NV',
-        zip_code='89145',
-        latitude=36.1683,
-        longitude=-115.2660,
-        start_at=datetime(1990,5,2,10)
-    )
-    flight1_oldvegas = Flights(
-        start_at=datetime(1990,5,2,10),
-        tournament=oldvegas,
-        day='1'
-    )
-    db.session.add_all([oldvegas, flight1_oldvegas])
+    # oldvegas = Tournaments(
+    #     casino='Casino',
+    #     name='RRPO #21 - NLH $100,000 Guaranteed - Day 1A',
+    #     address='2211 N Rampart Blvd',
+    #     city='Las Vegas',
+    #     state='NV',
+    #     zip_code='89145',
+    #     latitude=36.1683,
+    #     longitude=-115.2660,
+    #     start_at=datetime(1990,5,2,10)
+    # )
+    # flight1_oldvegas = Flights(
+    #     start_at=datetime(1990,5,2,10),
+    #     tournament=oldvegas,
+    #     day='1'
+    # )
+    # db.session.add_all([oldvegas, flight1_oldvegas])
 
-    db.session.flush()
+    # db.session.flush()
 
     # db.session.add(Buy_ins(         
     #     chips=7500,         
@@ -1060,25 +1060,25 @@ def run():
     # s1.counter_swap = s2
     # db.session.add_all([s1, s2])
     
-    s1 = Swaps(
-        tournament=oldvegas,
-        sender_user=lou,
-        recipient_user=cary,
-        percentage=10,
-        due_at=(oldvegas.start_at + timedelta(days=4)),
-        status='agreed'
-    )
-    s2 = Swaps(
-        tournament= oldvegas,
-        sender_user=cary,
-        recipient_user=lou,
-        percentage=10,
-        due_at=(oldvegas.start_at + timedelta(days=4)),
-        status='agreed',
-        counter_swap=s1
-    )
-    s1.counter_swap = s2
-    db.session.add_all([s1, s2])
+    # s1 = Swaps(
+    #     tournament=oldvegas,
+    #     sender_user=lou,
+    #     recipient_user=cary,
+    #     percentage=10,
+    #     due_at=(oldvegas.start_at + timedelta(days=4)),
+    #     status='agreed'
+    # )
+    # s2 = Swaps(
+    #     tournament= oldvegas,
+    #     sender_user=cary,
+    #     recipient_user=lou,
+    #     percentage=10,
+    #     due_at=(oldvegas.start_at + timedelta(days=4)),
+    #     status='agreed',
+    #     counter_swap=s1
+    # )
+    # s1.counter_swap = s2
+    # db.session.add_all([s1, s2])
 
 
     ##################

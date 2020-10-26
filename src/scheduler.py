@@ -77,19 +77,21 @@ for trmnt in trmnts:
             buyin = m.Buy_ins.get_latest(
                 user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
-            send_fcm(
-                user_id = user.id,
-                title = "Event Ended",
-                body = f'{trmnt.name} closed at {close_time}',
-                data = {
-                    'id': trmnt.id,
-                    'buy_in': buyin and buyin.id,
-                    'alert': f'{trmnt.name} closed at {close_time}',
-                    'type': 'results',
-                    'initialPath': 'Swap Results',
-                    'finalPath': 'Profit Results' }
-            )
-
+            if user.event_notification is True:
+                send_fcm(
+                    user_id = user.id,
+                    title = "Event Ended",
+                    body = f'{trmnt.name} closed at {close_time}',
+                    data = {
+                        'id': trmnt.id,
+                        'buy_in': buyin and buyin.id,
+                        'alert': f'{trmnt.name} closed at {close_time}',
+                        'type': 'results',
+                        'initialPath': 'Swap Results',
+                        'finalPath': 'Profit Results' }
+                )
+            else:
+                print("Not Sending")
 
 
 ###############################################################################
@@ -110,18 +112,21 @@ for trmnt in trmnts:
         buyin = m.Buy_ins.get_latest(
             user_id=user.id, tournament_id=trmnt.id )
         print('Sending notification that trmnt started to user, id: ', user.id)
-        send_fcm(
-            user_id = user.id,
-            title = "Event Started",
-            body = trmnt.name +' opened at ' + trmnt.start_at,
-            data = {
-                'id': trmnt.id,
-                'buy_in': buyin and buyin.id,
-                'alert': trmnt.name +' opened at' + trmnt.start_at,
-                'type': 'event',
-                'initialPath': 'Event Results',
-                'finalPath': 'Event Lobby' }
-        )
+        if user.event_notification is True:
+            send_fcm(
+                user_id = user.id,
+                title = "Event Started",
+                body = trmnt.name +' opened at ' + trmnt.start_at,
+                data = {
+                    'id': trmnt.id,
+                    'buy_in': buyin and buyin.id,
+                    'alert': trmnt.name +' opened at' + trmnt.start_at,
+                    'type': 'event',
+                    'initialPath': 'Event Results',
+                    'finalPath': 'Event Lobby' }
+            )
+        else:
+            print('Not Sending')
 
     # LOG
     import requests
