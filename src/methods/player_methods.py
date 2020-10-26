@@ -441,7 +441,7 @@ def attach(app):
             raise APIException('Buy-in not found', 404)
         print('buyin', a_buyin)
         trmnt = Tournaments.query.get(a_buyin['tournament_id'])
-        a_tournament = jsonify( actions.swap_tracker_json( trmnt, user_id ))
+        a_tournament = actions.swap_tracker_json( trmnt, user_id )
         print('tournament', a_tournament)
         x = buyin.chips
         buyin_status = buyin.status._value_
