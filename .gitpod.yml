@@ -8,7 +8,7 @@ ports:
 tasks:
     - init: >
         cp .env.example .env;
-        psql -u root -e "CREATE DATABASE pokerswap";
+        psql -u root -e "CREATE DATABASE swapprofit";
         pipenv run init;
       command:
         pipenv install;
