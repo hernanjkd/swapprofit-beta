@@ -441,6 +441,7 @@ def attach(app):
             raise APIException('Buy-in not found', 404)
         print('buyin', a_buyin)
         tournament = Tournaments.query.filter_by(id=a_buyin['tournament_id']).first()
+        a_tournament = tournament.serialize()
         print('tournament', tournament)
         x = buyin.chips
         buyin_status = buyin.status._value_
