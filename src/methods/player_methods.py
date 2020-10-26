@@ -435,13 +435,13 @@ def attach(app):
 
         utils.check_params(req)
 
-        buyin = Buy_ins.query.get(id)
-
+        buyin = Buy_ins.query.filter_by(user_id=user_id).order_by(Buy_ins.id.desc()).first()
+        a_buyin = buyin.serialize()
         if buyin is None:
             raise APIException('Buy-in not found', 404)
-        print('buyin', buyin)
-        tournament = Tournaments.query.get(buyin['tournament_id'])
-
+        print('buyin', a_buyin)
+        tournament = Tournaments.query.get(a_buyin['tournament_id'])
+        print('tournament', tournament)
         x = buyin.chips
         buyin_status = buyin.status._value_
 
