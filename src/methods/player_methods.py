@@ -435,7 +435,7 @@ def attach(app):
         utils.check_params(req)
 
         buyin = Buy_ins.query.get(id)
-        tournament = Tournaments.query.get(buyin['id'])
+        tournament = Tournaments.query.get(buyin['tournament']['id'])
         if buyin is None:
             raise APIException('Buy-in not found', 404)
 

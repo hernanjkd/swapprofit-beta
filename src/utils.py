@@ -93,9 +93,11 @@ def designated_trmnt_close_time():
 def ocr_reading(result):
     client = vision.ImageAnnotatorClient()
     print('client', client, result, vision)
+    # image = vision.types.Image()
     image = vision.Image()
     image.source.image_uri = result['secure_url']
 
+    
     response = client.text_detection(image=image)
     texts = response.text_annotations
     return texts and texts[0].description
