@@ -442,7 +442,7 @@ def attach(app):
         print('buyin', a_buyin)
         tournament = Tournaments.query.filter_by(id=a_buyin['tournament_id']).first()
         a_tournament = tournament.serialize()
-        print('tournament', tournament)
+        print('tournament', a_tournament)
         x = buyin.chips
         buyin_status = buyin.status._value_
 
