@@ -1004,7 +1004,8 @@ def attach(app):
 
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
-
+        prof = Profiles.query.get(user_id)
+        fullName = prof['first_name'] + ' ' + prof['last_name']
         # Security validation for single swap
         swap = Swaps.query.get(id)
         if req['tournament_id'] !=  swap.tournament_id \
@@ -1044,8 +1045,7 @@ def attach(app):
         # Suspend account
         else:
             swap_rating = 0
-            user = Users.query.get( user_id )
-            user.status = 'suspended'
+
 
 
         # Set to paid and add swap_rating to all the swaps with that user and that trmnt
@@ -1063,6 +1063,18 @@ def attach(app):
         user = Profiles.query.get( user_id )
         user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
+
+        send_fcm(
+            user_id = req['recipient_id'],
+            title = fullName + " - Paid Swaps",
+            body = "Please confirm " + fullName + ' paid their swaps to you' ,
+            data = {
+                'id': req['tournament_id'],
+                'alert': "Swap Paid. Please Confirm",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
 
         return jsonify({'message':'Swap/s has been paid'})
 

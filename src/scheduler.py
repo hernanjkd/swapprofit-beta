@@ -188,26 +188,91 @@ users_to_update_swaprating = []
 for swap in swaps:
     user = session.query(m.Profiles).get( swap.sender_id )
     time_after_due_date = now - swap.due_at
-    
+    trmt = swap['tournament_id']
     if swap.due_at > now:
         swap_rating = 5
+        send_fcm(
+            user_id = user.id,
+            title = "5 Star",
+            body = "You're account has been suspended until you've paid the swaps you owe",
+            data = {
+                'id': trmnt.id,
+                'alert': "You're account has been suspended until you've paid the swaps you owe",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
     elif time_after_due_date < timedelta(days=2):
         swap_rating = 4
+        send_fcm(
+            user_id = user.id,
+            title = "4 Star",
+            body = "2 days",
+            data = {
+                'id': trmnt.id,
+                'alert': "4 star",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
     elif time_after_due_date < timedelta(days=4):
         swap_rating = 3
+        send_fcm(
+            user_id = user.id,
+            title = "3 Star",
+            body = "4 days",
+            data = {
+                'id': trmnt.id,
+                'alert': "3 Star",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
     elif time_after_due_date < timedelta(days=6):
         swap_rating = 2
+        send_fcm(
+            user_id = user.id,
+            title = "2 Star",
+            body = "6 Days",
+            data = {
+                'id': trmnt.id,
+                'alert': "2 Star",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
     elif time_after_due_date < timedelta(days=7):
         swap_rating = 1
+        send_fcm(
+            user_id = user.id,
+            title = "1 Star",
+            body = "7 Days",
+            data = {
+                'id': trmnt.id,
+                'alert': "1 Star",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
 
     # Suspend account
     else:
         swap_rating = 0
         user_account = session.query(m.Users).get( user.id )
-        if user_account.status._value_ != 'suspended':
-            print('Suspending user', user.id)
-            user_account.status = 'suspended'
-            session.commit()
+        user_account['naughty'] = True
+        print('Put on naughty list', user.id)
+        session.commit()
+        send_fcm(
+            user_id = user.id,
+            title = "Account Suspension",
+            body = "You're account has been suspended until you've paid the swaps you owe",
+            data = {
+                'id': trmnt.id,
+                'alert': "You're account has been suspended until you've paid the swaps you owe",
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
         
 
     if swap.swap_rating != swap_rating:
