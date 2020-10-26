@@ -2,7 +2,7 @@ import hashlib
 import math
 import os
 import re
-from google.cloud import vision
+from google.cloud import vision_v1 as vision
 from flask import jsonify, url_for
 from flask_jwt_simple import create_jwt, jwt_required, get_jwt
 from datetime import datetime, timedelta
