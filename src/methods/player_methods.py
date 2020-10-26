@@ -440,7 +440,7 @@ def attach(app):
         if buyin is None:
             raise APIException('Buy-in not found', 404)
         print('buyin', a_buyin)
-        tournament = Tournaments.query.filter_by(tournament_id=a_buyin['tournament_id']).first()
+        tournament = Tournaments.query.filter_by(id=a_buyin['tournament_id']).first()
         print('tournament', tournament)
         x = buyin.chips
         buyin_status = buyin.status._value_
