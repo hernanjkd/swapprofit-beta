@@ -476,8 +476,8 @@ def attach(app):
                     })
 
                 db.session.commit()
-                if len(tournament['buyins']) != 0:
-                    for tbuyin in tournament['buyins']:
+                if len(a_tournament['buyins']) != 0:
+                    for tbuyin in a_tournament['buyins']:
                         if len(tbuyin['agreed_swaps'] != 0):
                             a_prof = Profiles.query.get(tbuyin['recipient_user']['id'])
                             if a_prof.buyin_update is True:
@@ -527,7 +527,7 @@ def attach(app):
             buyin.seat = req['seat']
 
         if (x != req['chips'] or x == 0):
-            for tbuyin in tournament['buyins']:
+            for tbuyin in a_tournament['buyins']:
                 prof = Profiles.query.get(tbuyin['recipient_user']['id'])
                 y
                 if x ==0:
