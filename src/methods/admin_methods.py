@@ -160,8 +160,8 @@ def attach(app):
         ###############################################################################
         # Send fcm to all players when trmnt opens
 
-        _4mins_ago = datetime.utcnow() - timedelta(minutes=4)
-        _4mins_ahead = datetime.utcnow() + timedelta(minutes=4)
+        _4mins_ago = datetime.utcnow() - timedelta(minutes=5)
+        _4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
 
         trmnts = db.session.query(m.Tournaments) \
             .filter( m.Tournaments.start_at < _4mins_ahead) \
