@@ -212,56 +212,60 @@ def attach(app):
             trmt_id = swap.tournament_id
             if swap.due_at > now:
                 swap_rating = 5
-                send_fcm(
-                    user_id = user.id,
-                    title = "5 Star",
-                    body = "You're account has been suspended until you've paid the swaps you owe",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "You're account has been suspended until you've paid the swaps you owe",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
-                )
+                if user.result_update is True:
+                    send_fcm(
+                        user_id = user.id,
+                        title = "5 Star",
+                        body = "You're account has been suspended until you've paid the swaps you owe",
+                        data = {
+                            'id': trmt_id,
+                            'alert': "You're account has been suspended until you've paid the swaps you owe",
+                            'type': 'result',
+                            'initialPath': 'Event Results',
+                            'finalPath': 'Swap Results' }
+                    )
             elif time_after_due_date < timedelta(days=2):
                 swap_rating = 4
-                send_fcm(
-                    user_id = user.id,
-                    title = "4 Star",
-                    body = "2 days",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "4 star",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
-                )
+                if user.result_update is True:
+                    send_fcm(
+                        user_id = user.id,
+                        title = "4 Star",
+                        body = "2 days",
+                        data = {
+                            'id': trmt_id,
+                            'alert': "4 star",
+                            'type': 'result',
+                            'initialPath': 'Event Results',
+                            'finalPath': 'Swap Results' }
+                    )
             elif time_after_due_date < timedelta(days=4):
                 swap_rating = 3
-                send_fcm(
-                    user_id = user.id,
-                    title = "3 Star",
-                    body = "4 days",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "3 Star",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
-                )
+                if user.result_update is True:
+                    send_fcm(
+                        user_id = user.id,
+                        title = "3 Star",
+                        body = "4 days",
+                        data = {
+                            'id': trmt_id,
+                            'alert': "3 Star",
+                            'type': 'result',
+                            'initialPath': 'Event Results',
+                            'finalPath': 'Swap Results' }
+                    )
             elif time_after_due_date < timedelta(days=6):
                 swap_rating = 2
-                send_fcm(
-                    user_id = user.id,
-                    title = "2 Star",
-                    body = "6 Days",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "2 Star",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
-                )
+                if user.result_update is True:
+                    send_fcm(
+                        user_id = user.id,
+                        title = "2 Star",
+                        body = "6 Days",
+                        data = {
+                            'id': trmt_id,
+                            'alert': "2 Star",
+                            'type': 'result',
+                            'initialPath': 'Event Results',
+                            'finalPath': 'Swap Results' }
+                    )
             elif time_after_due_date < timedelta(days=7):
                 swap_rating = 1
                 send_fcm(

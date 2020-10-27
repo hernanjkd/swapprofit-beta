@@ -531,28 +531,48 @@ def attach(app):
                 prof = Profiles.query.get(tbuyin['recipient_user']['id'])
                 y
                 if x ==0:
-                    y = ' just cashed out' 
-                else: 
-                    y = ' just updated their chips'
-                if len(tbuyin['agreed_swaps'] != 0):
-                    if prof.buyin_update is True:
-                        send_fcm(
-                            user_id = tbuyin['recipient_user']['id'],
-                            title = tbuyin['user_name'],
-                            body = tbuyin['user_name']+y,
-                            data = {
-                                'swap_id':tbuyin['agreed_swaps'][0],
-                                'id': tbuyin.id,
-                                'alert': tbuyin['user_name']+y,
-                                'type': 'buyin',
-                                'initialPath': 'SwapDashboard',
-                                'finalPath': 'SwapOffer'
-                            }
-                        )
+                    y = ' just cashed out'
+                    if len(tbuyin['agreed_swaps'] != 0):
+                        if prof.buyin_update is True:
+                            send_fcm(
+                                user_id = tbuyin['recipient_user']['id'],
+                                title = tbuyin['user_name'],
+                                body = tbuyin['user_name']+y,
+                                data = {
+                                    'swap_id':tbuyin['agreed_swaps'][0],
+                                    'id': tbuyin.id,
+                                    'alert': tbuyin['user_name']+y,
+                                    'type': 'buyin',
+                                    'initialPath': 'SwapDashboard',
+                                    'finalPath': 'SwapOffer'
+                                }
+                            )
+                        else:
+                            print("Not senfing")
                     else:
-                        print("Not senfing")
+                        print('no')
                 else:
-                    print('no')
+                    y = ' just updated their chips'
+                    if len(tbuyin['agreed_swaps'] != 0):
+                        if prof.coin_update is True:
+                            send_fcm(
+                                user_id = tbuyin['recipient_user']['id'],
+                                title = tbuyin['user_name'],
+                                body = tbuyin['user_name']+y,
+                                data = {
+                                    'swap_id':tbuyin['agreed_swaps'][0],
+                                    'id': tbuyin.id,
+                                    'alert': tbuyin['user_name']+y,
+                                    'type': 'buyin',
+                                    'initialPath': 'SwapDashboard',
+                                    'finalPath': 'SwapOffer'
+                                }
+                            )
+                        else:
+                            print("Not senfing")
+                    else:
+                        print('no')
+                
         
         else:
             print('lol')
