@@ -35,11 +35,11 @@ session = Session()
 
 def get_all_players_from_trmnt(trmnt):
     the_users = []
-    for flight in trmnt['flights']:
-        for a_buyin in flight['buy_ins']:
-            print('a_buyin .user',a_buyin['user'] )
-            if a_buyin['user'] not in the_users: # no repeats
-                the_users.append( a_buyin['user'] )
+    for flight in trmnt.flights:
+        for a_buyin in flight.buy_ins:
+            print('a_buyin .user',a_buyin.user )
+            if a_buyin.user not in the_users: # no repeats
+                the_users.append( a_buyin.user )
     return the_users
 
 
@@ -53,20 +53,20 @@ trmnts = session.query(m.Tournaments) \
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
-    if latest_flight['start_at'] < close_time:
+    if latest_flight.start_at < close_time:
             
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
         swaps = session.query(m.Swaps) \
-            .filter_by( tournament_id = trmnt['id'] ) \
+            .filter_by( tournament_id = trmnt.id ) \
             .filter( or_( 
                 m.Swaps.status == 'pending', 
                 m.Swaps.status == 'incoming',
                 m.Swaps.status == 'counter_incoming' ) )
 
         for swap in swaps:
-            print('Update swap status to "canceled", id:', swap['id'])
+            print('Update swap status to "canceled", id:', swap.id)
             swap.status = 'canceled'
 
         session.commit()
@@ -78,7 +78,7 @@ for trmnt in trmnts:
             buyin = m.Buy_ins.get_latest(
                 user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
-            if user['event_update'] is True:
+            if user.event_update is True:
                 send_fcm(
                     user_id = user.id,
                     title = "Event Ended",
@@ -102,26 +102,26 @@ _4mins_ago = datetime.utcnow() - timedelta(minutes=4)
 _4mins_ahead = datetime.utcnow() + timedelta(minutes=4)
 
 trmnts = session.query(m.Tournaments) \
-    .filter( m.Tournaments['start_at'] < _4mins_ahead) \
-    .filter( m.Tournaments['start_at'] > _4mins_ago )
+    .filter( m.Tournaments.start_at < _4mins_ahead) \
+    .filter( m.Tournaments.start_at > _4mins_ago )
 
 for trmnt in trmnts:
-    print('Tournament just started with id: ', trmnt['id'])
+    print('Tournament just started with id: ', trmnt.id)
 
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
         buyin = m.Buy_ins.get_latest(
-            user_id=user['id'], tournament_id=trmnt['id'] )
-        print('Sending notification that trmnt started to user, id: ', user['id'])
-        if user['event_update'] is True:
+            user_id=user.id, tournament_id=trmnt.id )
+        print('Sending notification that trmnt started to user, id: ', user.id)
+        if user.event_update is True:
             send_fcm(
-                user_id = user['id'],
+                user_id = user.id,
                 title = "Event Started",
-                body = trmnt['name'] +' opened at ' + trmnt['start_at'],
+                body = trmnt.name +' opened at ' + trmnt.start_at,
                 data = {
-                    'id': trmnt['id'],
-                    'buy_in': buyin and buyin['id'],
-                    'alert': trmnt['name'] +' opened at' + trmnt['start_at'],
+                    'id': trmnt.id,
+                    'buy_in': buyin and buyin.id,
+                    'alert': trmnt.name +' opened at' + trmnt.start_at,
                     'type': 'event',
                     'initialPath': 'Event Results',
                     'finalPath': 'Event Lobby' }
@@ -187,9 +187,9 @@ now = datetime.utcnow()
 users_to_update_swaprating = []
 
 for swap in swaps:
-    user = session.query(m.Profiles).get( swap['sender_id'] )
-    time_after_due_date = now - swap['due_at']
-    trmt = swap['tournament_id']
+    user = session.query(m.Profiles).get( swap.sender_id )
+    time_after_due_date = now - swap.due_at
+    trmt = swap.tournament_id
     if swap.due_at > now:
         swap_rating = 5
         send_fcm(
@@ -259,16 +259,16 @@ for swap in swaps:
     # Suspend account
     else:
         swap_rating = 0
-        user_account = session.query(m.Users).get( user['id'] )
-        user_account['naughty'] = True
-        print('Put on naughty list', user['id'])
+        user_account = session.query(m.Users).get( user.id )
+        user_account.naughty = True
+        print('Put on naughty list', user.id)
         session.commit()
         send_fcm(
-            user_id = user['id'],
+            user_id = user.id,
             title = "Account Suspension",
             body = "You're account has been suspended until you've paid the swaps you owe",
             data = {
-                'id': trmnt['id'],
+                'id': trmnt.id,
                 'alert': "You're account has been suspended until you've paid the swaps you owe",
                 'type': 'result',
                 'initialPath': 'Event Results',
