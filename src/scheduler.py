@@ -131,7 +131,7 @@ for trmnt in trmnts:
 
     # LOG
     import requests
-    
+    time = datetime.utcnow()
     domain = os.environ['MAILGUN_DOMAIN']
     requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
         auth=(

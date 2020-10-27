@@ -163,7 +163,7 @@ def attach(app):
                     )
                 else:
                     print('Not Sending')
-
+            time=datetime.utcnow()
             # LOG            
             domain = os.environ['MAILGUN_DOMAIN']
             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
