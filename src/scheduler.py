@@ -53,20 +53,20 @@ trmnts = session.query(m.Tournaments) \
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
-    if latest_flight.start_at < close_time:
+    if latest_flight['start_at'] < close_time:
             
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
         swaps = session.query(m.Swaps) \
-            .filter_by( tournament_id = trmnt.id ) \
+            .filter_by( tournament_id = trmnt['id'] ) \
             .filter( or_( 
                 m.Swaps.status == 'pending', 
                 m.Swaps.status == 'incoming',
                 m.Swaps.status == 'counter_incoming' ) )
 
         for swap in swaps:
-            print('Update swap status to "canceled", id:', swap.id)
+            print('Update swap status to "canceled", id:', swap['id'])
             swap.status = 'canceled'
 
         session.commit()
@@ -187,8 +187,8 @@ now = datetime.utcnow()
 users_to_update_swaprating = []
 
 for swap in swaps:
-    user = session.query(m.Profiles).get( swap.sender_id )
-    time_after_due_date = now - swap.due_at
+    user = session.query(m.Profiles).get( swap['sender_id'] )
+    time_after_due_date = now - swap['due_at']
     trmt = swap['tournament_id']
     if swap.due_at > now:
         swap_rating = 5
@@ -259,16 +259,16 @@ for swap in swaps:
     # Suspend account
     else:
         swap_rating = 0
-        user_account = session.query(m.Users).get( user.id )
+        user_account = session.query(m.Users).get( user['id'] )
         user_account['naughty'] = True
-        print('Put on naughty list', user.id)
+        print('Put on naughty list', user['id'])
         session.commit()
         send_fcm(
-            user_id = user.id,
+            user_id = user['id'],
             title = "Account Suspension",
             body = "You're account has been suspended until you've paid the swaps you owe",
             data = {
-                'id': trmnt.id,
+                'id': trmnt['id'],
                 'alert': "You're account has been suspended until you've paid the swaps you owe",
                 'type': 'result',
                 'initialPath': 'Event Results',
