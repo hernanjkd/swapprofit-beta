@@ -85,7 +85,7 @@ def attach(app):
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
-
+        print('trmts', trmnts)
         for trmnt in trmnts:
             latest_flight = trmnt.flights.pop()
             if latest_flight.start_at < close_time:
@@ -190,7 +190,7 @@ def attach(app):
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                     'to': ['gherndon5@gmail.com'],
-                    'subject': trmnt.name + 'has just started',
+                    'subject': trmnt.name + ' has just started',
                     'text': 'Sending text email',
                     'html': f'''
                         <div>trmnt.id {trmnt.id}</div><br />
@@ -233,10 +233,10 @@ def attach(app):
                     send_fcm(
                         user_id = user.id,
                         title = "5 Star",
-                        body = "You're account has been suspended until you've paid the swaps you owe",
+                        body = "Yee",
                         data = {
                             'id': trmt_id,
-                            'alert': "You're account has been suspended until you've paid the swaps you owe",
+                            'alert': "Yess",
                             'type': 'result',
                             'initialPath': 'Event Results',
                             'finalPath': 'Swap Results' }
@@ -283,7 +283,7 @@ def attach(app):
                             'initialPath': 'Event Results',
                             'finalPath': 'Swap Results' }
                     )
-            elif time_after_due_date < timedelta(days=7):
+            elif time_after_due_date < timedelta(days=14):
                 swap_rating = 1
                 send_fcm(
                     user_id = user.id,
