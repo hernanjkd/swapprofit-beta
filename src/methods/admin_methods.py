@@ -147,7 +147,7 @@ def attach(app):
             for user in users:
                 buyin = m.Buy_ins.get_latest(
                     user_id=user.id, tournament_id=trmnt.id )
-                print('Sending notification that trmnt started to user, id: ', user.id)
+                print('Sending notification that trmnt started to user, id: ', user.id, user.event_update)
                 if user.event_update is True:
                     send_fcm(
                         user_id = user.id,
@@ -158,7 +158,7 @@ def attach(app):
                             'buy_in': buyin and buyin.id,
                             'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                             'type': 'event',
-                            'initialPath': 'Event Results',
+                            'initialPath': 'Event Listings',
                             'finalPath': 'Event Lobby' }
                     )
                 else:
@@ -173,7 +173,7 @@ def attach(app):
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                     'to': ['gherndon5@gmail.com'],
-                    'subject': 'Testing',
+                    'subject': '{trmnt.name} has just started',
                     'text': 'Sending text email',
                     'html': f'''
                         <div>trmnt.id {trmnt.id}</div><br />

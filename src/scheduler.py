@@ -112,7 +112,7 @@ for trmnt in trmnts:
     for user in users:
         buyin = m.Buy_ins.get_latest(
             user_id=user.id, tournament_id=trmnt.id )
-        print('Sending notification that trmnt started to user, id: ', user.id)
+        print('Sending notification that trmnt started to user, id: ', user.id, user.event_update)
         if user.event_update is True:
             send_fcm(
                 user_id = user.id,
