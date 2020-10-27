@@ -299,7 +299,7 @@ for swap in swaps:
         
 
     if swap.swap_rating != swap_rating:
-        print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
+        # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
         swap.swap_rating = swap_rating
         session.commit()
         
@@ -318,6 +318,6 @@ def calculate_swap_rating(user_id):
 
 for user in users_to_update_swaprating:
     user.swap_rating = calculate_swap_rating( user.id )
-    print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
+    # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
     session.commit()
 
