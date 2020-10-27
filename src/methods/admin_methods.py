@@ -85,7 +85,9 @@ def attach(app):
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
-        ts = db.session.query(m.Tournaments).filter( m.Tournaments.status == 'open')
+        ts = db.session.query(m.Tournaments).filter( m.Tournaments.flights.any(
+                m.Flights.start_at < close_time
+            ))
         for t in ts:
             print('is it t', t)
         for trmnt in trmnts:
