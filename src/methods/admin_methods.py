@@ -319,7 +319,7 @@ def attach(app):
             print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
             db.session.commit()
     
-    return 'Tournaments checked successfully'
+        return 'Tournaments checked successfully'
     
 
     @app.route('/tournaments/update')
