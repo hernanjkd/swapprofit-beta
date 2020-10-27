@@ -319,6 +319,8 @@ def attach(app):
             print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
             db.session.commit()
     
+    return jsonify({'message':'Tournaments have been checked'}), 200
+    
 
     @app.route('/tournaments/update')
     def update_tournaments():
