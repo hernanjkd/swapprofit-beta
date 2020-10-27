@@ -34,12 +34,13 @@ session = Session()
 # Helper function to get all users from a trmnt
 
 def get_all_players_from_trmnt(trmnt):
-    users = []
-    for flight in trmnt.flights:
-        for buyin in flight.buy_ins:
-            if buyin.user not in users: # no repeats
-                users.append( buyin.user )
-    return users
+    the_users = []
+    for flight in trmnt['flights']:
+        for a_buyin in flight['buy_ins']:
+            print('a_buyin .user',a_buyin['user'] )
+            if a_buyin['user'] not in the_users: # no repeats
+                the_users.append( a_buyin['user'] )
+    return the_users
 
 
 # Set tournaments to waiting for results, cancel all pending swaps
