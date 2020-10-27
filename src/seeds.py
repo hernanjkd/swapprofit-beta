@@ -418,7 +418,7 @@ def run():
         tournament=aboutToEnd,
         day=None
     )
-    db.session.add_all(flight1_end)
+    db.session.add(flight1_end)
 
     flight1_oneStar = Flights(
         start_at=oneStar.start_at,
@@ -446,7 +446,7 @@ def run():
         tournament=aboutToEnd,
         day=None
     )
-    db.session.add_all(flight1_fourStar)
+    db.session.add(flight1_fourStar)
 
     flight1_fiveStar = Flights(
         start_at=aboutToStart.start_at,
@@ -460,7 +460,7 @@ def run():
         tournament=aboutToSuspend,
         day=None
     )
-    db.session.add_all(flight1_suspend)
+    db.session.add(flight1_suspend)
 
     # flight1_heartland = Flights(
     #     start_at=datetime(2019,10,11,12),
@@ -749,7 +749,7 @@ def run():
         user=cary,
         flight=flight1_suspend,
         status='active'
-    ))    
+    ))
 
     db.session.add(Buy_ins(
         chips=770,
@@ -835,7 +835,7 @@ def run():
         flight=flight1_fiveStar,
         status='active'
     ))
-    
+
     db.session.flush()
 
     # db.session.add(Buy_ins(
@@ -1132,7 +1132,7 @@ def run():
         counter_swap=s1
     )
     s1.counter_swap = s2
-    db.session.add_all([s1, s2])  
+    db.session.add_all([s1, s2])
 
     db.session.flush()
 
