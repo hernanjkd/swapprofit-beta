@@ -172,7 +172,7 @@ def attach(app):
                     os.environ.get('MAILGUN_API_KEY')),
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                    'to': ['hernanjkd@gmail.com','gherndon5@gmail.com'],
+                    'to': ['gherndon5@gmail.com'],
                     'subject': 'Testing',
                     'text': 'Sending text email',
                     'html': f'''

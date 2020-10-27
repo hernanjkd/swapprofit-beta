@@ -139,7 +139,7 @@ for trmnt in trmnts:
             os.environ.get('MAILGUN_API_KEY')),
         data={
             'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-            'to': ['hernanjkd@gmail.com','gherndon5@gmail.com'],
+            'to': ['gherndon5@gmail.com'],
             'subject': 'Testing',
             'text': 'Sending text email',
             'html': f'''
@@ -298,3 +298,4 @@ for user in users_to_update_swaprating:
     user.swap_rating = calculate_swap_rating( user.id )
     print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
     session.commit()
+
