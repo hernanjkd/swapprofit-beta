@@ -133,24 +133,24 @@ def attach(app):
                         )
                     else:
                         print("Not Sending")
-                    time = datetime.utcnow()
-                    domain = os.environ['MAILGUN_DOMAIN']
-                    requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                        auth=(
-                            'api',
-                            os.environ.get('MAILGUN_API_KEY')),
-                        data={
-                            'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                            'to': ['gherndon5@gmail.com'],
-                            'subject': trmnt.name + ' has just ended',
-                            'text': 'Sending text email',
-                            'html': f'''
-                                <div>trmnt.id {trmnt.id}</div><br />
-                                <div>{trmnt.start_at} trmnt.start_at</div>
-                                <div>{time} datetime.utcnow()</div>
-                                
-                            '''
-                        })
+                time = datetime.utcnow()
+                domain = os.environ['MAILGUN_DOMAIN']
+                requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                    auth=(
+                        'api',
+                        os.environ.get('MAILGUN_API_KEY')),
+                    data={
+                        'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                        'to': ['gherndon5@gmail.com'],
+                        'subject': trmnt.name + ' has just ended',
+                        'text': 'Sending text email',
+                        'html': f'''
+                            <div>trmnt.id {trmnt.id}</div><br />
+                            <div>{trmnt.start_at} trmnt.start_at</div>
+                            <div>{time} datetime.utcnow()</div>
+                            
+                        '''
+                    })
 
         ###############################################################################
         # Send fcm to all players when trmnt opens
@@ -163,13 +163,12 @@ def attach(app):
             .filter( m.Tournaments.start_at > _4mins_ago )
 
         for trmnt in trmnts:
-            print('Tournament just started with id: ', trmnt.id)
 
             users = get_all_players_from_trmnt( trmnt )
             for user in users:
                 buyin = m.Buy_ins.get_latest(
                     user_id=user.id, tournament_id=trmnt.id )
-                print('Sending notification that trmnt started to user, id: ', user.id, user.event_update)
+
                 if user.event_update is True:
                     send_fcm(
                         user_id = user.id,
