@@ -85,7 +85,7 @@ def attach(app):
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
-        print('trmts', trmnts)
+        print('trmts', db.session.query(m.Tournaments).filter( m.Tournaments.status == 'open'))
         for trmnt in trmnts:
             latest_flight = trmnt.flights.pop()
             if latest_flight.start_at < close_time:
