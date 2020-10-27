@@ -152,11 +152,11 @@ def attach(app):
                     send_fcm(
                         user_id = user.id,
                         title = "Event Started",
-                        body = trmnt.name +' opened at ' + trmnt.start_at,
+                        body = f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                         data = {
                             'id': trmnt.id,
                             'buy_in': buyin and buyin.id,
-                            'alert': trmnt.name +' opened at' + trmnt.start_at,
+                            'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                             'type': 'event',
                             'initialPath': 'Event Results',
                             'finalPath': 'Event Lobby' }
