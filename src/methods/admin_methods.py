@@ -209,7 +209,7 @@ def attach(app):
         for swap in swaps:
             user = db.session.query(m.Profiles).get( swap.sender_id )
             time_after_due_date = now - swap.due_at
-            trmt = swap.tournament_id
+            trmt_id = swap.tournament_id
             if swap.due_at > now:
                 swap_rating = 5
                 send_fcm(
@@ -217,7 +217,7 @@ def attach(app):
                     title = "5 Star",
                     body = "You're account has been suspended until you've paid the swaps you owe",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt_id,
                         'alert': "You're account has been suspended until you've paid the swaps you owe",
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -230,7 +230,7 @@ def attach(app):
                     title = "4 Star",
                     body = "2 days",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt_id,
                         'alert': "4 star",
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -243,7 +243,7 @@ def attach(app):
                     title = "3 Star",
                     body = "4 days",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt_id,
                         'alert': "3 Star",
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -256,7 +256,7 @@ def attach(app):
                     title = "2 Star",
                     body = "6 Days",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt_id,
                         'alert': "2 Star",
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -269,7 +269,7 @@ def attach(app):
                     title = "1 Star",
                     body = "7 Days",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt_id,
                         'alert': "1 Star",
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -288,7 +288,7 @@ def attach(app):
                     title = "Account Suspension",
                     body = "You're account has been suspended until you've paid the swaps you owe",
                     data = {
-                        'id': trmt.id,
+                        'id': trmt_id,
                         'alert': "You're account has been suspended until you've paid the swaps you owe",
                         'type': 'result',
                         'initialPath': 'Event Results',
