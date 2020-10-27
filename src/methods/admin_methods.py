@@ -288,7 +288,7 @@ def attach(app):
                     title = "Account Suspension",
                     body = "You're account has been suspended until you've paid the swaps you owe",
                     data = {
-                        'id': trmnt.id,
+                        'id': trmt.id,
                         'alert': "You're account has been suspended until you've paid the swaps you owe",
                         'type': 'result',
                         'initialPath': 'Event Results',
