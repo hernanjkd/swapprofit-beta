@@ -330,7 +330,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
-        start_at=datetime.utcnow() - timedelta(days=10)
+        start_at=datetime.utcnow() - timedelta(days=5)
     )
     db.session.add(fiveStar)
 
@@ -343,7 +343,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
-        start_at=datetime.utcnow() - timedelta(days=10, minutes=4)
+        start_at=datetime.utcnow() - timedelta(days=7, minutes=4)
     )
     db.session.add(fourStar)
 
@@ -356,7 +356,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
-        start_at=datetime.utcnow() - timedelta(days=10, minutes=6)
+        start_at=datetime.utcnow() - timedelta(days=8, minutes=6)
     )
     db.session.add(threeStar)
 
@@ -382,7 +382,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
-        start_at=datetime.utcnow() - timedelta(days=10)
+        start_at=datetime.utcnow() - timedelta(days=12)
     )
     db.session.add(oneStar)
     
@@ -422,35 +422,35 @@ def run():
 
     flight1_oneStar = Flights(
         start_at=oneStar.start_at,
-        tournament=aboutToStart,
+        tournament=oneStar,
         day=None
     )
     db.session.add(flight1_oneStar)
 
     flight1_twoStar = Flights(
         start_at=twoStar.start_at,
-        tournament=aboutToEnd,
+        tournament=twoStar,
         day=None
     )
     db.session.add(flight1_twoStar)
 
     flight1_threeStar = Flights(
         start_at=threeStar.start_at,
-        tournament=aboutToStart,
+        tournament=threeStar,
         day=None
     )
     db.session.add(flight1_threeStar)
 
     flight1_fourStar = Flights(
-        start_at=aboutToEnd.start_at,
-        tournament=aboutToEnd,
+        start_at=fourStar.start_at,
+        tournament=fourStar,
         day=None
     )
     db.session.add(flight1_fourStar)
 
     flight1_fiveStar = Flights(
-        start_at=aboutToStart.start_at,
-        tournament=aboutToStart,
+        start_at=fiveStar.start_at,
+        tournament=fiveStar,
         day=None
     )
     db.session.add(flight1_fiveStar)
@@ -920,7 +920,6 @@ def run():
     # ))
     
 
-    db.session.flush()
 
     ######################
     #   INCOMING SWAPS
