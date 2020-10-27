@@ -88,13 +88,13 @@ def attach(app):
 
         for trmnt in trmnts:
             latest_flight = trmnt.flights.pop()
-            if latest_flight['start_at'] < close_time:
+            if latest_flight.start_at < close_time:
                     
                 # This tournament is over: change status and clean swaps
                 print('Update tournament status to "waiting_results", id:', trmnt.id)
                 trmnt.status = 'waiting_results'
                 swaps = db.session.query(m.Swaps) \
-                    .filter_by( tournament_id = trmnt['id'] ) \
+                    .filter_by( tournament_id = trmnt.id ) \
                     .filter( or_( 
                         m.Swaps.status == 'pending', 
                         m.Swaps.status == 'incoming',
