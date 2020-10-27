@@ -257,7 +257,8 @@ for swap in swaps:
                     'alert': "2 Star",
                     'type': 'result',
                     'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results' }
+                    'finalPath': 'Swap Results'
+                }
             )
     elif time_after_due_date < timedelta(days=7):
         swap_rating = 1
@@ -270,7 +271,8 @@ for swap in swaps:
                 'alert': "1 Star",
                 'type': 'result',
                 'initialPath': 'Event Results',
-                'finalPath': 'Swap Results' }
+                'finalPath': 'Swap Results' 
+            }
         )
 
     # Suspend account
@@ -289,15 +291,14 @@ for swap in swaps:
                 'alert': "You're account has been suspended until you've paid the swaps you owe",
                 'type': 'result',
                 'initialPath': 'Event Results',
-                'finalPath': 'Swap Results' }
-        )
-        
+                'finalPath': 'Swap Results'
+            }
+        )     
 
     if swap.swap_rating != swap_rating:
         # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
         swap.swap_rating = swap_rating
         session.commit()
-        
         users_to_update_swaprating.append(user)
 
 
@@ -315,4 +316,3 @@ for user in users_to_update_swaprating:
     user.swap_rating = calculate_swap_rating( user.id )
     # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
     session.commit()
-

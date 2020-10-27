@@ -134,7 +134,8 @@ def attach(app):
                                 <div>{time} datetime.utcnow()</div>
                                 
                             '''
-                        })
+                        }
+                    )
                     print('Sending notification that trmnt closed to user id: ', user.id)
                     if user.event_update is True:
                         send_fcm(
