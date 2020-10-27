@@ -105,16 +105,16 @@ def attach(app):
                 users = get_all_players_from_trmnt( trmnt )
                 for user in users:
                     buyin = m.Buy_ins.get_latest(
-                        user_id=user.id, tournament_id=trmnt.id )
+                        user_id=user['id'], tournament_id=trmnt['id'] )
                     print('Sending notification that trmnt closed to user id: ', user.id)
                     if user['event_update'] is True:
                         send_fcm(
-                            user_id = user.id,
+                            user_id = user['id'],
                             title = "Event Ended",
                             body = f'{trmnt.name} closed at {close_time}',
                             data = {
-                                'id': trmnt.id,
-                                'buy_in': buyin and buyin.id,
+                                'id': trmnt['id'],
+                                'buy_in': buyin and buyin['id'],
                                 'alert': f'{trmnt.name} closed at {close_time}',
                                 'type': 'results',
                                 'initialPath': 'Event Results',
@@ -158,9 +158,7 @@ def attach(app):
                 else:
                     print('Not Sending')
 
-            # LOG
-            import requests
-            
+            # LOG            
             domain = os.environ['MAILGUN_DOMAIN']
             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
                 auth=(
@@ -187,27 +185,14 @@ def attach(app):
 
         buyins = session.query(m.Buy_ins) \
             .filter_by( status = 'pending' ) \
-            .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+            .filter( m.Buy_ins.flight.has( m.Flights['start_at'] < close_time ))
 
         for buyin in buyins:
-            print('Deleting buy-in', buyin.id)
+            print('Deleting buy-in', buyin['id'])
             session.delete(buyin)
 
         session.commit()
 
-
-
-        ###############################################################################
-        # Calculate Swap Rating and suspend users
-        '''
-            swap.due_at is 2 days after results come in
-            2 days -> 5 stars
-            4 days -> 4 stars
-            6 days -> 3 stars
-            8 days -> 2 stars
-            9 days -> 1 star
-            10+ days -> suspension (naughty list)
-        '''
         swaps = session.query(m.Swaps) \
             .filter( m.Swaps.due_at != None ) \
             .filter( m.Swaps.paid == False )
