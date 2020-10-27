@@ -125,7 +125,7 @@ def attach(app):
                             os.environ.get('MAILGUN_API_KEY')),
                         data={
                             'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                            'to': f'{user.email}',
+                            'to': f'{user.user.email}',
                             'subject': trmnt.name + ' has just ended',
                             'text': 'Sending text email',
                             'html': f'''
@@ -176,7 +176,7 @@ def attach(app):
                         os.environ.get('MAILGUN_API_KEY')),
                     data={
                         'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                        'to': f'{user.email}',
+                        'to': f'{user.user.email}',
                         'subject': trmnt.name + ' has just started',
                         'text': 'Sending text email',
                         'html': f'''
