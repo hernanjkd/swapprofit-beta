@@ -173,7 +173,7 @@ def attach(app):
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                     'to': ['gherndon5@gmail.com'],
-                    'subject': '{trmnt.name} has just started',
+                    'subject': trmnt.name + 'has just started',
                     'text': 'Sending text email',
                     'html': f'''
                         <div>trmnt.id {trmnt.id}</div><br />
