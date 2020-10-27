@@ -92,6 +92,7 @@ def attach(app):
             print('is it t', t)
         for trmnt in trmnts:
             latest_flight = trmnt.flights.pop()
+            print('timesss',latest_flight.start_at, close_time)
             if latest_flight.start_at < close_time:
                     
                 # This tournament is over: change status and clean swaps
