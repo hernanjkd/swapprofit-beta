@@ -599,13 +599,17 @@ def attach(app):
             prof.chat_update =  not prof.chat_update
         elif attribute =='swap':
             prof.swap_update =  not prof.swap_update
+        elif attribute =='coin':
+            prof.coin_update =  not prof.coin_update
+        elif attribute =='result':
+            prof.result_update =  not prof.result_update
         elif attribute =='buyin':
             prof.buyin_update = not prof.buyin_update
         elif attribute =='event':
             prof.event_update = not prof.event_update
         else:
             raise APIException('Invalid Notification Type: ' + req['notification_type'], 400)
-        
+       
         db.session.commit()
         return jsonify(prof.serialize())
 
