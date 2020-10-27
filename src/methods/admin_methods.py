@@ -113,7 +113,7 @@ def attach(app):
                     buyin = m.Buy_ins.get_latest(
                         user_id=user.id, tournament_id=trmnt.id )
                     print('Sending notification that trmnt closed to user id: ', user.id)
-                    if user['event_update'] is True:
+                    if user.event_update is True:
                         send_fcm(
                             user_id = user.id,
                             title = "Event Ended",
@@ -148,7 +148,7 @@ def attach(app):
                 buyin = m.Buy_ins.get_latest(
                     user_id=user.id, tournament_id=trmnt.id )
                 print('Sending notification that trmnt started to user, id: ', user['id'])
-                if user['event_update'] is True:
+                if user.event_update is True:
                     send_fcm(
                         user_id = user.id,
                         title = "Event Started",
@@ -279,16 +279,16 @@ def attach(app):
             # Suspend account
             else:
                 swap_rating = 0
-                user_account = db.session.query(m.Users).get( user['id'] )
-                user_account['naughty'] = True
-                print('Put on naughty list', user['id'])
+                user_account = db.session.query(m.Users).get( user.id )
+                user_account.naughty = True
+                print('Put on naughty list', user.id)
                 db.session.commit()
                 send_fcm(
-                    user_id = user['id'],
+                    user_id = user.id,
                     title = "Account Suspension",
                     body = "You're account has been suspended until you've paid the swaps you owe",
                     data = {
-                        'id': trmnt['id'],
+                        'id': trmnt.id,
                         'alert': "You're account has been suspended until you've paid the swaps you owe",
                         'type': 'result',
                         'initialPath': 'Event Results',
