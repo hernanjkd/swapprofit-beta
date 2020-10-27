@@ -101,26 +101,26 @@ _4mins_ago = datetime.utcnow() - timedelta(minutes=4)
 _4mins_ahead = datetime.utcnow() + timedelta(minutes=4)
 
 trmnts = session.query(m.Tournaments) \
-    .filter( m.Tournaments.start_at < _4mins_ahead) \
-    .filter( m.Tournaments.start_at > _4mins_ago )
+    .filter( m.Tournaments['start_at'] < _4mins_ahead) \
+    .filter( m.Tournaments['start_at'] > _4mins_ago )
 
 for trmnt in trmnts:
-    print('Tournament just started with id: ', trmnt.id)
+    print('Tournament just started with id: ', trmnt['id'])
 
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
         buyin = m.Buy_ins.get_latest(
-            user_id=user.id, tournament_id=trmnt.id )
-        print('Sending notification that trmnt started to user, id: ', user.id)
+            user_id=user['id'], tournament_id=trmnt['id'] )
+        print('Sending notification that trmnt started to user, id: ', user['id'])
         if user['event_update'] is True:
             send_fcm(
-                user_id = user.id,
+                user_id = user['id'],
                 title = "Event Started",
-                body = trmnt.name +' opened at ' + trmnt.start_at,
+                body = trmnt['name'] +' opened at ' + trmnt['start_at'],
                 data = {
-                    'id': trmnt.id,
-                    'buy_in': buyin and buyin.id,
-                    'alert': trmnt.name +' opened at' + trmnt.start_at,
+                    'id': trmnt['id'],
+                    'buy_in': buyin and buyin['id'],
+                    'alert': trmnt['name'] +' opened at' + trmnt['start_at'],
                     'type': 'event',
                     'initialPath': 'Event Results',
                     'finalPath': 'Event Lobby' }
