@@ -295,78 +295,172 @@ def run():
     #     TOURNAMENTS
     ########################
 
-    # heartland = Tournaments(
-    #     casino='Casino',
-    #     name='Hard Rock - RRPO #14 - NLH $2,000,000 Guaranteed - Day 2',
-    #     address='261 Main St',
-    #     city='Black Hawk',
-    #     state='CO',
-    #     zip_code='80422',
-    #     latitude=39.801105,
-    #     longitude=-105.503991,
-    #     start_at=datetime(2019,10,11,12)
-    # )
-    # db.session.add(heartland)
+    aboutToStart = Tournaments(
+        casino='Casino',
+        name='About To Start Event',
+        address='261 Main St',
+        city='Black Hawk',
+        state='CO',
+        zip_code='80422',
+        latitude=39.801105,
+        longitude=-105.503991,
+        start_at=datetime.utcnow() - timedelta(minutes=4)
+    )
+    db.session.add(aboutToStart)
 
-    # stones = Tournaments(
-    #     casino='Casino',
-    #     name='PBKC - NLH $2,000 Guaranteed',
-    #     address='6510 Antelope Rd',
-    #     city='Citrus Heights',
-    #     state='CA',
-    #     zip_code='95621',
-    #     latitude=38.695155,
-    #     longitude=-121.307501,
-    #     start_at=datetime(2019,9,30,11)
-    # )
-    # db.session.add(stones)
+    aboutToEnd = Tournaments(
+        casino='Casino',
+        name='About To End Event',
+        address='6510 Antelope Rd',
+        city='Citrus Heights',
+        state='CA',
+        zip_code='95621',
+        latitude=38.695155,
+        longitude=-121.307501,
+        start_at= datetime.utcnow() + timedelta(hours=16, minutes=56)
+    )
+    db.session.add(aboutToEnd)
 
-    # wpt = Tournaments(
-    #     casino='Casino',
-    #     name='Gulfstream - NLH $1,500 Guaranteed',
-    #     address='Thunder Valley Casino Resort, 1200 Athens Ave',
-    #     city='Lincoln',
-    #     state='CA',
-    #     zip_code='95648',
-    #     latitude=38.904035,
-    #     longitude=-121.295541,
-    #     start_at=datetime(2019,10,2,12)
-    # )
-    # db.session.add(wpt)
+    fiveStar = Tournaments(
+        casino='Casino',
+        name='Five Star Event',
+        address='Thunder Valley Casino Resort, 1200 Athens Ave',
+        city='Lincoln',
+        state='CA',
+        zip_code='95648',
+        latitude=38.904035,
+        longitude=-121.295541,
+        start_at=datetime.utcnow() - timedelta(days=10)
+    )
+    db.session.add(fiveStar)
 
-    # now = datetime.utcnow()
-    # live = Tournaments(
-    #     casino='Casino',
-    #     name='Coconut Creek - NLH $5,000 Guaranteed w/$20 Bounties',
-    #     address="5550 NW 40th St",
-    #     city="Coconut Creek",
-    #     state="Florida",
-    #     zip_code=33073,
-    #     latitude=26.278015,
-    #     longitude=-80.198955,
-    #     time_zone="eastern daylight time",
-    #     start_at=datetime(now.year,now.month,now.day,13)
-    # )
-    # db.session.add(live)
+    fourStar = Tournaments(
+        casino='Casino',
+        name='Four Star Event',
+        address='Thunder Valley Casino Resort, 1200 Athens Ave',
+        city='Lincoln',
+        state='CA',
+        zip_code='95648',
+        latitude=38.904035,
+        longitude=-121.295541,
+        start_at=datetime.utcnow() - timedelta(days=10, minutes=4)
+    )
+    db.session.add(fourStar)
 
-    # db.session.flush()
+    threeStar = Tournaments(
+        casino='Casino',
+        name='Three Star Event',
+        address='Thunder Valley Casino Resort, 1200 Athens Ave',
+        city='Lincoln',
+        state='CA',
+        zip_code='95648',
+        latitude=38.904035,
+        longitude=-121.295541,
+        start_at=datetime.utcnow() - timedelta(days=10, minutes=6)
+    )
+    db.session.add(threeStar)
+
+    twoStar = Tournaments(
+        casino='Casino',
+        name='Two Star Event',
+        address='Thunder Valley Casino Resort, 1200 Athens Ave',
+        city='Lincoln',
+        state='CA',
+        zip_code='95648',
+        latitude=38.904035,
+        longitude=-121.295541,
+        start_at=datetime.utcnow() - timedelta(days=10)
+    )
+    db.session.add(fiveStar)
+
+    oneStar = Tournaments(
+        casino='Casino',
+        name='One Star Event',
+        address='Thunder Valley Casino Resort, 1200 Athens Ave',
+        city='Lincoln',
+        state='CA',
+        zip_code='95648',
+        latitude=38.904035,
+        longitude=-121.295541,
+        start_at=datetime.utcnow() - timedelta(days=10)
+    )
+    db.session.add(oneStar)
+    
+    aboutToSuspend = Tournaments(
+        casino='Casino',
+        name='About To Suspend Event',
+        address="5550 NW 40th St",
+        city="Coconut Creek",
+        state="Florida",
+        zip_code=33073,
+        latitude=26.278015,
+        longitude=-80.198955,
+        time_zone="eastern daylight time",
+        start_at=datetime.utcnow() - timedelta(days=13, hours=23, minutes=55)
+    )
+    db.session.add(aboutToSuspend)
+
+    db.session.flush()
 
     ########################
     #       FLIGHTS
     ########################
 
-    # flight1_live = Flights(
-    #     start_at=live.start_at,
-    #     tournament=live,
-    #     day='1A'
-    # )
-    # flight2_live = Flights(
-    #     start_at=datetime(now.year,now.month,now.day,17),
-    #     tournament=live,
-    #     day='1B'
-    # )
-    # db.session.add_all([flight1_live, flight2_live])
+    flight1_start = Flights(
+        start_at=aboutToStart.start_at,
+        tournament=aboutToStart,
+        day=None
+    )
+    db.session.add(flight1_start)
 
+    flight1_end = Flights(
+        start_at=aboutToEnd.start_at,
+        tournament=aboutToEnd,
+        day=None
+    )
+    db.session.add_all(flight1_end)
+
+    flight1_oneStar = Flights(
+        start_at=oneStar.start_at,
+        tournament=aboutToStart,
+        day=None
+    )
+    db.session.add(flight1_oneStar)
+
+    flight1_twoStar = Flights(
+        start_at=twoStar.start_at,
+        tournament=aboutToEnd,
+        day=None
+    )
+    db.session.add(flight1_twoStar)
+
+    flight1_threeStar = Flights(
+        start_at=threeStar.start_at,
+        tournament=aboutToStart,
+        day=None
+    )
+    db.session.add(flight1_threeStar)
+
+    flight1_fourStar = Flights(
+        start_at=aboutToEnd.start_at,
+        tournament=aboutToEnd,
+        day=None
+    )
+    db.session.add_all(flight1_fourStar)
+
+    flight1_fiveStar = Flights(
+        start_at=aboutToStart.start_at,
+        tournament=aboutToStart,
+        day=None
+    )
+    db.session.add(flight1_fiveStar)
+
+    flight1_suspend = Flights(
+        start_at=aboutToSuspend.start_at,
+        tournament=aboutToSuspend,
+        day=None
+    )
+    db.session.add_all(flight1_suspend)
 
     # flight1_heartland = Flights(
     #     start_at=datetime(2019,10,11,12),
@@ -406,7 +500,7 @@ def run():
     # )
     # db.session.add(flight1_wpt)
 
-    # db.session.flush()
+    db.session.flush()
 
     ########################
     #        SWAPS
@@ -606,22 +700,144 @@ def run():
     #       BUY INS
     ########################
 
-    # db.session.add(Buy_ins(
-    #     chips=770,
-    #     table='1',
-    #     seat=2,
-    #     user=lou,
-    #     flight=flight1_live,
-    #     status='active'
-    # ))
-    # db.session.add(Buy_ins(
-    #     chips=600,
-    #     table='4',
-    #     seat=2,
-    #     user=lou,
-    #     flight=flight2_live,
-    #     status='active'
-    # ))
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_start,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_start,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_end,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_end,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_suspend,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_suspend,
+        status='active'
+    ))    
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_oneStar,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_oneStar,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_twoStar,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_twoStar,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_threeStar,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_threeStar,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_fourStar,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_fourStar,
+        status='active'
+    ))
+
+    db.session.add(Buy_ins(
+        chips=770,
+        table='1',
+        seat=2,
+        user=gabe,
+        flight=flight1_fiveStar,
+        status='active'
+    ))
+    db.session.add(Buy_ins(
+        chips=1600,
+        table='14',
+        seat=8,
+        user=cary,
+        flight=flight1_fiveStar,
+        status='active'
+    ))
+    
+    db.session.flush()
+
     # db.session.add(Buy_ins(
     #     chips=1100,
     #     table='12',
@@ -704,7 +920,7 @@ def run():
     # ))
     
 
-    # db.session.flush()
+    db.session.flush()
 
     ######################
     #   INCOMING SWAPS
@@ -798,26 +1014,128 @@ def run():
     # ))
 
 
-    # s1 = Swaps(
-    #     tournament=newvegas,
-    #     sender_user=lou,
-    #     recipient_user=cary,
-    #     percentage=11,
-    #     due_at=(newvegas.start_at + timedelta(days=4)),
-    #     status='agreed'
-    # )
-    # s2 = Swaps(
-    #     tournament= newvegas,
-    #     sender_user=cary,
-    #     recipient_user=lou,
-    #     percentage=11,
-    #     due_at=(newvegas.start_at + timedelta(days=4)),
-    #     status='agreed',
-    #     counter_swap=s1
-    # )
-    # s1.counter_swap = s2
-    # db.session.add_all([s1, s2])
+    s1 = Swaps(
+        tournament=aboutToSuspend,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(aboutToSuspend.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= aboutToSuspend,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(aboutToSuspend.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])
+
+    s1 = Swaps(
+        tournament=oneStar,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(oneStar.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= oneStar,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(oneStar.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])
+
+    s1 = Swaps(
+        tournament=twoStar,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(twoStar.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= twoStar,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(twoStar.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])
+
+    s1 = Swaps(
+        tournament=threeStar,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(threeStar.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= threeStar,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(threeStar.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])
+
+    s1 = Swaps(
+        tournament=fourStar,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(fourStar.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= fourStar,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(fourStar.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])    
     
+    s1 = Swaps(
+        tournament=fiveStar,
+        sender_user=gabe,
+        recipient_user=cary,
+        percentage=10,
+        due_at=(fiveStar.start_at + timedelta(days=4)),
+        status='agreed'
+    )
+    s2 = Swaps(
+        tournament= fiveStar,
+        sender_user=cary,
+        recipient_user=gabe,
+        percentage=11,
+        due_at=(fiveStar.start_at + timedelta(days=4)),
+        status='agreed',
+        counter_swap=s1
+    )
+    s1.counter_swap = s2
+    db.session.add_all([s1, s2])  
+
+    db.session.flush()
+
     # s1 = Swaps(
     #     tournament=newvegas,
     #     sender_user=lou,
