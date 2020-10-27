@@ -3,6 +3,7 @@ from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
 from notifications import send_email
+import models as m
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions, Users
 from datetime import datetime, timedelta
@@ -12,6 +13,8 @@ import utils
 import json
 import os
 import re
+from notifications import send_email, send_fcm
+
 
 
 def attach(app):
@@ -51,6 +54,7 @@ def attach(app):
 
     @app.route('/tournaments/onTime')
     def check_tournaments():
+       # Update from days ago or hours ago, default to 1 hour ago
         span = request.args.get('span') # days, hours
         amount = request.args.get('amount')
 
@@ -62,6 +66,7 @@ def attach(app):
             f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/update{args}" )
         if not resp.ok:
             raise APIException( resp.content.decode("utf-8")[-233:] , 500)
+
         def get_all_players_from_trmnt(trmnt):
             the_users = []
             for flight in trmnt['flights']:
@@ -74,7 +79,8 @@ def attach(app):
 
         # Set tournaments to waiting for results, cancel all pending swaps
         close_time = utils.designated_trmnt_close_time()
-        trmnts = session.query(m.Tournaments) \
+
+        trmnts = db.session.query(m.Tournaments) \
             .filter( m.Tournaments.status == 'open') \
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
@@ -87,7 +93,7 @@ def attach(app):
                 # This tournament is over: change status and clean swaps
                 print('Update tournament status to "waiting_results", id:', trmnt.id)
                 trmnt.status = 'waiting_results'
-                swaps = session.query(m.Swaps) \
+                swaps = db.session.query(m.Swaps) \
                     .filter_by( tournament_id = trmnt['id'] ) \
                     .filter( or_( 
                         m.Swaps.status == 'pending', 
@@ -98,7 +104,7 @@ def attach(app):
                     print('Update swap status to "canceled", id:', swap['id'])
                     swap.status = 'canceled'
 
-                session.commit()
+                db.session.commit()
 
                 
                 # Send fcm to all players when trmnt closes
@@ -130,7 +136,7 @@ def attach(app):
         _4mins_ago = datetime.utcnow() - timedelta(minutes=4)
         _4mins_ahead = datetime.utcnow() + timedelta(minutes=4)
 
-        trmnts = session.query(m.Tournaments) \
+        trmnts = db.session.query(m.Tournaments) \
             .filter( m.Tournaments['start_at'] < _4mins_ahead) \
             .filter( m.Tournaments['start_at'] > _4mins_ago )
 
@@ -183,17 +189,17 @@ def attach(app):
         ###############################################################################
         # Delete buy-ins created before close time with status 'pending'
 
-        buyins = session.query(m.Buy_ins) \
+        buyins = db.session.query(m.Buy_ins) \
             .filter_by( status = 'pending' ) \
             .filter( m.Buy_ins.flight.has( m.Flights['start_at'] < close_time ))
 
         for buyin in buyins:
             print('Deleting buy-in', buyin['id'])
-            session.delete(buyin)
+            db.session.delete(buyin)
 
-        session.commit()
+        db.session.commit()
 
-        swaps = session.query(m.Swaps) \
+        swaps = db.session.query(m.Swaps) \
             .filter( m.Swaps.due_at != None ) \
             .filter( m.Swaps.paid == False )
 
@@ -201,7 +207,7 @@ def attach(app):
         users_to_update_swaprating = []
 
         for swap in swaps:
-            user = session.query(m.Profiles).get( swap['sender_id'] )
+            user = db.session.query(m.Profiles).get( swap['sender_id'] )
             time_after_due_date = now - swap['due_at']
             trmt = swap['tournament_id']
             if swap.due_at > now:
@@ -273,10 +279,10 @@ def attach(app):
             # Suspend account
             else:
                 swap_rating = 0
-                user_account = session.query(m.Users).get( user['id'] )
+                user_account = db.session.query(m.Users).get( user['id'] )
                 user_account['naughty'] = True
                 print('Put on naughty list', user['id'])
-                session.commit()
+                db.session.commit()
                 send_fcm(
                     user_id = user['id'],
                     title = "Account Suspension",
@@ -293,14 +299,14 @@ def attach(app):
             if swap.swap_rating != swap_rating:
                 print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
                 swap.swap_rating = swap_rating
-                session.commit()
+                db.session.commit()
                 
                 users_to_update_swaprating.append(user)
 
 
         # Helper function to calculate the swap rating, used below
         def calculate_swap_rating(user_id):
-            swaps = session.query(m.Swaps) \
+            swaps = db.session.query(m.Swaps) \
                 .filter_by( sender_id=user_id ) \
                 .filter( m.Swaps.due_at != None )
             total_swap_ratings = 0
@@ -311,7 +317,7 @@ def attach(app):
         for user in users_to_update_swaprating:
             user.swap_rating = calculate_swap_rating( user.id )
             print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
-            session.commit()
+            db.session.commit()
     
 
     @app.route('/tournaments/update')
