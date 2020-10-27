@@ -304,7 +304,7 @@ def run():
         zip_code='80422',
         latitude=39.801105,
         longitude=-105.503991,
-        start_at=datetime.utcnow() - timedelta(minutes=4)
+        start_at=datetime.utcnow() + timedelta(minutes=4)
     )
     db.session.add(aboutToStart)
 
@@ -317,7 +317,7 @@ def run():
         zip_code='95621',
         latitude=38.695155,
         longitude=-121.307501,
-        start_at= datetime.utcnow() + timedelta(hours=16, minutes=56)
+        start_at= datetime.utcnow() - timedelta(hours=16, minutes=56)
     )
     db.session.add(aboutToEnd)
 
