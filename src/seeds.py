@@ -330,6 +330,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
+        results_link='td',
         start_at=datetime.utcnow() - timedelta(days=5)
     )
     db.session.add(fiveStar)
@@ -343,6 +344,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
+        results_link='td',
         start_at=datetime.utcnow() - timedelta(days=7, minutes=4)
     )
     db.session.add(fourStar)
@@ -356,6 +358,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
+        results_link='td',
         start_at=datetime.utcnow() - timedelta(days=8, minutes=6)
     )
     db.session.add(threeStar)
@@ -369,6 +372,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
+        results_link='td',
         start_at=datetime.utcnow() - timedelta(days=10)
     )
     db.session.add(fiveStar)
@@ -382,6 +386,7 @@ def run():
         zip_code='95648',
         latitude=38.904035,
         longitude=-121.295541,
+        results_link='td',
         start_at=datetime.utcnow() - timedelta(days=12)
     )
     db.session.add(oneStar)
@@ -395,6 +400,7 @@ def run():
         zip_code=33073,
         latitude=26.278015,
         longitude=-80.198955,
+        results_link='td',
         time_zone="eastern daylight time",
         start_at=datetime.utcnow() - timedelta(days=13, hours=23, minutes=55)
     )
