@@ -53,6 +53,7 @@ trmnts = session.query(m.Tournaments) \
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
+    print('timesss',latest_flight.start_at, close_time)
     if latest_flight.start_at < close_time:
             
         # This tournament is over: change status and clean swaps
@@ -77,6 +78,24 @@ for trmnt in trmnts:
         for user in users:
             buyin = m.Buy_ins.get_latest(
                 user_id=user.id, tournament_id=trmnt.id )
+            time = datetime.utcnow()
+            domain = os.environ['MAILGUN_DOMAIN']
+            requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                auth=(
+                    'api',
+                    os.environ.get('MAILGUN_API_KEY')),
+                data={
+                    'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                    'to': [user.email],
+                    'subject': trmnt.name + ' has just ended',
+                    'text': 'Sending text email',
+                    'html': f'''
+                        <div>trmnt.id {trmnt.id}</div><br />
+                        <div>{trmnt.start_at} trmnt.start_at</div>
+                        <div>{time} datetime.utcnow()</div>
+                        
+                    '''
+                })
             print('Sending notification that trmnt closed to user id: ', user.id)
             if user.event_update is True:
                 send_fcm(
@@ -87,30 +106,12 @@ for trmnt in trmnts:
                         'id': trmnt.id,
                         'buy_in': buyin and buyin.id,
                         'alert': f'{trmnt.name} closed at {close_time}',
-                        'type': 'event',
+                        'type': 'results',
                         'initialPath': 'Event Results',
                         'finalPath': 'Swap Results' }
                 )
             else:
                 print("Not Sending")
-            time = datetime.utcnow()
-            domain = os.environ['MAILGUN_DOMAIN']
-            requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                auth=(
-                    'api',
-                    os.environ.get('MAILGUN_API_KEY')),
-                data={
-                    'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                    'to': ['gherndon5@gmail.com'],
-                    'subject': trmnt.name + ' has just ended',
-                    'text': 'Sending text email',
-                    'html': f'''
-                        <div>trmnt.id {trmnt.id}</div><br />
-                        <div>{trmnt.start_at} trmnt.start_at</div>
-                        <div>{time} datetime.utcnow()</div>
-                        
-                    '''
-                })
 
 
 ###############################################################################
@@ -124,50 +125,44 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at > _4mins_ago )
 
 for trmnt in trmnts:
-    print('Tournament just started with id: ', trmnt.id)
-
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
         buyin = m.Buy_ins.get_latest(
             user_id=user.id, tournament_id=trmnt.id )
-        print('Sending notification that trmnt started to user, id: ', user.id, user.event_update)
+        time=datetime.utcnow()
+        domain = os.environ['MAILGUN_DOMAIN']
+        requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+            auth=(
+                'api',
+                os.environ.get('MAILGUN_API_KEY')),
+            data={
+                'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                'to': [user.email],
+                'subject': trmnt.name + ' has just started',
+                'text': 'Sending text email',
+                'html': f'''
+                    <div>trmnt.id {trmnt.id}</div><br />
+                    <div>{trmnt.start_at} trmnt.start_at</div>
+                    <div>{time} datetime.utcnow()</div>
+                    <div>{_4mins_ago} _4mins_ago</div>
+                    <div>{_4mins_ahead} _4mins_ahead</div>
+                '''
+        })
         if user.event_update is True:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
-                body = f'{trmnt.name} opened at ' + f'{trmnt.start_at}',
+                body = f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                 data = {
                     'id': trmnt.id,
                     'buy_in': buyin and buyin.id,
-                    'alert': f'{trmnt.name} opened at ' + f'{trmnt.start_at}',
+                    'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                     'type': 'event',
-                    'initialPath': 'Event Results',
+                    'initialPath': 'Event Listings',
                     'finalPath': 'Event Lobby' }
             )
         else:
             print('Not Sending')
-
-    # LOG
-  
-    time = datetime.utcnow()
-    domain = os.environ['MAILGUN_DOMAIN']
-    requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-        auth=(
-            'api',
-            os.environ.get('MAILGUN_API_KEY')),
-        data={
-            'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-            'to': ['gherndon5@gmail.com'],
-            'subject': trmnt.name + ' has just started',
-            'text': 'Sending text email',
-            'html': f'''
-                <div>trmnt.id {trmnt.id}</div><br />
-                <div>{trmnt.start_at} trmnt.start_at</div>
-                <div>{time} datetime.utcnow()</div>
-                <div>{_4mins_ago} _4mins_ago</div>
-                <div>{_4mins_ahead} _4mins_ahead</div>
-            '''
-    })
 
 
 
