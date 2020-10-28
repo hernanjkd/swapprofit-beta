@@ -23,6 +23,8 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 from notifications import send_email, send_fcm
 import requests
+from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
+    Transactions, Users
 
 engine = create_engine( os.environ.get('DATABASE_URL') )
 Session = sessionmaker( bind=engine )
@@ -73,8 +75,7 @@ for trmnt in trmnts:
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
-            buyin = m.Buy_ins.get_latest(
-                user_id=user.id, tournament_id=trmnt.id )
+            buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             time = datetime.utcnow()
             domain = os.environ['MAILGUN_DOMAIN']
             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
@@ -94,8 +95,7 @@ for trmnt in trmnts:
                     '''
                 })
         for user in users:
-            buyin = m.Buy_ins.get_latest(
-                user_id=user.id, tournament_id=trmnt.id )
+            buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
             if user.event_update is True:
                 send_fcm(
@@ -127,8 +127,7 @@ trmnts = session.query(m.Tournaments) \
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        buyin = m.Buy_ins.get_latest(
-            user_id=user.id, tournament_id=trmnt.id )
+        buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
         time=datetime.utcnow()
         domain = os.environ['MAILGUN_DOMAIN']
         requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
@@ -149,8 +148,7 @@ for trmnt in trmnts:
                 '''
         })
     for user in users:
-        buyin = m.Buy_ins.get_latest(
-            user_id=user.id, tournament_id=trmnt.id )
+        buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             send_fcm(
                 user_id = user.id,
@@ -162,10 +160,10 @@ for trmnt in trmnts:
                     'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
                     'type': 'event',
                     'initialPath': 'Event Listings',
-                    'finalPath': 'Event Lobby' }
+                    'finalPath': 'Event Lobby' 
+                }
             )
-        else:
-            print('Not Sending')
+
 
 
 

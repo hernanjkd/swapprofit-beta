@@ -106,8 +106,7 @@ def attach(app):
 
                 users = get_all_players_from_trmnt( trmnt )
                 for user in users:
-                    buyin = m.Buy_ins.get_latest(
-                        user_id=user.id, tournament_id=trmnt.id )
+                    buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
                     time = datetime.utcnow()
                     domain = os.environ['MAILGUN_DOMAIN']
                     requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
@@ -128,8 +127,7 @@ def attach(app):
                         }
                     )
                 for user in users:
-                    buyin = m.Buy_ins.get_latest(
-                        user_id=user.id, tournament_id=trmnt.id )
+                    buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
                     print('Sending notification that trmnt closed to user id: ', user.id)
                     if user.event_update is True:
                         send_fcm(
@@ -144,9 +142,6 @@ def attach(app):
                                 'initialPath': 'Event Results',
                                 'finalPath': 'Swap Results' }
                         )
-                    else:
-                        print("Not Sending")
-                
 
         ###############################################################################
         # Send fcm to all players when trmnt opens
@@ -161,8 +156,7 @@ def attach(app):
         for trmnt in trmnts:
             users = get_all_players_from_trmnt( trmnt )
             for user in users:
-                buyin = m.Buy_ins.get_latest(
-                    user_id=user.id, tournament_id=trmnt.id )
+                buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
                 time=datetime.utcnow()
                 domain = os.environ['MAILGUN_DOMAIN']
                 requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
@@ -183,8 +177,7 @@ def attach(app):
                         '''
                 })
             for user in users:
-                buyin = m.Buy_ins.get_latest(
-                    user_id=user.id, tournament_id=trmnt.id )
+                buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
                 print('It got through, so then TF', user.event_update)
                 if user.event_update is True:
                     send_fcm(
