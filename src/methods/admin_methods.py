@@ -85,17 +85,11 @@ def attach(app):
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
-        ts = db.session.query(m.Tournaments).filter( m.Tournaments.flights.any(
-                m.Flights.start_at < close_time
-            ))
-        for t in ts:
-            print('is it t', t)
+
         for trmnt in trmnts:
             latest_flight = trmnt.flights.pop()
             print('timesss',latest_flight.start_at, close_time)
             if latest_flight.start_at < close_time:
-                    
-                # This tournament is over: change status and clean swaps
                 print('Update tournament status to "waiting_results", id:', trmnt.id)
                 trmnt.status = 'waiting_results'
                 swaps = db.session.query(m.Swaps) \
@@ -108,11 +102,8 @@ def attach(app):
                 for swap in swaps:
                     print('Update swap status to "canceled", id:', swap.id)
                     swap.status = 'canceled'
-
                 db.session.commit()
 
-                
-                # Send fcm to all players when trmnt closes
                 users = get_all_players_from_trmnt( trmnt )
                 for user in users:
                     buyin = m.Buy_ins.get_latest(
@@ -250,7 +241,8 @@ def attach(app):
                             'alert': "Yess",
                             'type': 'result',
                             'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results' }
+                            'finalPath': 'Swap Results'
+                        }
                     )
             elif time_after_due_date < timedelta(days=2):
                 swap_rating = 4
@@ -264,7 +256,8 @@ def attach(app):
                             'alert': "4 star",
                             'type': 'result',
                             'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results' }
+                            'finalPath': 'Swap Results'
+                        }
                     )
             elif time_after_due_date < timedelta(days=4):
                 swap_rating = 3
@@ -278,7 +271,8 @@ def attach(app):
                             'alert': "3 Star",
                             'type': 'result',
                             'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results' }
+                            'finalPath': 'Swap Results' 
+                        }
                     )
             elif time_after_due_date < timedelta(days=6):
                 swap_rating = 2
@@ -292,7 +286,8 @@ def attach(app):
                             'alert': "2 Star",
                             'type': 'result',
                             'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results' }
+                            'finalPath': 'Swap Results'
+                        }
                     )
             elif time_after_due_date < timedelta(days=14):
                 swap_rating = 1
@@ -305,7 +300,8 @@ def attach(app):
                         'alert': "1 Star",
                         'type': 'result',
                         'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
+                        'finalPath': 'Swap Results'
+                    }
                 )
 
             # Suspend account
@@ -324,7 +320,8 @@ def attach(app):
                         'alert': "You're account has been suspended until you've paid the swaps you owe",
                         'type': 'result',
                         'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
+                        'finalPath': 'Swap Results'
+                    }
                 )
                 
 

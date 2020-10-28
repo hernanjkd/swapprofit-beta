@@ -69,10 +69,7 @@ for trmnt in trmnts:
         for swap in swaps:
             print('Update swap status to "canceled", id:', swap.id)
             swap.status = 'canceled'
-
         session.commit()
-
-        
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
@@ -221,7 +218,8 @@ for swap in swaps:
                     'alert': "You're account has been suspended until you've paid the swaps you owe",
                     'type': 'result',
                     'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results' }
+                    'finalPath': 'Swap Results'
+                }
             )
     elif time_after_due_date < timedelta(days=2):
         swap_rating = 4
@@ -235,7 +233,8 @@ for swap in swaps:
                     'alert': "4 star",
                     'type': 'result',
                     'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results' }
+                    'finalPath': 'Swap Results'
+                }
             )
     elif time_after_due_date < timedelta(days=4):
         swap_rating = 3
@@ -249,7 +248,8 @@ for swap in swaps:
                     'alert': "3 Star",
                     'type': 'result',
                     'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results' }
+                    'finalPath': 'Swap Results'
+                }
             )
     elif time_after_due_date < timedelta(days=6):
         swap_rating = 2
@@ -277,7 +277,7 @@ for swap in swaps:
                 'alert': "1 Star",
                 'type': 'result',
                 'initialPath': 'Event Results',
-                'finalPath': 'Swap Results' 
+                'finalPath': 'Swap Results'
             }
         )
 
@@ -299,7 +299,7 @@ for swap in swaps:
                 'initialPath': 'Event Results',
                 'finalPath': 'Swap Results'
             }
-        )     
+        )
 
     if swap.swap_rating != swap_rating:
         # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
