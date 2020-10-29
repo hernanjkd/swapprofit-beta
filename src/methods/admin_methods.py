@@ -707,12 +707,12 @@ def attach(app):
 
 
 
-    # 
+     
     @app.route('/profiles/naughty/yes/<int:user_id>', methods=['PUT'])
     def naughty_list_add(user_id):
         prof = Profiles.query.get(user_id)
         print("PROFILE IS", prof)
-        prof['naughty'] = True
+        prof.naughty = True
         db.session.commit()
 
         return jsonify(prof.serialize())
@@ -720,7 +720,7 @@ def attach(app):
     @app.route('/profiles/naughty/no/<int:user_id>', methods=['PUT'])
     def naughty_list_minus(user_id):
         prof = Profiles.query.get(user_id)
-        prof['naughty'] = False
+        prof.naughty = False
         db.session.commit()
 
         return jsonify(prof.serialize())
