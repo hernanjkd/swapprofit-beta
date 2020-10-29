@@ -41,7 +41,7 @@ def send_email(template, emails, data={}):
 
 
 def send_fcm(user_id, title, body, data={}):
-
+    print('tired', user_id, data)
     devices = Devices.query.filter_by( user_id = user_id )
     registration_ids = [device.token for device in devices]
 
