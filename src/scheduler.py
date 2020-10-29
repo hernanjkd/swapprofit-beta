@@ -158,10 +158,10 @@ for trmnt in trmnts:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
-                body = trmnt.name +  ' opened at ' + f'{trmnt.start_at}',
+                body = trmnt.name +  ' opened at ',
                 data = {
                     'id': trmnt.id,
-                    'alert': trmnt.name + ' opened at ' + f'{trmnt.start_at}',
+                    'alert': trmnt.name + ' opened at ',
                     'type': 'event',
                     'initialPath': 'Event Listings',
                     'finalPath': 'Event Lobby',
