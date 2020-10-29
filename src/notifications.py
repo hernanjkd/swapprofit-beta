@@ -40,9 +40,9 @@ def send_email(template, emails, data={}):
 
 
 
-def send_fcm(user_id, title, body, data={}):
-    print('tired', user_id, data)
-    devices = Devices.query.filter_by( user_id = user_id )
+def send_fcm(auser_id, title, body, data={}):
+    print('tired', auser_id, data)
+    devices = Devices.query.filter_by( user_id = auser_id )
     registration_ids = [device.token for device in devices]
 
     if len(registration_ids) == 0 or push_service is None:
