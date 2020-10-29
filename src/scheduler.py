@@ -58,8 +58,7 @@ trmnts = session.query(m.Tournaments) \
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
     print('timesss',latest_flight.start_at, close_time)
-    if latest_flight.start_at < close_time:
-            
+    if latest_flight.start_at < close_time:           
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
@@ -100,6 +99,7 @@ for trmnt in trmnts:
             # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
             if user.event_update is True:
+                print('INITIATING SENDING NOTIFICATION')
                 send_fcm(
                     user_id = user.id,
                     title = "Event Ended",
@@ -109,7 +109,7 @@ for trmnt in trmnts:
                         'alert': 'Event Ended: ' + trmnt.name,
                         'type': 'results',
                         'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results' }
+                        'finalPath': 'Swap Results', }
                 )
             else:
                 print("Not Sending")
@@ -149,8 +149,10 @@ for trmnt in trmnts:
                 '''
         })
     for user in users:
+        print('INITIATING SENDING NOTIFICATION')
         # buyin = Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
+            print('THIS SHOULD BE SENT')
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
