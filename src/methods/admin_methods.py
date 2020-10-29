@@ -302,7 +302,7 @@ def attach(app):
                 swap_rating = 0
                 user_account = db.session.query(m.Users).get( user.id )
                 user_account.naughty = True
-                print('Put on naughty list', user.id)
+                print('Put on naughty list', user.id, user, user.naughty)
                 db.session.commit()
                 send_fcm(
                     user_id = user.id,

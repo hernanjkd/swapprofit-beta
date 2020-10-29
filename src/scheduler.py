@@ -284,7 +284,7 @@ for swap in swaps:
         swap_rating = 0
         user_account = session.query(m.Users).get( user.id )
         user_account.naughty = True
-        print('Put on naughty list', user.id)
+        print('Put on naughty list', user, user.id, user.naughty)
         session.commit()
         send_fcm(
             user_id = user.id,
