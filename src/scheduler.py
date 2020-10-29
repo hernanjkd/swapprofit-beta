@@ -137,7 +137,7 @@ for trmnt in trmnts:
             data={
                 'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                 'to': f'{user.user.email}',
-                'subject': trmnt.name + ' has just started',
+                'subject': 'Event Started: ' + trmnt.name,
                 'text': 'Sending text email',
                 'html': f'''
                     <div>trmnt.id {trmnt.id}</div><br />
@@ -282,8 +282,8 @@ for swap in swaps:
     # Suspend account
     else:
         swap_rating = 0
-        user_account = session.query(m.Users).get( user.id )
-        user_account.naughty = True
+        # user_account = session.query(m.Users).get( user.id )
+        user.naughty = True
         print('Put on naughty list', user, user.id, user.naughty)
         session.commit()
         send_fcm(

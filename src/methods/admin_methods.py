@@ -116,7 +116,7 @@ def attach(app):
                         data={
                             'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                             'to': f'{user.user.email}',
-                            'subject': trmnt.name + ' has just ended',
+                            'subject': 'Event Ended: ' + trmnt.name,
                             'text': 'Sending text email',
                             'html': f'''
                                 <div>trmnt.id {trmnt.id}</div><br />
@@ -183,11 +183,11 @@ def attach(app):
                     send_fcm(
                         user_id = user.id,
                         title = "Event Started",
-                        body = f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
+                        body = 'Event Started:' + f'{trmnt.name}',
                         data = {
                             'id': trmnt.id,
                             'buy_in': buyin and buyin.id,
-                            'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
+                            'alert': 'Event Started:' + f'{trmnt.name}',
                             'type': 'event',
                             'initialPath': 'Event Listings',
                             'finalPath': 'Event Lobby' }
