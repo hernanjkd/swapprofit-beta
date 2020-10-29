@@ -77,6 +77,23 @@ for trmnt in trmnts:
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
             # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+            print('Sending notification that trmnt closed to user id: ', user.id)
+            if user.event_update is True:
+                print('INITIATING SENDING NOTIFICATION')
+                send_fcm(
+                    user_id = user.id,
+                    title = "Event Ended",
+                    body = 'Event Ended: ' + trmnt.name,
+                    data = {
+                        'id': trmnt.id,
+                        'alert': 'Event Ended: ' + trmnt.name,
+                        'type': 'results',
+                        'initialPath': 'Event Results',
+                        'finalPath': 'Swap Results',
+                    }
+                )
+        for user in users:
+            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             time = datetime.utcnow()
             domain = os.environ['MAILGUN_DOMAIN']
             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
@@ -95,23 +112,7 @@ for trmnt in trmnts:
                         
                     '''
                 })
-        for user in users:
-            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-            print('Sending notification that trmnt closed to user id: ', user.id)
-            if user.event_update is True:
-                print('INITIATING SENDING NOTIFICATION')
-                send_fcm(
-                    user_id = user.id,
-                    title = "Event Ended",
-                    body = 'Event Ended: ' + trmnt.name,
-                    data = {
-                        'id': trmnt.id,
-                        'alert': 'Event Ended: ' + trmnt.name,
-                        'type': 'results',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results',
-                    }
-                )
+        
 
 
 ###############################################################################
@@ -157,10 +158,10 @@ for trmnt in trmnts:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
-                body = trmnt.name +  ' opened at ' + trmnt.start_at,
+                body = trmnt.name +  ' opened at ' + f'{trmnt.start_at}',
                 data = {
                     'id': trmnt.id,
-                    'alert': trmnt.name + ' opened at ' + trmnt.start_at,
+                    'alert': trmnt.name + ' opened at ' + f'{trmnt.start_at}',
                     'type': 'event',
                     'initialPath': 'Event Listings',
                     'finalPath': 'Event Lobby',
