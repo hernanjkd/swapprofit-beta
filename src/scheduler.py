@@ -47,6 +47,8 @@ def get_all_players_from_trmnt(trmnt):
 
 # Set tournaments to waiting for results, cancel all pending swaps
 close_time = utils.designated_trmnt_close_time()
+
+
 trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.status == 'open') \
     .filter( m.Tournaments.flights.any(
@@ -85,7 +87,7 @@ for trmnt in trmnts:
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
                     'to': f'{user.user.email}',
-                    'subject': trmnt.name + ' has just ended',
+                    'subject': 'Event Started: ' + trmnt.name,
                     'text': 'Sending text email',
                     'html': f'''
                         <div>trmnt.id {trmnt.id}</div><br />
@@ -101,10 +103,10 @@ for trmnt in trmnts:
                 send_fcm(
                     user_id = user.id,
                     title = "Event Ended",
-                    body = f'{trmnt.name} closed at {close_time}',
+                    body = 'Event Ended: ' + trmnt.name,
                     data = {
                         'id': trmnt.id,
-                        'alert': f'{trmnt.name} closed at {close_time}',
+                        'alert': 'Event Ended: ' + trmnt.name,
                         'type': 'results',
                         'initialPath': 'Event Results',
                         'finalPath': 'Swap Results' }
@@ -293,7 +295,7 @@ for swap in swaps:
                 'alert': "You're account has been suspended until you've paid the swaps you owe",
                 'type': 'result',
                 'initialPath': 'Event Results',
-                'finalPath': 'Swap Results'
+                'finalPath': 'Swap Results',
             }
         )
 
