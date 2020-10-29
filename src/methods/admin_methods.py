@@ -2,7 +2,7 @@ from flask import request, jsonify, render_template
 from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
-from notifications import send_email
+from notifications import send_email, send_fcm
 import models as m
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions, Users
@@ -13,8 +13,6 @@ import utils
 import json
 import os
 import re
-from notifications import send_email, send_fcm
-
 
 
 def attach(app):

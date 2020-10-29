@@ -16,13 +16,13 @@
 '''
 
 import os
+import requests
+from datetime import datetime, timedelta
 import utils
 import models as m
 from sqlalchemy import create_engine, func, asc, or_
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
 from notifications import send_email, send_fcm
-import requests
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions, Users
 
@@ -35,9 +35,9 @@ session = Session()
 ###############################################################################
 # Helper function to get all users from a trmnt
 
-def get_all_players_from_trmnt(trmnt):
+def get_all_players_from_trmnt(trmnte):
     the_users = []
-    for flight in trmnt.flights:
+    for flight in trmnte.flights:
         for a_buyin in flight.buy_ins:
             print('a_buyin .user',a_buyin.user )
             if a_buyin.user not in the_users: # no repeats
@@ -87,7 +87,7 @@ for trmnt in trmnts:
                     data = {
                         'id': trmnt.id,
                         'alert': 'Event Ended: ' + trmnt.name,
-                        'type': 'results',
+                        'type': 'result',
                         'initialPath': 'Event Results',
                         'finalPath': 'Swap Results',
                     }
@@ -112,7 +112,7 @@ for trmnt in trmnts:
                         
                     '''
                 })
-        
+
 
 
 ###############################################################################
@@ -148,8 +148,6 @@ for trmnt in trmnts:
                     <div>{_4mins_ahead} _4mins_ahead</div>
                 '''
         })
-for trmnt in trmnts:
-    users = get_all_players_from_trmnt( trmnt )
     for user in users:
         print('INITIATING SENDING NOTIFICATION')
         # buyin = Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
@@ -158,7 +156,7 @@ for trmnt in trmnts:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
-                body = trmnt.name +  ' opened at ',
+                body = 'iaas opened at ',
                 data = {
                     'id': trmnt.id,
                     'alert': trmnt.name + ' opened at ',
@@ -206,6 +204,7 @@ users_to_update_swaprating = []
 
 for swap in swaps:
     user = session.query(m.Profiles).get( swap.sender_id )
+    print('How late am I',user.id)
     time_after_due_date = now - swap.due_at
     trmt_id = swap.tournament_id
     if swap.due_at > now:
