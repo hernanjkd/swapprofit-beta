@@ -127,7 +127,7 @@ trmnts = session.query(m.Tournaments) \
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
         time=datetime.utcnow()
         domain = os.environ['MAILGUN_DOMAIN']
         requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
