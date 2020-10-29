@@ -65,8 +65,8 @@ for trmnt in trmnts:
         trmnt.status = 'waiting_results'
         swaps = session.query(m.Swaps) \
             .filter_by( tournament_id = trmnt.id ) \
-            .filter( or_( 
-                m.Swaps.status == 'pending', 
+            .filter( or_(
+                m.Swaps.status == 'pending',
                 m.Swaps.status == 'incoming',
                 m.Swaps.status == 'counter_incoming' ) )
 
@@ -86,8 +86,8 @@ for trmnt in trmnts:
                     os.environ.get('MAILGUN_API_KEY')),
                 data={
                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                    'to': f'{user.user.email}',
-                    'subject': 'Event Started: ' + trmnt.name,
+                    'to': user.user.email,
+                    'subject': 'Event Ended: ' + trmnt.name,
                     'text': 'Sending text email',
                     'html': f'''
                         <div>trmnt.id {trmnt.id}</div><br />
@@ -137,7 +137,7 @@ for trmnt in trmnts:
                 os.environ.get('MAILGUN_API_KEY')),
             data={
                 'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                'to': f'{user.user.email}',
+                'to': user.user.email,
                 'subject': 'Event Started: ' + trmnt.name,
                 'text': 'Sending text email',
                 'html': f'''
@@ -154,13 +154,13 @@ for trmnt in trmnts:
             send_fcm(
                 user_id = user.id,
                 title = "Event Started",
-                body = f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
+                body = trmnt.name +  ' opened at ' + trmnt.start_at,
                 data = {
                     'id': trmnt.id,
-                    'alert': f'{trmnt.name}  opened at ' + f'{trmnt.start_at}',
+                    'alert': trmnt.name + ' opened at ' + trmnt.start_at,
                     'type': 'event',
                     'initialPath': 'Event Listings',
-                    'finalPath': 'Event Lobby' 
+                    'finalPath': 'Event Lobby',
                 }
             )
 
