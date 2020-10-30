@@ -155,7 +155,7 @@ for trmnt in trmnts:
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        # buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             print('THIS SHOULD BE SENT')
             send_fcm(
