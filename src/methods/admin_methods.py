@@ -72,21 +72,28 @@ def attach(app):
                     print('a_buyin .user',a_buyin.user )
                     if a_buyin.user not in the_users: # no repeats
                         the_users.append( a_buyin.user )
+            print('the_users', the_users)
             return the_users
 
 
         # Set tournaments to waiting for results, cancel all pending swaps
         close_time = utils.designated_trmnt_close_time()
 
+        # trmnts = db.session.query(m.Tournaments) \
+        #     .filter( m.Tournaments.status == 'open') \
+        #     .filter( m.Tournaments.flights.any(
+        #         m.Flights.start_at < close_time
+        #     ))
+
         trmnts = db.session.query(m.Tournaments) \
-            .filter( m.Tournaments.status == 'open') \
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
 
         for trmnt in trmnts:
+            print('flights in this', trmnt.flights)
             latest_flight = trmnt.flights.pop()
-            print('timesss',latest_flight.start_at, close_time)
+            print('timesss',latest_flight.start_at, trmnt, close_time)
             if latest_flight.start_at < close_time:
                 print('Update tournament status to "waiting_results", id:', trmnt.id)
                 trmnt.status = 'waiting_results'
