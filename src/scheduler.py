@@ -53,129 +53,125 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.flights.any(
         m.Flights.start_at < close_time
     ))
-for trmnt in trmnts:
-    print("Tournaments about to end", trmnt)
 
-for trmnt in trmnts:
-    latest_flight = trmnt.flights.pop()
-    fee = latest_flight.start_at
-    if latest_flight.start_at < close_time:
-        print('This fucker is closed', trmnt)
-    else:
-        print('Nope, this fucker is still open', trmnt)
-    if latest_flight.start_at < close_time:
-        # This tournament is over: change status and clean swaps
-        print('Update tournament status to "waiting_results", id:', trmnt.id)
-        trmnt.status = 'waiting_results'
-        swaps = session.query(m.Swaps) \
-            .filter_by( tournament_id = trmnt.id ) \
-            .filter( or_(
-                m.Swaps.status == 'pending',
-                m.Swaps.status == 'incoming',
-                m.Swaps.status == 'counter_incoming' ) )
+if trmnts is not None:
+    for trmnt in trmnts:
+        latest_flight = trmnt.flights.pop()
 
-        for swap in swaps:
-            print('Update swap status to "canceled", id:', swap.id)
-            swap.status = 'canceled'
-        session.commit()
-        # Send fcm to all players when trmnt closes
-        users = get_all_players_from_trmnt( trmnt )
-        for user in users:
-            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-            print('Sending notification that trmnt closed to user id: ', user.id)
-            if user.event_update is True:
-                print('INITIATING SENDING NOTIFICATION')
-                send_fcm(
-                    user_id = user.user.id,
-                    title = "Event Ended",
-                    body = 'Event Ended: ' + trmnt.name,
-                    data = {
-                        'id': trmnt.id,
-                        # 'buy_in': buyin and buyin.id,
-                        'alert': 'Event Ended: ' + trmnt.name,
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results',
-                    }
-                )
-        for user in users:
-            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-            time = datetime.utcnow()
-            domain = os.environ['MAILGUN_DOMAIN']
-            requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                auth=(
-                    'api',
-                    os.environ.get('MAILGUN_API_KEY')),
-                data={
-                    'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                    'to': user.user.email,
-                    'subject': 'Event Ended: ' + trmnt.name,
-                    'text': 'Sending text email',
-                    'html': f'''
-                        <div>trmnt.id {trmnt.id}</div><br />
-                        <div>{trmnt.start_at} trmnt.start_at</div>
-                        <div>{time} datetime.utcnow()</div>
-                        
-                    '''
+        if latest_flight.start_at < close_time:
+            # This tournament is over: change status and clean swaps
+            print('Update tournament status to "waiting_results", id:', trmnt.id)
+            trmnt.status = 'waiting_results'
+            swaps = session.query(m.Swaps) \
+                .filter_by( tournament_id = trmnt.id ) \
+                .filter( or_(
+                    m.Swaps.status == 'pending',
+                    m.Swaps.status == 'incoming',
+                    m.Swaps.status == 'counter_incoming' ) )
+
+            for swap in swaps:
+                print('Update swap status to "canceled", id:', swap.id)
+                swap.status = 'canceled'
+            session.commit()
+            # Send fcm to all players when trmnt closes
+            users = get_all_players_from_trmnt( trmnt )
+    
+
+            for user in users:
+                # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+                print('Sending notification that trmnt closed to user id: ', user.id, user.user.id)
+                
+                if user.event_update is True:
+                    print('INITIATING SENDING NOTIFICATION')
+                    send_fcm(
+                        user_id = user.id,
+                        title = "Event Ended",
+                        body = 'Event Ended: ' + trmnt.name,
+                        data = {
+                            'id': trmnt.id,
+                            # 'buy_in': buyin and buyin.id,
+                            'alert': 'Event Ended: ' + trmnt.name,
+                            'type': 'result',
+                            'initialPath': 'Event Results',
+                            'finalPath': 'Swap Results',
+                        }
+                    )
+            for user in users:
+                # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+                time = datetime.utcnow()
+                domain = os.environ['MAILGUN_DOMAIN']
+                requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                    auth=(
+                        'api',
+                        os.environ.get('MAILGUN_API_KEY')),
+                    data={
+                        'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                        'to': user.user.email,
+                        'subject': 'Event Ended: ' + trmnt.name,
+                        'text': 'Sending text email',
+                        'html': f'''
+                            <div>trmnt.id {trmnt.id}</div><br />
+                            <div>{trmnt.start_at} trmnt.start_at</div>
+                            <div>{time} datetime.utcnow()</div>
+                            
+                        '''
+                    })
+
+
+
+    ###############################################################################
+    # Send fcm to all players when trmnt opens
+
+    _4mins_ago = datetime.utcnow() - timedelta(minutes=5)
+    _4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
+
+    trmnts = session.query(m.Tournaments) \
+        .filter( m.Tournaments.start_at < _4mins_ahead) \
+        .filter( m.Tournaments.start_at > _4mins_ago )
+    if trmnts is not None:
+
+        for trmnt in trmnts:
+            users = get_all_players_from_trmnt( trmnt )
+            for user in users:
+                # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+                time=datetime.utcnow()
+                domain = os.environ['MAILGUN_DOMAIN']
+                requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                    auth=(
+                        'api',
+                        os.environ.get('MAILGUN_API_KEY')),
+                    data={
+                        'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                        'to': user.user.email,
+                        'subject': 'Event Started: ' + trmnt.name,
+                        'text': 'Sending text email',
+                        'html': f'''
+                            <div>trmnt.id {trmnt.id}</div><br />
+                            <div>{trmnt.start_at} trmnt.start_at</div>
+                            <div>{time} datetime.utcnow()</div>
+                            <div>{_4mins_ago} _4mins_ago</div>
+                            <div>{_4mins_ahead} _4mins_ahead</div>
+                        '''
                 })
-
-
-
-###############################################################################
-# Send fcm to all players when trmnt opens
-
-_4mins_ago = datetime.utcnow() - timedelta(minutes=5)
-_4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
-
-trmnts = session.query(m.Tournaments) \
-    .filter( m.Tournaments.start_at < _4mins_ahead) \
-    .filter( m.Tournaments.start_at > _4mins_ago )
-
-for trmnt in trmnts:
-    print("Tournaments about to start", trmnt)
-
-for trmnt in trmnts:
-    users = get_all_players_from_trmnt( trmnt )
-    for user in users:
-        # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-        time=datetime.utcnow()
-        domain = os.environ['MAILGUN_DOMAIN']
-        requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-            auth=(
-                'api',
-                os.environ.get('MAILGUN_API_KEY')),
-            data={
-                'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                'to': user.user.email,
-                'subject': 'Event Started: ' + trmnt.name,
-                'text': 'Sending text email',
-                'html': f'''
-                    <div>trmnt.id {trmnt.id}</div><br />
-                    <div>{trmnt.start_at} trmnt.start_at</div>
-                    <div>{time} datetime.utcnow()</div>
-                    <div>{_4mins_ago} _4mins_ago</div>
-                    <div>{_4mins_ahead} _4mins_ahead</div>
-                '''
-        })
-for trmnt in trmnts:
-    users = get_all_players_from_trmnt( trmnt )
-    for user in users:
-        # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
-        if user.event_update is True:
-            print('THIS SHOULD BE SENT')
-            send_fcm(
-                user_id = user.user.id,
-                title = "Event Started",
-                body = 'iaas opened at ',
-                data = {
-                    'id': trmnt.id,
-                    'alert': trmnt.name + ' opened at ',
-                    # 'buy_in': buyin and buyin.id,
-                    'type': 'event',
-                    'initialPath': 'Event Listings',
-                    'finalPath': 'Event Lobby',
-                }
-            )
+        for trmnt in trmnts:
+            users = get_all_players_from_trmnt( trmnt )
+            for user in users:
+                # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
+                if user.event_update is True:
+                    print('THIS SHOULD BE SENT', user.id, user.user.id)
+                    send_fcm(
+                        user_id = user.user.id,
+                        title = "Event Started",
+                        body = 'iaas opened at ',
+                        data = {
+                            'id': trmnt.id,
+                            'alert': trmnt.name + ' opened at ',
+                            # 'buy_in': buyin and buyin.id,
+                            'type': 'event',
+                            'initialPath': 'Event Listings',
+                            'finalPath': 'Event Lobby',
+                        }
+                    )
 
 
 
