@@ -55,6 +55,8 @@ trmnts = session.query(m.Tournaments) \
         m.Flights.start_at < close_time
     ))
 
+print("Tournaments about to end", trmnts)
+
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
     print('timesss',latest_flight.start_at, close_time)
@@ -125,6 +127,8 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at < _4mins_ahead) \
     .filter( m.Tournaments.start_at > _4mins_ago )
 
+print("Tournaments about to start", trmnts)
+
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
@@ -151,7 +155,6 @@ for trmnt in trmnts:
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        print('INITIATING SENDING NOTIFICATION')
         # buyin = Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             print('THIS SHOULD BE SENT')
@@ -214,7 +217,7 @@ for swap in swaps:
             send_fcm(
                 user_id = user.id,
                 title = "5 Star",
-                body = "You're account has been suspended until you've paid the swaps you owe",
+                body = "2 days after results",
                 data = {
                     'id': trmnt.id,
                     'alert': "You're account has been suspended until you've paid the swaps you owe",
@@ -229,7 +232,7 @@ for swap in swaps:
             send_fcm(
                 user_id = user.id,
                 title = "4 Star",
-                body = "2 days",
+                body = "4 days after results",
                 data = {
                     'id': trmt_id,
                     'alert': "4 star",
@@ -244,7 +247,7 @@ for swap in swaps:
             send_fcm(
                 user_id = user.id,
                 title = "3 Star",
-                body = "4 days",
+                body = "6 days after results",
                 data = {
                     'id': trmt_id,
                     'alert': "3 Star",
@@ -259,7 +262,7 @@ for swap in swaps:
             send_fcm(
                 user_id = user.id,
                 title = "2 Star",
-                body = "6 Days",
+                body = "8 Days after results",
                 data = {
                     'id': trmt_id,
                     'alert': "2 Star",
@@ -273,7 +276,7 @@ for swap in swaps:
         send_fcm(
             user_id = user.id,
             title = "1 Star",
-            body = "7 Days",
+            body = "9 Days after results",
             data = {
                 'id': trmt_id,
                 'alert': "1 Star",
