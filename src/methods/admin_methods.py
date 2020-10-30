@@ -89,6 +89,8 @@ def attach(app):
             .filter( m.Tournaments.flights.any(
                 m.Flights.start_at < close_time
             ))
+        for trmnt in trmnts:
+            print('flights in this', trmnt)
 
         for trmnt in trmnts:
             print('flights in this', trmnt.flights)

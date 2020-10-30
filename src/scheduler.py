@@ -158,9 +158,8 @@ if trmnts is not None:
             for user in users:
                 # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
                 if user.event_update is True:
-                    print('THIS SHOULD BE SENT', user['id'], user.user.id)
                     send_fcm(
-                        user_id = user.user.id,
+                        user_id = user.id,
                         title = "Event Started",
                         body = 'iaas opened at ',
                         data = {
