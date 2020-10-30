@@ -59,7 +59,12 @@ for trmnt in trmnts:
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
-    if latest_flight.start_at < close_time:
+    fee = latest_flight.start_at + timedelta(hours=17)
+    if fee > close_time:
+        print('This fucker is closed', trmnt, fee, close_time)
+    else:
+        print('Nope, this fucker is still open', trmnt, fee, close_time)
+    if latest_flight.start_at > close_time:
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
@@ -77,7 +82,7 @@ for trmnt in trmnts:
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
-            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+            buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
             if user.event_update is True:
                 print('INITIATING SENDING NOTIFICATION')
@@ -87,6 +92,7 @@ for trmnt in trmnts:
                     body = 'Event Ended: ' + trmnt.name,
                     data = {
                         'id': trmnt.id,
+                        'buy_in': buyin and buyin.id,
                         'alert': 'Event Ended: ' + trmnt.name,
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -127,7 +133,7 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at > _4mins_ago )
 
 for trmnt in trmnts:
-    print("Tournaments about to end", trmnt)
+    print("Tournaments about to start", trmnt)
 
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
@@ -155,7 +161,7 @@ for trmnt in trmnts:
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        # buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             print('THIS SHOULD BE SENT')
             send_fcm(
@@ -165,6 +171,7 @@ for trmnt in trmnts:
                 data = {
                     'id': trmnt.id,
                     'alert': trmnt.name + ' opened at ',
+                    'buy_in': buyin and buyin.id,
                     'type': 'event',
                     'initialPath': 'Event Listings',
                     'finalPath': 'Event Lobby',
