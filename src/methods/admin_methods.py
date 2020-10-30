@@ -77,7 +77,7 @@ def attach(app):
 
 
         # Set tournaments to waiting for results, cancel all pending swaps
-        close_time = utils.designated_trmnt_close_time()
+        # close_time = utils.designated_trmnt_close_time()
 
         # trmnts = db.session.query(m.Tournaments) \
         #     .filter( m.Tournaments.status == 'open') \
@@ -85,70 +85,70 @@ def attach(app):
         #         m.Flights.start_at < close_time
         #     ))
 
-        trmnts = db.session.query(m.Tournaments) \
-            .filter( m.Tournaments.flights.any(
-                m.Flights.start_at < close_time
-            ))
-        for trmnt in trmnts:
-            print('flights in this', trmnt)
+        # trmnts = db.session.query(m.Tournaments) \
+        #     .filter( m.Tournaments.flights.any(
+        #         m.Flights.start_at < close_time
+        #     ))
+        # for trmnt in trmnts:
+        #     print('flights in this', trmnt)
 
-        for trmnt in trmnts:
-            print('flights in this', trmnt.flights)
-            latest_flight = trmnt.flights.pop()
-            print('timesss',latest_flight.start_at, trmnt, close_time)
-            if latest_flight.start_at < close_time:
-                print('Update tournament status to "waiting_results", id:', trmnt.id)
-                trmnt.status = 'waiting_results'
-                swaps = db.session.query(m.Swaps) \
-                    .filter_by( tournament_id = trmnt.id ) \
-                    .filter( or_( 
-                        m.Swaps.status == 'pending', 
-                        m.Swaps.status == 'incoming',
-                        m.Swaps.status == 'counter_incoming' ) )
+        # for trmnt in trmnts:
+        #     print('flights in this', trmnt.flights)
+        #     latest_flight = trmnt.flights.pop()
+        #     print('timesss',latest_flight.start_at, trmnt, close_time)
+        #     if latest_flight.start_at < close_time:
+        #         print('Update tournament status to "waiting_results", id:', trmnt.id)
+        #         trmnt.status = 'waiting_results'
+        #         swaps = db.session.query(m.Swaps) \
+        #             .filter_by( tournament_id = trmnt.id ) \
+        #             .filter( or_( 
+        #                 m.Swaps.status == 'pending', 
+        #                 m.Swaps.status == 'incoming',
+        #                 m.Swaps.status == 'counter_incoming' ) )
 
-                for swap in swaps:
-                    print('Update swap status to "canceled", id:', swap.id)
-                    swap.status = 'canceled'
-                db.session.commit()
+        #         for swap in swaps:
+        #             print('Update swap status to "canceled", id:', swap.id)
+        #             swap.status = 'canceled'
+        #         db.session.commit()
 
-                users = get_all_players_from_trmnt( trmnt )
-                for user in users:
-                    # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-                    time = datetime.utcnow()
-                    domain = os.environ['MAILGUN_DOMAIN']
-                    requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                        auth=(
-                            'api',
-                            os.environ.get('MAILGUN_API_KEY')),
-                        data={
-                            'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                            'to': f'{user.user.email}',
-                            'subject': 'Event Ended: ' + trmnt.name,
-                            'text': 'Sending text email',
-                            'html': f'''
-                                <div>trmnt.id {trmnt.id}</div><br />
-                                <div>{trmnt.start_at} trmnt.start_at</div>
-                                <div>{time} datetime.utcnow()</div>
+        #         users = get_all_players_from_trmnt( trmnt )
+        #         for user in users:
+        #             # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        #             time = datetime.utcnow()
+        #             domain = os.environ['MAILGUN_DOMAIN']
+        #             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+        #                 auth=(
+        #                     'api',
+        #                     os.environ.get('MAILGUN_API_KEY')),
+        #                 data={
+        #                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+        #                     'to': f'{user.user.email}',
+        #                     'subject': 'Event Ended: ' + trmnt.name,
+        #                     'text': 'Sending text email',
+        #                     'html': f'''
+        #                         <div>trmnt.id {trmnt.id}</div><br />
+        #                         <div>{trmnt.start_at} trmnt.start_at</div>
+        #                         <div>{time} datetime.utcnow()</div>
                                 
-                            '''
-                        }
-                    )
-                for user in users:
-                    buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-                    print('Sending notification that trmnt closed to user id: ', user.id)
-                    if user.event_update is True:
-                        send_fcm(
-                            user_id = user.id,
-                            title = "Event Ended",
-                            body = f'{trmnt.name} closed at {close_time}',
-                            data = {
-                                'id': trmnt.id,
-                                'buy_in': buyin and buyin.id,
-                                'alert': f'{trmnt.name} closed at {close_time}',
-                                'type': 'results',
-                                'initialPath': 'Event Results',
-                                'finalPath': 'Swap Results' }
-                        )
+        #                     '''
+        #                 }
+        #             )
+        #         for user in users:
+        #             buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        #             print('Sending notification that trmnt closed to user id: ', user.id)
+        #             if user.event_update is True:
+        #                 send_fcm(
+        #                     user_id = user.id,
+        #                     title = "Event Ended",
+        #                     body = f'{trmnt.name} closed at {close_time}',
+        #                     data = {
+        #                         'id': trmnt.id,
+        #                         'buy_in': buyin and buyin.id,
+        #                         'alert': f'{trmnt.name} closed at {close_time}',
+        #                         'type': 'results',
+        #                         'initialPath': 'Event Results',
+        #                         'finalPath': 'Swap Results' }
+        #                 )
 
         ###############################################################################
         # Send fcm to all players when trmnt opens
@@ -183,8 +183,7 @@ def attach(app):
                             <div>{_4mins_ahead} _4mins_ahead</div>
                         '''
                 })
-            for user in users:
-                buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+
                 print('It got through, so then TF', user.event_update)
                 if user.event_update is True:
                     send_fcm(
