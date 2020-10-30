@@ -153,6 +153,7 @@ if trmnts is not None:
                         <div>{_4mins_ahead} _4mins_ahead</div>
                     '''
             })
+            print("this user id", user.id, type(user.id) )
             # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
             if user.event_update is True:
                 send_fcm(
