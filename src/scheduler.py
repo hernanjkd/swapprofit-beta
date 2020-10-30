@@ -64,7 +64,7 @@ for trmnt in trmnts:
         print('This fucker is closed', trmnt, fee, close_time)
     else:
         print('Nope, this fucker is still open', trmnt, fee, close_time)
-    if latest_flight.start_at > close_time:
+    if fee > close_time:
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
