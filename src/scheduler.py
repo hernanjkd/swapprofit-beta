@@ -122,49 +122,49 @@ def get_all_players_from_trmnt(trmnte):
     ###############################################################################
     # Send fcm to all players when trmnt opens
 
-    _4mins_ago = datetime.utcnow() - timedelta(minutes=5)
-    _4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
+_4mins_ago = datetime.utcnow() - timedelta(minutes=5)
+_4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
 
-    trmnts = session.query(m.Tournaments) \
-        .filter( m.Tournaments.start_at < _4mins_ahead) \
-        .filter( m.Tournaments.start_at > _4mins_ago )
-    if trmnts is not None:
+trmnts = session.query(m.Tournaments) \
+    .filter( m.Tournaments.start_at < _4mins_ahead) \
+    .filter( m.Tournaments.start_at > _4mins_ago )
+if trmnts is not None:
 
-        for trmnt in trmnts:
-            users = get_all_players_from_trmnt( trmnt )
-            for user in users:
-                # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-                time=datetime.utcnow()
-                domain = os.environ['MAILGUN_DOMAIN']
-                requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                    auth=(
-                        'api',
-                        os.environ.get('MAILGUN_API_KEY')),
-                    data={
-                        'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                        'to': user.user.email,
-                        'subject': 'Event Started: ' + trmnt.name,
-                        'text': 'Sending text email',
-                        'html': f'''
-                            <div>trmnt.id {trmnt.id}</div><br />
-                            <div>{trmnt.start_at} trmnt.start_at</div>
-                            <div>{time} datetime.utcnow()</div>
-                            <div>{_4mins_ago} _4mins_ago</div>
-                            <div>{_4mins_ahead} _4mins_ahead</div>
-                        '''
-                })
-                # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
-                if user.event_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "Event Started",
-                        body = 'iaas opened at ',
-                        data = {
-                            'id': trmnt.id,
-                            'alert': trmnt.name + ' opened at ',
-                            'type': 'event'
-                        }
-                    )
+    for trmnt in trmnts:
+        users = get_all_players_from_trmnt( trmnt )
+        for user in users:
+            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+            time=datetime.utcnow()
+            domain = os.environ['MAILGUN_DOMAIN']
+            requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                auth=(
+                    'api',
+                    os.environ.get('MAILGUN_API_KEY')),
+                data={
+                    'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                    'to': user.user.email,
+                    'subject': 'Event Started: ' + trmnt.name,
+                    'text': 'Sending text email',
+                    'html': f'''
+                        <div>trmnt.id {trmnt.id}</div><br />
+                        <div>{trmnt.start_at} trmnt.start_at</div>
+                        <div>{time} datetime.utcnow()</div>
+                        <div>{_4mins_ago} _4mins_ago</div>
+                        <div>{_4mins_ahead} _4mins_ahead</div>
+                    '''
+            })
+            # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
+            if user.event_update is True:
+                send_fcm(
+                    user_id = user.id,
+                    title = "Event Started",
+                    body = 'iaas opened at ',
+                    data = {
+                        'id': trmnt.id,
+                        'alert': trmnt.name + ' opened at ',
+                        'type': 'event'
+                    }
+                )
 
 
 
