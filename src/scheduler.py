@@ -112,7 +112,7 @@ for trmnt in trmnts:
                         
                     '''
                 })
-
+        
 
 
 ###############################################################################
@@ -148,6 +148,8 @@ for trmnt in trmnts:
                     <div>{_4mins_ahead} _4mins_ahead</div>
                 '''
         })
+for trmnt in trmnts:
+    users = get_all_players_from_trmnt( trmnt )
     for user in users:
         print('INITIATING SENDING NOTIFICATION')
         # buyin = Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
@@ -204,7 +206,6 @@ users_to_update_swaprating = []
 
 for swap in swaps:
     user = session.query(m.Profiles).get( swap.sender_id )
-    print('How late am I',user.id)
     time_after_due_date = now - swap.due_at
     trmt_id = swap.tournament_id
     if swap.due_at > now:
