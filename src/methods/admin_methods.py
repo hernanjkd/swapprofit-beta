@@ -198,8 +198,7 @@ def attach(app):
                             'initialPath': 'Event Listings',
                             'finalPath': 'Event Lobby' }
                     )
-                else:
-                    print('Not Sending')
+
             
 
 
@@ -207,145 +206,145 @@ def attach(app):
         ###############################################################################
         # Delete buy-ins created before close time with status 'pending'
 
-        buyins = db.session.query(m.Buy_ins) \
-            .filter_by( status = 'pending' ) \
-            .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+        # buyins = db.session.query(m.Buy_ins) \
+        #     .filter_by( status = 'pending' ) \
+        #     .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
 
-        for buyin in buyins:
-            print('Deleting buy-in', buyin.id)
-            db.session.delete(buyin)
+        # for buyin in buyins:
+        #     print('Deleting buy-in', buyin.id)
+        #     db.session.delete(buyin)
 
-        db.session.commit()
+        # db.session.commit()
 
-        swaps = db.session.query(m.Swaps) \
-            .filter( m.Swaps.due_at != None ) \
-            .filter( m.Swaps.paid == False )
+        # swaps = db.session.query(m.Swaps) \
+        #     .filter( m.Swaps.due_at != None ) \
+        #     .filter( m.Swaps.paid == False )
 
-        now = datetime.utcnow()
-        users_to_update_swaprating = []
+        # now = datetime.utcnow()
+        # users_to_update_swaprating = []
 
-        for swap in swaps:
-            user = db.session.query(m.Profiles).get( swap.sender_id )
-            time_after_due_date = now - swap.due_at
-            trmt_id = swap.tournament_id
-            if swap.due_at > now:
-                swap_rating = 5
-                if user.result_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "5 Star",
-                        body = "Yee",
-                        data = {
-                            'id': trmt_id,
-                            'alert': "Yess",
-                            'type': 'result',
-                            'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results'
-                        }
-                    )
-            elif time_after_due_date < timedelta(days=2):
-                swap_rating = 4
-                if user.result_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "4 Star",
-                        body = "2 days",
-                        data = {
-                            'id': trmt_id,
-                            'alert': "4 star",
-                            'type': 'result',
-                            'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results'
-                        }
-                    )
-            elif time_after_due_date < timedelta(days=4):
-                swap_rating = 3
-                if user.result_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "3 Star",
-                        body = "4 days",
-                        data = {
-                            'id': trmt_id,
-                            'alert': "3 Star",
-                            'type': 'result',
-                            'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results' 
-                        }
-                    )
-            elif time_after_due_date < timedelta(days=6):
-                swap_rating = 2
-                if user.result_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "2 Star",
-                        body = "6 Days",
-                        data = {
-                            'id': trmt_id,
-                            'alert': "2 Star",
-                            'type': 'result',
-                            'initialPath': 'Event Results',
-                            'finalPath': 'Swap Results'
-                        }
-                    )
-            elif time_after_due_date < timedelta(days=14):
-                swap_rating = 1
-                send_fcm(
-                    user_id = user.id,
-                    title = "1 Star",
-                    body = "7 Days",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "1 Star",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results'
-                    }
-                )
+        # for swap in swaps:
+        #     user = db.session.query(m.Profiles).get( swap.sender_id )
+        #     time_after_due_date = now - swap.due_at
+        #     trmt_id = swap.tournament_id
+        #     if swap.due_at > now:
+        #         swap_rating = 5
+        #         if user.result_update is True:
+        #             send_fcm(
+        #                 user_id = user.id,
+        #                 title = "5 Star",
+        #                 body = "Yee",
+        #                 data = {
+        #                     'id': trmt_id,
+        #                     'alert': "Yess",
+        #                     'type': 'result',
+        #                     'initialPath': 'Event Results',
+        #                     'finalPath': 'Swap Results'
+        #                 }
+        #             )
+        #     elif time_after_due_date < timedelta(days=2):
+        #         swap_rating = 4
+        #         if user.result_update is True:
+        #             send_fcm(
+        #                 user_id = user.id,
+        #                 title = "4 Star",
+        #                 body = "2 days",
+        #                 data = {
+        #                     'id': trmt_id,
+        #                     'alert': "4 star",
+        #                     'type': 'result',
+        #                     'initialPath': 'Event Results',
+        #                     'finalPath': 'Swap Results'
+        #                 }
+        #             )
+        #     elif time_after_due_date < timedelta(days=4):
+        #         swap_rating = 3
+        #         if user.result_update is True:
+        #             send_fcm(
+        #                 user_id = user.id,
+        #                 title = "3 Star",
+        #                 body = "4 days",
+        #                 data = {
+        #                     'id': trmt_id,
+        #                     'alert': "3 Star",
+        #                     'type': 'result',
+        #                     'initialPath': 'Event Results',
+        #                     'finalPath': 'Swap Results' 
+        #                 }
+        #             )
+        #     elif time_after_due_date < timedelta(days=6):
+        #         swap_rating = 2
+        #         if user.result_update is True:
+        #             send_fcm(
+        #                 user_id = user.id,
+        #                 title = "2 Star",
+        #                 body = "6 Days",
+        #                 data = {
+        #                     'id': trmt_id,
+        #                     'alert': "2 Star",
+        #                     'type': 'result',
+        #                     'initialPath': 'Event Results',
+        #                     'finalPath': 'Swap Results'
+        #                 }
+        #             )
+        #     elif time_after_due_date < timedelta(days=14):
+        #         swap_rating = 1
+        #         send_fcm(
+        #             user_id = user.id,
+        #             title = "1 Star",
+        #             body = "7 Days",
+        #             data = {
+        #                 'id': trmt_id,
+        #                 'alert': "1 Star",
+        #                 'type': 'result',
+        #                 'initialPath': 'Event Results',
+        #                 'finalPath': 'Swap Results'
+        #             }
+        #         )
 
-            # Suspend account
-            else:
-                swap_rating = 0
-                user_account = db.session.query(m.Users).get( user.id )
-                user_account.naughty = True
-                print('Put on naughty list', user.id, user, user.naughty)
-                db.session.commit()
-                send_fcm(
-                    user_id = user.id,
-                    title = "Account Suspension",
-                    body = "You're account has been suspended until you've paid the swaps you owe",
-                    data = {
-                        'id': trmt_id,
-                        'alert': "You're account has been suspended until you've paid the swaps you owe",
-                        'type': 'result',
-                        'initialPath': 'Event Results',
-                        'finalPath': 'Swap Results'
-                    }
-                )
+        #     # Suspend account
+        #     else:
+        #         swap_rating = 0
+        #         user_account = db.session.query(m.Users).get( user.id )
+        #         user_account.naughty = True
+        #         print('Put on naughty list', user.id, user, user.naughty)
+        #         db.session.commit()
+        #         send_fcm(
+        #             user_id = user.id,
+        #             title = "Account Suspension",
+        #             body = "You're account has been suspended until you've paid the swaps you owe",
+        #             data = {
+        #                 'id': trmt_id,
+        #                 'alert': "You're account has been suspended until you've paid the swaps you owe",
+        #                 'type': 'result',
+        #                 'initialPath': 'Event Results',
+        #                 'finalPath': 'Swap Results'
+        #             }
+        #         )
                 
 
-            if swap.swap_rating != swap_rating:
-                # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-                swap.swap_rating = swap_rating
-                db.session.commit()
+        #     if swap.swap_rating != swap_rating:
+        #         # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
+        #         swap.swap_rating = swap_rating
+        #         db.session.commit()
                 
-                users_to_update_swaprating.append(user)
+        #         users_to_update_swaprating.append(user)
 
 
-        # Helper function to calculate the swap rating, used below
-        def calculate_swap_rating(user_id):
-            swaps = db.session.query(m.Swaps) \
-                .filter_by( sender_id=user_id ) \
-                .filter( m.Swaps.due_at != None )
-            total_swap_ratings = 0
-            for swap in swaps:
-                total_swap_ratings += swap.swap_rating
-            return total_swap_ratings / swaps.count()
+        # # Helper function to calculate the swap rating, used below
+        # def calculate_swap_rating(user_id):
+        #     swaps = db.session.query(m.Swaps) \
+        #         .filter_by( sender_id=user_id ) \
+        #         .filter( m.Swaps.due_at != None )
+        #     total_swap_ratings = 0
+        #     for swap in swaps:
+        #         total_swap_ratings += swap.swap_rating
+        #     return total_swap_ratings / swaps.count()
 
-        for user in users_to_update_swaprating:
-            user.swap_rating = calculate_swap_rating( user.id )
-            # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
-            db.session.commit()
+        # for user in users_to_update_swaprating:
+        #     user.swap_rating = calculate_swap_rating( user.id )
+        #     # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
+        #     db.session.commit()
     
         return 'Tournaments checked successfully'
     
