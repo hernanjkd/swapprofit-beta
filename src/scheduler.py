@@ -166,10 +166,7 @@ if trmnts is not None:
                         data = {
                             'id': trmnt.id,
                             'alert': trmnt.name + ' opened at ',
-                            # 'buy_in': buyin and buyin.id,
-                            'type': 'event',
-                            'initialPath': 'Event Listings',
-                            'finalPath': 'Event Lobby',
+                            'type': 'event'
                         }
                     )
 
