@@ -39,7 +39,6 @@ def get_all_players_from_trmnt(trmnte):
     the_users = []
     for flight in trmnte.flights:
         for a_buyin in flight.buy_ins:
-            print('a_buyin .user',a_buyin.user )
             if a_buyin.user not in the_users: # no repeats
                 the_users.append( a_buyin.user )
     return the_users
@@ -59,12 +58,12 @@ for trmnt in trmnts:
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
-    fee = latest_flight.start_at + timedelta(hours=17)
-    if fee > close_time:
-        print('This fucker is closed', trmnt, fee, close_time)
+    fee = latest_flight.start_at
+    if latest_flight.start_at < close_time:
+        print('This fucker is closed', trmnt)
     else:
-        print('Nope, this fucker is still open', trmnt, fee, close_time)
-    if fee > close_time:
+        print('Nope, this fucker is still open', trmnt)
+    if latest_flight.start_at < close_time:
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
@@ -82,17 +81,17 @@ for trmnt in trmnts:
         # Send fcm to all players when trmnt closes
         users = get_all_players_from_trmnt( trmnt )
         for user in users:
-            buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
             print('Sending notification that trmnt closed to user id: ', user.id)
             if user.event_update is True:
                 print('INITIATING SENDING NOTIFICATION')
                 send_fcm(
-                    user_id = user.id,
+                    user_id = user.user.id,
                     title = "Event Ended",
                     body = 'Event Ended: ' + trmnt.name,
                     data = {
                         'id': trmnt.id,
-                        'buy_in': buyin and buyin.id,
+                        # 'buy_in': buyin and buyin.id,
                         'alert': 'Event Ended: ' + trmnt.name,
                         'type': 'result',
                         'initialPath': 'Event Results',
@@ -119,7 +118,7 @@ for trmnt in trmnts:
                         
                     '''
                 })
-        
+
 
 
 ###############################################################################
@@ -161,17 +160,17 @@ for trmnt in trmnts:
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             print('THIS SHOULD BE SENT')
             send_fcm(
-                user_id = user.id,
+                user_id = user.user.id,
                 title = "Event Started",
                 body = 'iaas opened at ',
                 data = {
                     'id': trmnt.id,
                     'alert': trmnt.name + ' opened at ',
-                    'buy_in': buyin and buyin.id,
+                    # 'buy_in': buyin and buyin.id,
                     'type': 'event',
                     'initialPath': 'Event Listings',
                     'finalPath': 'Event Lobby',
