@@ -54,13 +54,12 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.flights.any(
         m.Flights.start_at < close_time
     ))
-
-print("Tournaments about to end", trmnts)
+for trmnt in trmnts:
+    print("Tournaments about to end", trmnt)
 
 for trmnt in trmnts:
     latest_flight = trmnt.flights.pop()
-    print('timesss',latest_flight.start_at, close_time)
-    if latest_flight.start_at < close_time:       
+    if latest_flight.start_at < close_time:
         # This tournament is over: change status and clean swaps
         print('Update tournament status to "waiting_results", id:', trmnt.id)
         trmnt.status = 'waiting_results'
@@ -127,7 +126,8 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at < _4mins_ahead) \
     .filter( m.Tournaments.start_at > _4mins_ago )
 
-print("Tournaments about to start", trmnts)
+for trmnt in trmnts:
+    print("Tournaments about to end", trmnt)
 
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
@@ -155,7 +155,7 @@ for trmnt in trmnts:
 for trmnt in trmnts:
     users = get_all_players_from_trmnt( trmnt )
     for user in users:
-        # buyin = Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
+        buyin = m.Buy_ins.query.get_latest(user_id=user.id, tournament_id=trmnt.id )
         if user.event_update is True:
             print('THIS SHOULD BE SENT')
             send_fcm(
