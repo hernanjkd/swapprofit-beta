@@ -153,9 +153,6 @@ def get_all_players_from_trmnt(trmnte):
                             <div>{_4mins_ahead} _4mins_ahead</div>
                         '''
                 })
-        for trmnt in trmnts:
-            users = get_all_players_from_trmnt( trmnt )
-            for user in users:
                 # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
                 if user.event_update is True:
                     send_fcm(
@@ -175,15 +172,15 @@ def get_all_players_from_trmnt(trmnte):
 ###############################################################################
 # Delete buy-ins created before close time with status 'pending'
 
-buyins = session.query(m.Buy_ins) \
-    .filter_by( status = 'pending' ) \
-    .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+# buyins = session.query(m.Buy_ins) \
+#     .filter_by( status = 'pending' ) \
+#     .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
 
-for buyin in buyins:
-    print('Deleting buy-in', buyin.id)
-    session.delete(buyin)
+# for buyin in buyins:
+#     print('Deleting buy-in', buyin.id)
+#     session.delete(buyin)
 
-session.commit()
+# session.commit()
 
 
 
@@ -198,130 +195,130 @@ session.commit()
     9 days -> 1 star
     10+ days -> suspension (naughty list)
 '''
-swaps = session.query(m.Swaps) \
-    .filter( m.Swaps.due_at != None ) \
-    .filter( m.Swaps.paid == False )
+# swaps = session.query(m.Swaps) \
+#     .filter( m.Swaps.due_at != None ) \
+#     .filter( m.Swaps.paid == False )
 
-now = datetime.utcnow()
-users_to_update_swaprating = []
+# now = datetime.utcnow()
+# users_to_update_swaprating = []
 
-for swap in swaps:
-    user = session.query(m.Profiles).get( swap.sender_id )
-    time_after_due_date = now - swap.due_at
-    trmt_id = swap.tournament_id
-    if swap.due_at > now:
-        swap_rating = 5
-        if user.result_update is True:
-            send_fcm(
-                user_id = user.id,
-                title = "5 Star",
-                body = "2 days after results",
-                data = {
-                    'id': trmnt.id,
-                    'alert': "You're account has been suspended until you've paid the swaps you owe",
-                    'type': 'result',
-                    'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results'
-                }
-            )
-    elif time_after_due_date < timedelta(days=2):
-        swap_rating = 4
-        if user.result_update is True:
-            send_fcm(
-                user_id = user.id,
-                title = "4 Star",
-                body = "4 days after results",
-                data = {
-                    'id': trmt_id,
-                    'alert': "4 star",
-                    'type': 'result',
-                    'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results'
-                }
-            )
-    elif time_after_due_date < timedelta(days=4):
-        swap_rating = 3
-        if user.result_update is True:
-            send_fcm(
-                user_id = user.id,
-                title = "3 Star",
-                body = "6 days after results",
-                data = {
-                    'id': trmt_id,
-                    'alert': "3 Star",
-                    'type': 'result',
-                    'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results'
-                }
-            )
-    elif time_after_due_date < timedelta(days=6):
-        swap_rating = 2
-        if user.result_update is True:
-            send_fcm(
-                user_id = user.id,
-                title = "2 Star",
-                body = "8 Days after results",
-                data = {
-                    'id': trmt_id,
-                    'alert': "2 Star",
-                    'type': 'result',
-                    'initialPath': 'Event Results',
-                    'finalPath': 'Swap Results'
-                }
-            )
-    elif time_after_due_date < timedelta(days=7):
-        swap_rating = 1
-        send_fcm(
-            user_id = user.id,
-            title = "1 Star",
-            body = "9 Days after results",
-            data = {
-                'id': trmt_id,
-                'alert': "1 Star",
-                'type': 'result',
-                'initialPath': 'Event Results',
-                'finalPath': 'Swap Results'
-            }
-        )
+# for swap in swaps:
+#     user = session.query(m.Profiles).get( swap.sender_id )
+#     time_after_due_date = now - swap.due_at
+#     trmt_id = swap.tournament_id
+#     if swap.due_at > now:
+#         swap_rating = 5
+#         if user.result_update is True:
+#             send_fcm(
+#                 user_id = user.id,
+#                 title = "5 Star",
+#                 body = "2 days after results",
+#                 data = {
+#                     'id': trmnt.id,
+#                     'alert': "You're account has been suspended until you've paid the swaps you owe",
+#                     'type': 'result',
+#                     'initialPath': 'Event Results',
+#                     'finalPath': 'Swap Results'
+#                 }
+#             )
+#     elif time_after_due_date < timedelta(days=2):
+#         swap_rating = 4
+#         if user.result_update is True:
+#             send_fcm(
+#                 user_id = user.id,
+#                 title = "4 Star",
+#                 body = "4 days after results",
+#                 data = {
+#                     'id': trmt_id,
+#                     'alert': "4 star",
+#                     'type': 'result',
+#                     'initialPath': 'Event Results',
+#                     'finalPath': 'Swap Results'
+#                 }
+#             )
+#     elif time_after_due_date < timedelta(days=4):
+#         swap_rating = 3
+#         if user.result_update is True:
+#             send_fcm(
+#                 user_id = user.id,
+#                 title = "3 Star",
+#                 body = "6 days after results",
+#                 data = {
+#                     'id': trmt_id,
+#                     'alert': "3 Star",
+#                     'type': 'result',
+#                     'initialPath': 'Event Results',
+#                     'finalPath': 'Swap Results'
+#                 }
+#             )
+#     elif time_after_due_date < timedelta(days=6):
+#         swap_rating = 2
+#         if user.result_update is True:
+#             send_fcm(
+#                 user_id = user.id,
+#                 title = "2 Star",
+#                 body = "8 Days after results",
+#                 data = {
+#                     'id': trmt_id,
+#                     'alert': "2 Star",
+#                     'type': 'result',
+#                     'initialPath': 'Event Results',
+#                     'finalPath': 'Swap Results'
+#                 }
+#             )
+#     elif time_after_due_date < timedelta(days=7):
+#         swap_rating = 1
+#         send_fcm(
+#             user_id = user.id,
+#             title = "1 Star",
+#             body = "9 Days after results",
+#             data = {
+#                 'id': trmt_id,
+#                 'alert': "1 Star",
+#                 'type': 'result',
+#                 'initialPath': 'Event Results',
+#                 'finalPath': 'Swap Results'
+#             }
+#         )
 
-    # Suspend account
-    else:
-        swap_rating = 0
-        # user_account = session.query(m.Users).get( user.id )
-        user.naughty = True
-        print('Put on naughty list', user, user.id, user.naughty)
-        session.commit()
-        send_fcm(
-            user_id = user.id,
-            title = "Account Suspension",
-            body = "You're account has been suspended until you've paid the swaps you owe",
-            data = {
-                'id': trmt_id,
-                'alert': "You're account has been suspended until you've paid the swaps you owe",
-                'type': 'result',
-                'initialPath': 'Event Results',
-                'finalPath': 'Swap Results',
-            }
-        )
+#     # Suspend account
+#     else:
+#         swap_rating = 0
+#         # user_account = session.query(m.Users).get( user.id )
+#         user.naughty = True
+#         print('Put on naughty list', user, user.id, user.naughty)
+#         session.commit()
+#         send_fcm(
+#             user_id = user.id,
+#             title = "Account Suspension",
+#             body = "You're account has been suspended until you've paid the swaps you owe",
+#             data = {
+#                 'id': trmt_id,
+#                 'alert': "You're account has been suspended until you've paid the swaps you owe",
+#                 'type': 'result',
+#                 'initialPath': 'Event Results',
+#                 'finalPath': 'Swap Results',
+#             }
+#         )
 
-    if swap.swap_rating != swap_rating:
-        # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-        swap.swap_rating = swap_rating
-        session.commit()
-        users_to_update_swaprating.append(user)
+#     if swap.swap_rating != swap_rating:
+#         # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
+#         swap.swap_rating = swap_rating
+#         session.commit()
+#         users_to_update_swaprating.append(user)
 
 
-# Helper function to calculate the swap rating, used below
-def calculate_swap_rating(user_id):
-    swaps = session.query(m.Swaps) \
-        .filter_by( sender_id=user_id ) \
-        .filter( m.Swaps.due_at != None )
-    total_swap_ratings = 0
-    for swap in swaps:
-        total_swap_ratings += swap.swap_rating
-    return total_swap_ratings / swaps.count()
+# # Helper function to calculate the swap rating, used below
+# def calculate_swap_rating(user_id):
+#     swaps = session.query(m.Swaps) \
+#         .filter_by( sender_id=user_id ) \
+#         .filter( m.Swaps.due_at != None )
+#     total_swap_ratings = 0
+#     for swap in swaps:
+#         total_swap_ratings += swap.swap_rating
+#     return total_swap_ratings / swaps.count()
 
-for user in users_to_update_swaprating:
-    user.swap_rating = calculate_swap_rating( user.id )
-    # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
-    session.commit()
+# for user in users_to_update_swaprating:
+#     user.swap_rating = calculate_swap_rating( user.id )
+#     # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
+#     session.commit()
