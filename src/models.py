@@ -274,6 +274,7 @@ class Tournaments(db.Model):
     @staticmethod
     def get_live_upcoming(user_id=False):
         close_time = utils.designated_trmnt_close_time()
+        print('close time', close_time)
         trmnts = Tournaments.query \
                     .filter( Tournaments.flights.any(
                         Flights.start_at > close_time ))
@@ -281,15 +282,20 @@ class Tournaments(db.Model):
             trmnts =  trmnts.filter( Tournaments.flights.any( 
                     Flights.buy_ins.any( user_id = user_id ))) \
                 .order_by( Tournaments.start_at.asc() )
+
         return trmnts if trmnts.count() > 0 else None
 
     @staticmethod
     def get_history(user_id=False):
         close_time = utils.designated_trmnt_close_time()
+                        # db.not_( Flights.start_at > close_time ))) \
+        print('close time', close_time)
+
         trmnts = Tournaments.query \
-                    .filter( Tournaments.flights.any(
-                        db.not_( Flights.start_at > close_time ))) \
+                    .filter( Tournaments.flights.any(Flights.start_at < close_time )) \
                     .order_by( Tournaments.start_at.desc() )
+        for trmnt in trmnts:
+            print("YOU WERE IN HERE", trmnt)
         if user_id:
             trmnts = trmnts.filter( Tournaments.flights.any( 
                             Flights.buy_ins.any( user_id = user_id )))
@@ -330,6 +336,27 @@ class Tournaments(db.Model):
             'flights': [x.serialize() for x in self.flights],
             'swaps': [x.serialize() for x in self.swaps],
             'buy_ins': self.get_all_users_latest_buyins()
+        }
+
+    def serialize2(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'casino': self.casino,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'start_at': self.start_at,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'time_zone': self.time_zone,
+            'results_link': self.results_link,
+            'tournament_status': self.status._value_,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'flights': [x.serialize() for x in self.flights],
+            'swaps': [x.serialize() for x in self.swaps],
         }
 
 
@@ -405,7 +432,7 @@ class Buy_ins(db.Model):
     def get_latest(user_id, tournament_id):
         return ( Buy_ins.query
             .filter( Buy_ins.flight.has( tournament_id=tournament_id ))
-            .filter_by( user_id=user_id )
+            .filter( Buy_ins.user_id==user_id )
             .order_by( Buy_ins.id.desc() ).first() )
 
     def serialize(self):

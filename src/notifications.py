@@ -2,9 +2,16 @@ import os
 import utils
 import requests
 from flask import render_template, jsonify
+from sqlalchemy import create_engine, func, asc, or_
+
 from models import Devices
 from utils import APIException
 from pyfcm import FCMNotification
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine( os.environ.get('DATABASE_URL') )
+Session = sessionmaker( bind=engine )
+session = Session()
 
 push_service = None
 FIREBASE_KEY = os.environ.get('FIREBASE_KEY')
@@ -41,8 +48,8 @@ def send_email(template, emails, data={}):
 
 
 def send_fcm(user_id, title, body, data={}):
-
-    devices = Devices.query.filter_by( user_id = user_id )
+    devices = session.query(Devices).filter( Devices.user_id == user_id )
+    # devices = Devices.query.filter( user_id = user_id )
     registration_ids = [device.token for device in devices]
 
     if len(registration_ids) == 0 or push_service is None:

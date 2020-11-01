@@ -15,6 +15,10 @@ def swap_tracker_json(trmnt, user_id):
     my_buyin = Buy_ins.get_latest( user_id=user_id, tournament_id=trmnt.id )
     final_profit = 0
 
+    print('user_id', user_id)
+    print('tournament_id', trmnt.id)
+    print('my_buyin', my_buyin)
+
     swaps = Swaps.query.filter_by(
         sender_id = user_id,
         tournament_id = trmnt.id

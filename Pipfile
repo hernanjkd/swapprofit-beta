@@ -28,6 +28,7 @@ google-cloud-vision = "*"
 pyfcm = "*"
 mysql = "*"
 postgres = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"

@@ -4,6 +4,7 @@ from models import db, Users, Profiles, Tournaments, Swaps, Flights, Buy_ins, \
 from datetime import datetime, timedelta
 from utils import sha256
 import actions
+import pytz
 
 
 def run():
@@ -294,34 +295,48 @@ def run():
     ########################
     #     TOURNAMENTS
     ########################
+    d1 = datetime.utcnow()
+    d2 = datetime.utcnow() - timedelta(hours=17, minutes=0)
+    # est = pytz.timezone('EST')
+    # d1 = datetime.now(est)
+    # d2 = datetime.now(est) - timedelta(hours=17, minutes=0)
+    # fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+    # print(d1.strftime(fmt))
+    # print(d2.strftime(fmt))
+
+    # def toUTC(d):
+    #     return tz.normalize(tz.localize(d))
+
+    # Now convert it to another timezon
+    # Now convert it to another timezone
 
     aboutToStart = Tournaments(
-        casino='Casino',
+        casino='Seminole Hard Rock Hotel & Casino',
         name='About To Start Event',
-        address='261 Main St',
-        city='Black Hawk',
-        state='CO',
-        zip_code='80422',
-        latitude=39.801105,
-        longitude=-105.503991,
-        start_at=datetime.utcnow() + timedelta(minutes=7)
+        address='1 Seminole Way',
+        city='Davie',
+        state='FL',
+        zip_code='33314',
+        latitude=26.0510,
+        longitude=-80.2097,
+        start_at= d1,
+        time_zone='Etc/GMT-4'
     )
     db.session.add(aboutToStart)
-
     aboutToEnd = Tournaments(
-        casino='Casino',
+        casino='Seminole Hard Rock Hotel & Casino',
         name='About To End Event',
-        address='6510 Antelope Rd',
-        city='Citrus Heights',
-        state='CA',
-        zip_code='95621',
-        latitude=38.695155,
-        longitude=-121.307501,
-        start_at= datetime.utcnow() - timedelta(hours=16, minutes=50)
+        address='1 Seminole Way',
+        city='Davie',
+        state='FL',
+        zip_code='33314',
+        latitude=26.0510,
+        longitude=-80.2097,
+        start_at= d2,
+        time_zone='EST',
     )
     db.session.add(aboutToEnd)
 
-    db.session.flush()
 
     ########################
     #       FLIGHTS
@@ -330,16 +345,18 @@ def run():
     flight1_start = Flights(
         start_at=aboutToStart.start_at,
         tournament=aboutToStart,
-        day=None
+        day=1
     )
     db.session.add(flight1_start)
 
     flight1_end = Flights(
         start_at=aboutToEnd.start_at,
         tournament=aboutToEnd,
-        day=None
+        day=1
     )
     db.session.add(flight1_end)
+
+    db.session.flush()
 
 
     # flight1_heartland = Flights(
@@ -380,7 +397,6 @@ def run():
     # )
     # db.session.add(flight1_wpt)
 
-    db.session.flush()
 
     ########################
     #        SWAPS
