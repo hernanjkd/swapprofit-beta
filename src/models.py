@@ -3,10 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import asc, desc
 from datetime import datetime, timedelta
 import enum
+import os
 
 db = SQLAlchemy()
 
-
+# engine = create_engine( os.environ.get('DATABASE_URL') )
+# Session = sessionmaker( bind=engine )
+# session = Session()
 
 class UserStatus(enum.Enum):
     valid = 'valid'
@@ -411,6 +414,7 @@ class Buy_ins(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     flight_id = db.Column(db.Integer, db.ForeignKey('flights.id'))
+    tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
     receipt_img_url = db.Column(db.String(250))
     chips = db.Column(db.Integer)
     table = db.Column(db.String(20))
@@ -430,10 +434,13 @@ class Buy_ins(db.Model):
 
     @staticmethod
     def get_latest(user_id, tournament_id):
-        return ( Buy_ins.query
-            .filter( Buy_ins.flight.has( tournament_id=tournament_id ))
-            .filter( Buy_ins.user_id==user_id )
-            .order_by( Buy_ins.id.desc() ).first() )
+        print('user_id', user_id)
+        print('tournament_id', tournament_id)
+        # print('plz', Buy_ins.query.filter( Buy_ins.user_id==user_id ))
+        # return ( __self__.query.get( user_id )
+        #     .filter( Buy_ins.flight.has( tournament_id=tournament_id ))
+        #     .filter( Buy_ins.user_id==user_id )
+        #     .order_by( Buy_ins.id.desc() ).first() )
 
     def serialize(self):
         u = self.user

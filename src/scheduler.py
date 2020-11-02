@@ -24,8 +24,8 @@ import models as m
 from sqlalchemy import create_engine, func, asc, or_
 from sqlalchemy.orm import sessionmaker
 from notifications import send_email, send_fcm
-from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
-    Transactions, Users
+from models import ( db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
+    Transactions, Users )
 
 engine = create_engine( os.environ.get('DATABASE_URL') )
 Session = sessionmaker( bind=engine )
@@ -159,8 +159,25 @@ if trmnts is not None:
                         <div>{_5mins_ahead} _4mins_ahead</div>
                     '''
             })
+            # print('user_id', user.id)
+            # print('tournament_id', trmnt.id)
+            # buyin = m.Buy_ins.query.get_latest(user.id, trmnt.id )
+            # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
 
-            # buyin = m.Buy_ins.query.get_latest(user_id=user.user.id, tournament_id=trmnt.id )
+            # print("Buyin", buyin, buyin.id)
+            ueser = session.query(m.Buy_ins) \
+                .filter( Buy_ins.flight.has( tournament_id=trmnt.id )) \
+                .filter( m.Buy_ins.user_id==user.id ) \
+                .order_by( m.Buy_ins.id.desc() ).first()
+            # ter = ueser.serialize()
+            # buyin = ter['my_buyin']['id']
+                # (m.Buy_ins) \
+                # .filter( m.Buy_ins.tournament_id == trmnt.id ) \
+                # .filter( m.Buy_ins.user_id==user.id ) \
+                # .order_by( m.Buy_ins.id.desc() ).first()
+            
+            print("Buyin", ueser)
+ 
             if user.event_update is True:
                 isdst_now_in = lambda zonename: bool(datetime.now(pytz.timezone(zonename)).dst())
                 y = 0 if isdst_now_in(trmnt.time_zone) else -1
@@ -175,6 +192,7 @@ if trmnts is not None:
                     data = {
                         'id': trmnt.id,
                         'alert': trmnt.name + '\nopened at ' + start_time,
+                        'buyin_id': ueser.id,
                         'type': 'event',
                         'initialPath': 'Event Listings',
                         'finalPath': 'Event Lobby'

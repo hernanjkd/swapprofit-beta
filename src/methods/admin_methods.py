@@ -69,10 +69,8 @@ def attach(app):
             the_users = []
             for flight in trmnt.flights:
                 for a_buyin in flight.buy_ins:
-                    print('a_buyin .user',a_buyin.user )
                     if a_buyin.user not in the_users: # no repeats
                         the_users.append( a_buyin.user )
-            print('the_users', the_users)
             return the_users
 
 
