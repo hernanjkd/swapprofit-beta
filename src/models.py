@@ -313,10 +313,15 @@ class Tournaments(db.Model):
         buyins = []
         for buyin in all_buyins:
             user_id = buyin.user_id
+            print('hello', user_id)
             # Users may have multiple buy_ins in one tournament
             if user_id not in user_ids:
                 user_ids.append( user_id )
-                buyins.append( Buy_ins.get_latest(user_id, self.id).serialize() )
+                ueser = db.session.query(Buy_ins) \
+                    .filter( Buy_ins.flight.has( tournament_id=self.id )) \
+                    .filter( Buy_ins.user_id==user_id ) \
+                    .order_by( Buy_ins.id.desc() ).first().serialize()
+                buyins.append( ueser )
         return buyins
 
     def serialize(self):
@@ -436,6 +441,11 @@ class Buy_ins(db.Model):
     def get_latest(user_id, tournament_id):
         print('user_id', user_id)
         print('tournament_id', tournament_id)
+        latest_buyin = db.session.query(Buy_ins) \
+            .filter( Buy_ins.flight.has( tournament_id=tournament_id )) \
+            .filter( Buy_ins.user_id==user_id ) \
+            .order_by( Buy_ins.id.desc() ).first()
+        return latest_buyin
         # print('plz', Buy_ins.query.filter( Buy_ins.user_id==user_id ))
         # return ( __self__.query.get( user_id )
         #     .filter( Buy_ins.flight.has( tournament_id=tournament_id ))

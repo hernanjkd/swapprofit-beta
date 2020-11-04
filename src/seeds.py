@@ -296,7 +296,7 @@ def run():
     #     TOURNAMENTS
     ########################
     d1 = datetime.utcnow()
-    d2 = datetime.utcnow() - timedelta(hours=17, minutes=0)
+    d2 = datetime.utcnow() - timedelta(hours=18, minutes=0)
     # est = pytz.timezone('EST')
     # d1 = datetime.now(est)
     # d2 = datetime.now(est) - timedelta(hours=17, minutes=0)

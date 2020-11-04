@@ -372,10 +372,12 @@ def attach(app):
             trmnt = Tournaments.query.get( trmntjson['id'] )
             if trmnt is None:
                 print(f'Adding trmnt id: {trmntjson["id"]}')
+                print(f'Checking trmnt json: {trmntjson}')
                 db.session.add( Tournaments(
                     **{col:val for col,val in trmntjson.items()} ))
             else:
                 print(f'Updating trmnt id: {trmntjson["id"]}')
+                print(f'Checking trmnt json: {trmntjson["casino"]}')
                 for col,val in trmntjson.items():
                     if getattr(trmnt, col) != val:
                         setattr(trmnt, col, val)
@@ -385,10 +387,12 @@ def attach(app):
                 flight = Flights.query.get( flightjson['id'] )
                 if flight is None:
                     print(f'Adding flight id: {flightjson["id"]}')
+                    print(f'Checking flight json: {flightjson}')
                     db.session.add( Flights(
                         **{col:val for col,val in flightjson.items()} ))
                 else:
                     print(f'Updating flight id: {flightjson["id"]}')
+                    print(f'Checking flight json: {flightjson}')
                     for col,val in flightjson.items():
                         if getattr(flight, col) != val:
                             setattr(flight, col, val)

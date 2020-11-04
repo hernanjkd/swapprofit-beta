@@ -165,10 +165,11 @@ if trmnts is not None:
             # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
 
             # print("Buyin", buyin, buyin.id)
-            ueser = session.query(m.Buy_ins) \
+            my_buyin = session.query(m.Buy_ins) \
                 .filter( Buy_ins.flight.has( tournament_id=trmnt.id )) \
                 .filter( m.Buy_ins.user_id==user.id ) \
                 .order_by( m.Buy_ins.id.desc() ).first()
+            # my_buyin = m.Buy_ins.get_latest( user_id=user.id, tournament_id=trmnt.id )
             # ter = ueser.serialize()
             # buyin = ter['my_buyin']['id']
                 # (m.Buy_ins) \
@@ -176,7 +177,7 @@ if trmnts is not None:
                 # .filter( m.Buy_ins.user_id==user.id ) \
                 # .order_by( m.Buy_ins.id.desc() ).first()
             
-            print("Buyin", ueser)
+            print("Buyin", my_buyin)
  
             if user.event_update is True:
                 isdst_now_in = lambda zonename: bool(datetime.now(pytz.timezone(zonename)).dst())
@@ -192,7 +193,7 @@ if trmnts is not None:
                     data = {
                         'id': trmnt.id,
                         'alert': trmnt.name + '\nopened at ' + start_time,
-                        'buyin_id': ueser.id,
+                        'buyin_id': my_buyin.id,
                         'type': 'event',
                         'initialPath': 'Event Listings',
                         'finalPath': 'Event Lobby'
