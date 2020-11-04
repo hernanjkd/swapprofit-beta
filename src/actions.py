@@ -153,7 +153,7 @@ def load_tournament_file():
         if trmnt is None:
 
             casino = cache.get( r['Casino ID'] )
-            
+            print("THIS CASINO", f'{casino}') 
             trmntjson = {
                 **trmntjson,
                 'casino': casino['name'],
