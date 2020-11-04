@@ -32,6 +32,7 @@ for d in data:
     else:
         print(f'Updating trmnt id: {trmntjson["id"]}')
         print(f'Checking trmnt json: {trmntjson}')
+        print(f'Checking trmnt json: {trmnt}')
         for col,val in trmntjson.items():
             if getattr(trmnt, col) != val:
                 setattr(trmnt, col, val)
