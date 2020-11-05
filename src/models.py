@@ -200,6 +200,7 @@ class Swaps(db.Model):
     percentage = db.Column(db.Integer, nullable=False)
     due_at = db.Column(db.DateTime, default=None)
     paid = db.Column(db.Boolean, default=False)
+    confirmed = db.Column(db.Boolean, default=False)
     swap_rating = db.Column(db.Integer)
     result_winnings = db.Column(db.Boolean, default=None)
     cost = db.Column(db.Integer, default=1)
@@ -236,6 +237,7 @@ class Swaps(db.Model):
             'sender_user': self.sender_user.serialize(),
             'recipient_user': self.recipient_user.serialize(),
             'paid': self.paid,
+            'confirmed': self.confirmed,
             'cost': self.cost,
             'counter_swap_id': self.counter_swap_id,
             'counter_percentage': self.counter_swap.percentage,

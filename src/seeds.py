@@ -245,13 +245,11 @@ def run():
     ))
     db.session.flush()
 
-
-
     ########################
     #     TOURNAMENTS
     ########################
     d1 = datetime.utcnow()
-    d2 = datetime.utcnow() - timedelta(hours=18, minutes=0)
+    d2 = datetime.utcnow() - timedelta(days=4,hours=18, minutes=0)
 
 
     aboutToStart = Tournaments(
@@ -280,7 +278,6 @@ def run():
         time_zone='EST',
     )
     db.session.add(aboutToEnd)
-
 
     ########################
     #       FLIGHTS
@@ -312,7 +309,7 @@ def run():
         sender_user=gabe,
         recipient_user=cary,
         percentage=10,
-        status='pending',
+        status='agreed',
         due_at=(aboutToEnd.start_at + timedelta(days=4))
     )
     s2 = Swaps(
@@ -320,7 +317,7 @@ def run():
         sender_user=cary,
         recipient_user=gabe,
         percentage=10,
-        status='incoming',
+        status='agreed',
         due_at=(aboutToEnd.start_at + timedelta(days=4)),
         counter_swap=s1
     )
@@ -332,7 +329,7 @@ def run():
         sender_user=gabe,
         recipient_user=cary,
         percentage=2,
-        status='pending',
+        status='agreed',
         due_at=(aboutToEnd.start_at + timedelta(days=4))
     )
     s2 = Swaps(
@@ -340,7 +337,7 @@ def run():
         sender_user=cary,
         recipient_user=gabe,
         percentage=3,
-        status='incoming',
+        status='agreed',
         due_at=(aboutToEnd.start_at + timedelta(days=4)),
         counter_swap=s1
     )

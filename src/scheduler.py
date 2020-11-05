@@ -230,6 +230,7 @@ swaps = session.query(m.Swaps) \
 
 now = datetime.utcnow()
 users_to_update_swaprating = []
+users_to_notify = []
 
 for swap in swaps:
     user = session.query(m.Profiles).get( swap.sender_id )
@@ -297,6 +298,25 @@ for swap in swaps:
             )
     elif time_after_due_date < timedelta(days=7):
         swap_rating = 1
+        time=datetime.utcnow()
+        domain = os.environ['MAILGUN_DOMAIN']
+        requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+            auth=(
+                'api',
+                os.environ.get('MAILGUN_API_KEY')),
+            data={
+                'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                'to': user.user.email,
+                'subject': 'You are in Danger of being Suspended',
+                'text': 'Sending text email',
+                'html': f'''
+                    <div>trmnt.id {trmnt.id}</div><br />
+                    <div>{trmnt.start_at} trmnt.start_at</div>
+                    <div>{time} datetime.utcnow()</div>
+                    <div>{_5mins_ago} _4mins_ago</div>
+                    <div>{_5mins_ahead} _4mins_ahead</div>
+                '''
+        })
         send_fcm(
             user_id = user.id,
             title = "1 Star Reminder",
@@ -317,6 +337,9 @@ for swap in swaps:
         user.naughty = True
         print('Put on naughty list', user, user.id, user.naughty)
         session.commit()
+        send_email( template='account_suspension', emails=user.email, 
+            # data={'validation_link': utils.jwt_link(user.id, role='email_change')} 
+            )
         send_fcm(
             user_id = user.id,
             title = "Account Suspension",
