@@ -1022,14 +1022,14 @@ def attach(app):
 
 
     # UPDATE SWAP PAID STATUS
-    @app.route('/users/me/swaps/<int:id>/done', methods=['PUT'])
+    @app.route('/users/me/swaps/<int:id>/paid', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_paid(user_id, id):
 
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
         prof = Profiles.query.get(user_id)
-        fullName = prof['first_name'] + ' ' + prof['last_name']
+        fullName = prof.first_name + ' ' + prof.last_name
         # Security validation for single swap
         swap = Swaps.query.get(id)
         if req['tournament_id'] !=  swap.tournament_id \
@@ -1055,22 +1055,19 @@ def attach(app):
         now = datetime.utcnow()
         time_after_due_date = now - swap.due_at
 
-        if swap.due_at > now:
+        if time_after_due_date < timedelta(days=2):
             swap_rating = 5
-        elif time_after_due_date < timedelta(days=2):
-            swap_rating = 4
         elif time_after_due_date < timedelta(days=4):
-            swap_rating = 3
+            swap_rating = 4
         elif time_after_due_date < timedelta(days=6):
+            swap_rating = 3
+        elif time_after_due_date < timedelta(days=8):
             swap_rating = 2
-        elif time_after_due_date < timedelta(days=7):
+        elif time_after_due_date < timedelta(days=9):
             swap_rating = 1
-        
         # Suspend account
         else:
             swap_rating = 0
-
-
 
         # Set to paid and add swap_rating to all the swaps with that user and that trmnt
         swaps_to_pay = Swaps.query.filter_by(
@@ -1079,13 +1076,14 @@ def attach(app):
             status = 'agreed'
         )
         for swap in swaps_to_pay:
-            swap.swap_rating = swap_rating
+            # swap.swap_rating = swap_rating
             swap.paid = True
+            swap.paid_at = datetime.utcnow()
 
         db.session.commit()
 
         user = Profiles.query.get( user_id )
-        user.swap_rating = user.calculate_swap_rating()
+        # user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
 
         send_fcm(
@@ -1101,6 +1099,85 @@ def attach(app):
         )
 
         return jsonify({'message':'Swap/s has been paid'})
+
+    @app.route('/users/me/swaps/<int:id>/confirmed', methods=['PUT'])
+    @role_jwt_required(['user'])
+    def set_swap_confirmed(user_id, id):
+        req = request.get_json()
+        utils.check_params(req, 'tournament_id', 'recipient_id')
+        prof = Profiles.query.get(user_id)
+        fullName = prof.first_name + ' ' + prof.last_name
+        # Security validation for single swap
+        swap = Swaps.query.get(id)
+        if req['tournament_id'] !=  swap.tournament_id \
+            or req['recipient_id'] != swap.recipient_id:
+            raise APIException('Swap data does not match json data', 400)
+
+        if swap.status._value_ != 'agreed':
+            raise APIException('This swap has not been agreed upon', 400)
+
+        if swap.confirmed == True:
+            raise APIException('This swap is already confirmed', 400)
+
+        # Calculate swap rating for these swaps
+        '''
+            swap.due_at is 2 days after results come in
+            2 days -> 5 stars
+            4 days -> 4 stars
+            6 days -> 3 stars
+            8 days -> 2 stars
+            9 days -> 1 star
+            10+ days -> suspension (naughty list)
+        '''
+        now = datetime.utcnow()
+        time_after_due_date = swap.paid_at - swap.due_at
+
+        if time_after_due_date < timedelta(days=2):
+            swap_rating = 5
+        elif time_after_due_date < timedelta(days=4):
+            swap_rating = 4
+        elif time_after_due_date < timedelta(days=6):
+            swap_rating = 3
+        elif time_after_due_date < timedelta(days=7):
+            swap_rating = 2
+        elif time_after_due_date < timedelta(days=9):
+            swap_rating = 1
+        # Suspend account
+        else:
+            print("Out of anughty prison")
+
+
+
+        # Set to confirmed and add swap_rating to all the swaps with that user and that trmnt
+        swaps_to_pay = Swaps.query.filter_by(
+            tournament_id = req['tournament_id'],
+            recipient_id = req['recipient_id'],
+            status = 'agreed'
+        )
+        for swap in swaps_to_pay:
+            swap.swap_rating = swap_rating
+            swap.confirmed = True
+
+        db.session.commit()
+
+        user = Profiles.query.get( user_id )
+        print("mmm",user.swap_rating)
+        user.swap_rating = user.calculate_swap_rating()
+        db.session.commit()
+
+        send_fcm(
+            user_id = req['recipient_id'],
+            title = "Confirmed Swaps",
+            body = fullName + ' confirmed your payment to you',
+            data = {
+                'id': req['tournament_id'],
+                'alert': fullName + ' confirmed your payment to you',
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
+
+        return jsonify({'message':'Swap/s has been paid'}) 
 
 
     # GET SWAP TRACKER (CURRENT/UPCOMING)

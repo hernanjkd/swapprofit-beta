@@ -141,6 +141,7 @@ class Profiles(db.Model):
             .filter( Swaps.due_at != None )
         total_swap_ratings = 0
         for swap in swaps:
+            print("SWAP", swap.swap_rating)
             total_swap_ratings += swap.swap_rating
         return total_swap_ratings / swaps.count()
 
@@ -200,6 +201,7 @@ class Swaps(db.Model):
     percentage = db.Column(db.Integer, nullable=False)
     due_at = db.Column(db.DateTime, default=None)
     paid = db.Column(db.Boolean, default=False)
+    paid_at = db.Column(db.DateTime, default=None)
     confirmed = db.Column(db.Boolean, default=False)
     swap_rating = db.Column(db.Integer)
     result_winnings = db.Column(db.Boolean, default=None)
@@ -237,6 +239,7 @@ class Swaps(db.Model):
             'sender_user': self.sender_user.serialize(),
             'recipient_user': self.recipient_user.serialize(),
             'paid': self.paid,
+            'paid_at': self.paid_at,
             'confirmed': self.confirmed,
             'cost': self.cost,
             'counter_swap_id': self.counter_swap_id,
