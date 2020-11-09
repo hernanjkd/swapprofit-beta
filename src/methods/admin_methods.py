@@ -947,8 +947,8 @@ def attach(app):
         r  = request.get_json()
 
         # Security token check
-        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-            return jsonify({'error':'API token does not match'})        
+        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+        #     return jsonify({'error':'API token does not match'})        
 
         trmnt = Tournaments.query.get( id )
         if trmnt is None:
