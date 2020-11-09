@@ -541,16 +541,19 @@ def attach(app):
         # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
         #     return jsonify({'error':r['api_token']})
         
-        
+        print('Tournament ID',r['tournament_id'])
+        # print('Buyin ID', r['tournament_buyin'])
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
             return jsonify(
                 {'error':'Tournament not found with id: '+ r['tournament_id']})
-        trmnt_buyin = Buy_ins.query.get( r['tournament_buyin'] )
-        if trmnt_buyin is None:
-            return jsonify(
-                {'error':'Buyin not found with id: '+ r['tournament_buyin']})
-        print('eee',trmnt_buyin.id)
+        print('trmnt', trmnt)
+        # trmnt_buyin = Buy_ins.query.get( r['tournament_id'] )
+        # if trmnt_buyin is None:
+        #     return jsonify(
+        #         {'trmnt': trmnt})
+        #         # {'error':'Buyin not found with id: '+ r['tournament_buyin']})
+        # print('eee',trmnt_buyin.id)
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
 
@@ -566,7 +569,8 @@ def attach(app):
             if email not in r['users']:
                 r['users'][email] = {
                     'place': None,
-                    'winnings': None
+                    'winnings': None,
+                    'user_id': None
                 }
         
         

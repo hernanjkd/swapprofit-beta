@@ -26,7 +26,6 @@ for d in data:
     trmnt = session.query( m.Tournaments ).get( trmntjson['id'] )
     if trmnt is None:
         print(f'Adding trmnt id: {trmntjson["id"]}')
-        print(f'Adding trmnt id: {trmntjson}')
         session.add( m.Tournaments(
             **{col:val for col,val in trmntjson.items()} ))
     else:
