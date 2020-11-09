@@ -58,6 +58,8 @@ users_to_notify = []
 # REMINDERS FOR SWAPS TO BE PAID (SEND ONE NOTIFICATION PER USER, PER TOURNAMENT ID)
 for swap in swapsToBePaid:
     user = session.query(m.Profiles).get( swap.sender_id )
+    # swap due_at has end of tournament
+    first_due = swap.due_at + timedelta(days=4) 
     time_after_due_date = now - swap.due_at
     trmt_id = swap.tournament_id
     title = ''
@@ -66,7 +68,7 @@ for swap in swapsToBePaid:
         title="5 Star Reminder"
         body="2 days after results"
     elif time_after_due_date < timedelta(days=2):
-        title="2 Star Reminder"
+        title="5 Star Reminder"
         body="2 days after results"
     elif time_after_due_date < timedelta(days=4):
         title="4 Star Reminder"
@@ -102,7 +104,8 @@ for swap in swapsToBePaid:
         
     # Suspend account
     else:
-        rating=0
+        title="Account Suspension"
+        body="You're account has been suspended until you pay your swaps"
         swap_rating = 0
         # user_account = session.query(m.Users).get( user.id )
         user.naughty = True

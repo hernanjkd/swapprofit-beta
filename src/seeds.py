@@ -310,7 +310,6 @@ def run():
         recipient_user=cary,
         percentage=10,
         status='agreed',
-        due_at=(aboutToEnd.start_at + timedelta(days=4))
     )
     s2 = Swaps(
         tournament=aboutToEnd,
@@ -318,7 +317,6 @@ def run():
         recipient_user=gabe,
         percentage=10,
         status='agreed',
-        due_at=(aboutToEnd.start_at + timedelta(days=4)),
         counter_swap=s1
     )
     s1.counter_swap = s2
@@ -330,7 +328,6 @@ def run():
         recipient_user=cary,
         percentage=2,
         status='agreed',
-        due_at=(aboutToEnd.start_at + timedelta(days=4))
     )
     s2 = Swaps(
         tournament=aboutToEnd,
@@ -338,7 +335,6 @@ def run():
         recipient_user=gabe,
         percentage=3,
         status='agreed',
-        due_at=(aboutToEnd.start_at + timedelta(days=4)),
         counter_swap=s1
     )
     s1.counter_swap = s2
@@ -350,7 +346,6 @@ def run():
         recipient_user=cary,
         percentage=2,
         status='canceled',
-        due_at=(aboutToEnd.start_at + timedelta(days=4))
     )
     s2 = Swaps(
         tournament=aboutToEnd,
@@ -358,7 +353,6 @@ def run():
         recipient_user=gabe,
         percentage=3,
         status='canceled',
-        due_at=(aboutToEnd.start_at + timedelta(days=4)),
         counter_swap=s1
     )
     s1.counter_swap = s2

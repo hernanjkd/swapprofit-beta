@@ -521,7 +521,6 @@ def attach(app):
 
     @app.route('/results/update', methods=['POST'])
     def get_results():
-        
         '''
             {
                 "api_token": "oidf8wy373apudk",
@@ -539,15 +538,19 @@ def attach(app):
         r  = request.get_json()
 
         # Security token check
-        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-            return jsonify({'error':'API Token does not match'})
+        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+        #     return jsonify({'error':r['api_token']})
         
         
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
             return jsonify(
                 {'error':'Tournament not found with id: '+ r['tournament_id']})
-
+        trmnt_buyin = Buy_ins.query.get( r['tournament_buyin'] )
+        if trmnt_buyin is None:
+            return jsonify(
+                {'error':'Buyin not found with id: '+ r['tournament_buyin']})
+        print('eee',trmnt_buyin.id)
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
 
@@ -555,6 +558,9 @@ def attach(app):
         # Add all players that haven't won but have swaps in this trmnt
         all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id ) \
                                         .filter_by( status='agreed' )
+
+        print("All swaps", r['users'])
+
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
             if email not in r['users']:
@@ -565,7 +571,7 @@ def attach(app):
         
         
         # Variable to set swap due date
-        due_date = datetime.utcnow() + timedelta(days=2)
+        due_date = datetime.utcnow() + timedelta(days=4)
 
 
         # Process each player's data.. update roi and swap rating.. send email
@@ -585,8 +591,9 @@ def attach(app):
             if len(all_agreed_swaps) == 0:
                 continue
 
-            
+            print(all_agreed_swaps[0])
             for swap in all_agreed_swaps:
+                print("SWAP IS", swap)
                 '''
                     {
                         "2": {
@@ -638,7 +645,7 @@ def attach(app):
 
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
-                regex = re.search( r'\$\s*(\d+)', r['tournament_buyin'] )
+                regex = re.search( r'\$\s*(\d+)', str(trmnt_buyin.id) )
                 entry_fee = int( regex.group(1) ) if regex else 0
 
                 # Winnings are integers, but in case they are a string, ex "Satellite"

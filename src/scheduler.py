@@ -57,7 +57,6 @@ trmnts = session.query(m.Tournaments) \
 
 if trmnts is not None:
     for trmnt in trmnts:
-                   
         latest_flight = trmnt.flights[-1]
         print(latest_flight.start_at.strftime("%c"))
         start_time = latest_flight.start_at + timedelta(hours=17)
