@@ -73,81 +73,6 @@ def attach(app):
                         the_users.append( a_buyin.user )
             return the_users
 
-
-        # Set tournaments to waiting for results, cancel all pending swaps
-        # close_time = utils.designated_trmnt_close_time()
-
-        # trmnts = db.session.query(m.Tournaments) \
-        #     .filter( m.Tournaments.status == 'open') \
-        #     .filter( m.Tournaments.flights.any(
-        #         m.Flights.start_at < close_time
-        #     ))
-
-        # trmnts = db.session.query(m.Tournaments) \
-        #     .filter( m.Tournaments.flights.any(
-        #         m.Flights.start_at < close_time
-        #     ))
-        # for trmnt in trmnts:
-        #     print('flights in this', trmnt)
-
-        # for trmnt in trmnts:
-        #     print('flights in this', trmnt.flights)
-        #     latest_flight = trmnt.flights.pop()
-        #     print('timesss',latest_flight.start_at, trmnt, close_time)
-        #     if latest_flight.start_at < close_time:
-        #         print('Update tournament status to "waiting_results", id:', trmnt.id)
-        #         trmnt.status = 'waiting_results'
-        #         swaps = db.session.query(m.Swaps) \
-        #             .filter_by( tournament_id = trmnt.id ) \
-        #             .filter( or_( 
-        #                 m.Swaps.status == 'pending', 
-        #                 m.Swaps.status == 'incoming',
-        #                 m.Swaps.status == 'counter_incoming' ) )
-
-        #         for swap in swaps:
-        #             print('Update swap status to "canceled", id:', swap.id)
-        #             swap.status = 'canceled'
-        #         db.session.commit()
-
-        #         users = get_all_players_from_trmnt( trmnt )
-        #         for user in users:
-        #             # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-        #             time = datetime.utcnow()
-        #             domain = os.environ['MAILGUN_DOMAIN']
-        #             requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-        #                 auth=(
-        #                     'api',
-        #                     os.environ.get('MAILGUN_API_KEY')),
-        #                 data={
-        #                     'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-        #                     'to': f'{user.user.email}',
-        #                     'subject': 'Event Ended: ' + trmnt.name,
-        #                     'text': 'Sending text email',
-        #                     'html': f'''
-        #                         <div>trmnt.id {trmnt.id}</div><br />
-        #                         <div>{trmnt.start_at} trmnt.start_at</div>
-        #                         <div>{time} datetime.utcnow()</div>
-                                
-        #                     '''
-        #                 }
-        #             )
-        #         for user in users:
-        #             buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-        #             print('Sending notification that trmnt closed to user id: ', user.id)
-        #             if user.event_update is True:
-        #                 send_fcm(
-        #                     user_id = user.id,
-        #                     title = "Event Ended",
-        #                     body = f'{trmnt.name} closed at {close_time}',
-        #                     data = {
-        #                         'id': trmnt.id,
-        #                         'buy_in': buyin and buyin.id,
-        #                         'alert': f'{trmnt.name} closed at {close_time}',
-        #                         'type': 'results',
-        #                         'initialPath': 'Event Results',
-        #                         'finalPath': 'Swap Results' }
-        #                 )
-
         ###############################################################################
         # Send fcm to all players when trmnt opens
 
@@ -182,7 +107,6 @@ def attach(app):
                         '''
                 })
 
-                print('It got through, so then TF', user.event_update)
                 if user.event_update is True:
                     send_fcm(
                         user_id = user.id,
@@ -196,153 +120,6 @@ def attach(app):
                             'initialPath': 'Event Listings',
                             'finalPath': 'Event Lobby' }
                     )
-
-            
-
-
-
-        ###############################################################################
-        # Delete buy-ins created before close time with status 'pending'
-
-        # buyins = db.session.query(m.Buy_ins) \
-        #     .filter_by( status = 'pending' ) \
-        #     .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
-
-        # for buyin in buyins:
-        #     print('Deleting buy-in', buyin.id)
-        #     db.session.delete(buyin)
-
-        # db.session.commit()
-
-        # swaps = db.session.query(m.Swaps) \
-        #     .filter( m.Swaps.due_at != None ) \
-        #     .filter( m.Swaps.paid == False )
-
-        # now = datetime.utcnow()
-        # users_to_update_swaprating = []
-
-        # for swap in swaps:
-        #     user = db.session.query(m.Profiles).get( swap.sender_id )
-        #     time_after_due_date = now - swap.due_at
-        #     trmt_id = swap.tournament_id
-        #     if swap.due_at > now:
-        #         swap_rating = 5
-        #         if user.result_update is True:
-        #             send_fcm(
-        #                 user_id = user.id,
-        #                 title = "5 Star",
-        #                 body = "Yee",
-        #                 data = {
-        #                     'id': trmt_id,
-        #                     'alert': "Yess",
-        #                     'type': 'result',
-        #                     'initialPath': 'Event Results',
-        #                     'finalPath': 'Swap Results'
-        #                 }
-        #             )
-        #     elif time_after_due_date < timedelta(days=2):
-        #         swap_rating = 4
-        #         if user.result_update is True:
-        #             send_fcm(
-        #                 user_id = user.id,
-        #                 title = "4 Star",
-        #                 body = "2 days",
-        #                 data = {
-        #                     'id': trmt_id,
-        #                     'alert': "4 star",
-        #                     'type': 'result',
-        #                     'initialPath': 'Event Results',
-        #                     'finalPath': 'Swap Results'
-        #                 }
-        #             )
-        #     elif time_after_due_date < timedelta(days=4):
-        #         swap_rating = 3
-        #         if user.result_update is True:
-        #             send_fcm(
-        #                 user_id = user.id,
-        #                 title = "3 Star",
-        #                 body = "4 days",
-        #                 data = {
-        #                     'id': trmt_id,
-        #                     'alert': "3 Star",
-        #                     'type': 'result',
-        #                     'initialPath': 'Event Results',
-        #                     'finalPath': 'Swap Results' 
-        #                 }
-        #             )
-        #     elif time_after_due_date < timedelta(days=6):
-        #         swap_rating = 2
-        #         if user.result_update is True:
-        #             send_fcm(
-        #                 user_id = user.id,
-        #                 title = "2 Star",
-        #                 body = "6 Days",
-        #                 data = {
-        #                     'id': trmt_id,
-        #                     'alert': "2 Star",
-        #                     'type': 'result',
-        #                     'initialPath': 'Event Results',
-        #                     'finalPath': 'Swap Results'
-        #                 }
-        #             )
-        #     elif time_after_due_date < timedelta(days=14):
-        #         swap_rating = 1
-        #         send_fcm(
-        #             user_id = user.id,
-        #             title = "1 Star",
-        #             body = "7 Days",
-        #             data = {
-        #                 'id': trmt_id,
-        #                 'alert': "1 Star",
-        #                 'type': 'result',
-        #                 'initialPath': 'Event Results',
-        #                 'finalPath': 'Swap Results'
-        #             }
-        #         )
-
-        #     # Suspend account
-        #     else:
-        #         swap_rating = 0
-        #         user_account = db.session.query(m.Users).get( user.id )
-        #         user_account.naughty = True
-        #         print('Put on naughty list', user.id, user, user.naughty)
-        #         db.session.commit()
-        #         send_fcm(
-        #             user_id = user.id,
-        #             title = "Account Suspension",
-        #             body = "You're account has been suspended until you've paid the swaps you owe",
-        #             data = {
-        #                 'id': trmt_id,
-        #                 'alert': "You're account has been suspended until you've paid the swaps you owe",
-        #                 'type': 'result',
-        #                 'initialPath': 'Event Results',
-        #                 'finalPath': 'Swap Results'
-        #             }
-        #         )
-                
-
-        #     if swap.swap_rating != swap_rating:
-        #         # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-        #         swap.swap_rating = swap_rating
-        #         db.session.commit()
-                
-        #         users_to_update_swaprating.append(user)
-
-
-        # # Helper function to calculate the swap rating, used below
-        # def calculate_swap_rating(user_id):
-        #     swaps = db.session.query(m.Swaps) \
-        #         .filter_by( sender_id=user_id ) \
-        #         .filter( m.Swaps.due_at != None )
-        #     total_swap_ratings = 0
-        #     for swap in swaps:
-        #         total_swap_ratings += swap.swap_rating
-        #     return total_swap_ratings / swaps.count()
-
-        # for user in users_to_update_swaprating:
-        #     user.swap_rating = calculate_swap_rating( user.id )
-        #     # print(f'Updating swap rating for user {user.id} to {user.swap_rating}')
-        #     db.session.commit()
     
         return 'Tournaments checked successfully'
     
@@ -372,12 +149,12 @@ def attach(app):
             trmnt = Tournaments.query.get( trmntjson['id'] )
             if trmnt is None:
                 print(f'Adding trmnt id: {trmntjson["id"]}')
-                print(f'Checking trmnt json: {trmntjson}')
+                # print(f'Checking trmnt json: {trmntjson}')
                 db.session.add( Tournaments(
                     **{col:val for col,val in trmntjson.items()} ))
             else:
                 print(f'Updating trmnt id: {trmntjson["id"]}')
-                print(f'Checking trmnt json: {trmntjson}')
+                # print(f'Checking trmnt json: {trmntjson}')
                 for col,val in trmntjson.items():
                     if getattr(trmnt, col) != val:
                         setattr(trmnt, col, val)
@@ -538,31 +315,22 @@ def attach(app):
         r  = request.get_json()
 
         # Security token check
-        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-        #     return jsonify({'error':r['api_token']})
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':r['api_token']})
         
-        print('Tournament ID',r['tournament_id'])
         # print('Buyin ID', r['tournament_buyin'])
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
             return jsonify(
                 {'error':'Tournament not found with id: '+ r['tournament_id']})
-        print('trmnt', trmnt)
-        # trmnt_buyin = Buy_ins.query.get( r['tournament_id'] )
-        # if trmnt_buyin is None:
-        #     return jsonify(
-        #         {'trmnt': trmnt})
-        #         # {'error':'Buyin not found with id: '+ r['tournament_buyin']})
-        # print('eee',trmnt_buyin.id)
+
+        trmnt_buyin = r['tournament_buyin'] 
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
 
-        
         # Add all players that haven't won but have swaps in this trmnt
         all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id ) \
                                         .filter_by( status='agreed' )
-
-        print("All swaps", r['users'])
 
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
@@ -570,7 +338,6 @@ def attach(app):
                 r['users'][email] = {
                     'place': None,
                     'winnings': None,
-                    'user_id': None
                 }
         
         
@@ -580,7 +347,7 @@ def attach(app):
 
         # Process each player's data.. update roi and swap rating.. send email
         for email, userdata in r['users'].items():
-            
+            print('userdata', userdata)
             user = Profiles.query.filter( 
                 Profiles.user.has( email=email )).first()
             if user is None:
@@ -649,7 +416,7 @@ def attach(app):
 
 
                 # Tournament buyin could be "$200" "$0++" "Day 2"
-                regex = re.search( r'\$\s*(\d+)', str(trmnt_buyin.id) )
+                regex = re.search( r'\$\s*(\d+)', str(trmnt_buyin) )
                 entry_fee = int( regex.group(1) ) if regex else 0
 
                 # Winnings are integers, but in case they are a string, ex "Satellite"
@@ -702,6 +469,21 @@ def attach(app):
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
             
+            a_user = Profiles.query.get(user.id)
+            if a_user.result_update == True:
+                send_fcm(
+                    user_id = a_user.id,
+                    title = "Results Posted",
+                    body = trmnt.name + " posted their results.",
+                    data = {
+                        'id': trmnt.id,
+                        'alert': trmnt.name + " just posted their results.",
+                        'type': 'result',
+                        'initialPath': 'Event Results',
+                        'finalPath': 'Swap Results'
+                    }
+        )
+
             send_email('swap_results',[email], #'loustadler@hotmail.com','a@4geeksacademy.com'],
                 data={
                     'tournament_date': trmnt.start_at.strftime( '%A, %B %d, %Y - %I:%M %p' ),

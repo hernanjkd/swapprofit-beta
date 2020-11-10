@@ -297,13 +297,13 @@ class Tournaments(db.Model):
     def get_history(user_id=False):
         close_time = utils.designated_trmnt_close_time()
                         # db.not_( Flights.start_at > close_time ))) \
-        print('close time', close_time)
+        # print('close time', close_time)
 
         trmnts = Tournaments.query \
                     .filter( Tournaments.flights.any(Flights.start_at < close_time )) \
                     .order_by( Tournaments.start_at.desc() )
-        for trmnt in trmnts:
-            print("YOU WERE IN HERE", trmnt)
+        # for trmnt in trmnts:
+        #     print("YOU WERE IN HERE", trmnt)
         if user_id:
             trmnts = trmnts.filter( Tournaments.flights.any( 
                             Flights.buy_ins.any( user_id = user_id )))
@@ -318,7 +318,6 @@ class Tournaments(db.Model):
         buyins = []
         for buyin in all_buyins:
             user_id = buyin.user_id
-            print('hello', user_id)
             # Users may have multiple buy_ins in one tournament
             if user_id not in user_ids:
                 user_ids.append( user_id )
@@ -444,8 +443,8 @@ class Buy_ins(db.Model):
 
     @staticmethod
     def get_latest(user_id, tournament_id):
-        print('user_id', user_id)
-        print('tournament_id', tournament_id)
+        # print('user_id', user_id)
+        # print('tournament_id', tournament_id)
         latest_buyin = db.session.query(Buy_ins) \
             .filter( Buy_ins.flight.has( tournament_id=tournament_id )) \
             .filter( Buy_ins.user_id==user_id ) \

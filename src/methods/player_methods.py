@@ -1161,7 +1161,7 @@ def attach(app):
         db.session.commit()
 
         user = Profiles.query.get( user_id )
-        print("mmm",user.swap_rating)
+
         user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
 
