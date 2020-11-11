@@ -315,8 +315,8 @@ def attach(app):
         r  = request.get_json()
 
         # Security token check
-        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-            return jsonify({'error':r['api_token']})
+        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+        #     return jsonify({'error':r['api_token']})
         
         # print('Buyin ID', r['tournament_buyin'])
         trmnt = Tournaments.query.get( r['tournament_id'] )
