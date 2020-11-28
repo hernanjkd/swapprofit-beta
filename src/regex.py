@@ -1,5 +1,6 @@
 import re
 
+# SEMINOLE HARD ROCK TICKET FORMAT
 def hard_rock(text):
     buyin = re.search(r'buy[\s\-_]*in\D{1,5}([0-9,\.]+)', text, re.IGNORECASE)
     buyin = buyin and buyin.group(1)

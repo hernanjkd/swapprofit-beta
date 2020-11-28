@@ -618,7 +618,7 @@ def attach(app):
     @app.route('/tournaments/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_tournaments(user_id, id):
-        
+        print('ARGS',request.args)
         # List Flights
         if id == 'all':
             

@@ -10,6 +10,7 @@ engine = create_engine( os.environ.get('DATABASE_URL'))
 Session = sessionmaker( bind=engine )
 session = Session()
 
+# STARTS IN THE POKERSOCIETY DATABASE
 resp = requests.get( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/update?span=all' )
 
 if not resp.ok:
@@ -21,26 +22,34 @@ data = resp.json()
 
 for d in data:
 
-    # TOURNAMENTS
+    # TOURNAMENTS - ADD/UPDATE
     trmntjson = d['tournament']
     trmnt = session.query( m.Tournaments ).get( trmntjson['id'] )
+    
+    # ADD TOURNAMENT
     if trmnt is None:
         print(f'Adding trmnt id: {trmntjson["id"]}')
         session.add( m.Tournaments(
             **{col:val for col,val in trmntjson.items()} ))
+    
+    # UPDATE TOURNAMENT
     else:
         print(f'Updating trmnt id: {trmntjson["id"]}')
         for col,val in trmntjson.items():
             if getattr(trmnt, col) != val:
                 setattr(trmnt, col, val)
         
-    # FLIGHTS
+    # FLIGHTS - ADD/UPDATE
     for flightjson in d['flights']:
         flight = session.query( m.Flights ).get( flightjson['id'] )
+        
+        # ADD FLIGHT
         if flight is None:
             print(f'Adding flight id: {flightjson["id"]}')
             session.add( m.Flights(
                 **{col:val for col,val in flightjson.items()} ))
+        
+        # UPDATE FLIGHT
         else:
             print(f'Updating flight id: {flightjson["id"]}')
             for col,val in flightjson.items():

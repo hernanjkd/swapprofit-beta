@@ -41,6 +41,7 @@ def check_params(body, *args):
         raise APIException('You must specify the ' + msg, 400)
     return body
 
+# FUNCTION FOR WHEN USER UPDATES TABLE
 def update_table(table, body, ignore=[]):
     ignore = [*ignore, 'created_at', 'updated_at']
     for attr, value in body.items():
@@ -49,15 +50,18 @@ def update_table(table, body, ignore=[]):
                 raise APIException(f'Incorrect parameter in body: {attr}', 400)
             setattr(table, attr, value)
 
+# FUNCTION FOR FIRST TIME VALIDATION LINK
 def jwt_link(id, path='users/validate/', role='first_time_validation'):
     return os.path.join(
         os.environ['API_HOST'], path, create_jwt({'id':id, 'role':role}) )
 
+# BASIC ENCRYPTION TO PROTECT API REQUESTS
 def sha256(string):
     m = hashlib.sha256()
     m.update(string.encode('utf-8'))
     return m.hexdigest()
 
+# GIVES A SET NUMBER OF OBJECTS FROM THE DATABASE, DEFAULT 10 UNTIL ASKED FOR MORE
 def resolve_pagination(request_args, limit_default=10):
     page = request_args.get('page', '0')
     offset = int(page) - 1 if page.isnumeric() and int(page) > 0 else 0
@@ -67,12 +71,14 @@ def resolve_pagination(request_args, limit_default=10):
     
     return offset, limit
 
+# IF MULTIPLE FLIGHTS, returns their names into days
 def resolve_name_day(string):
     a = re.search(r'(.*) - Day ([\d\w]+)', string)
     tournament_name = string if a is None else a.group(1)
     flight_day = a and a.group(2)
     return [tournament_name, flight_day]
 
+# RETURNS GOOGLE CREDENTIALS
 def resolve_google_credentials():
     path = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
     if not os.path.exists( path ):
@@ -90,14 +96,13 @@ def isfloat(string):
 def designated_trmnt_close_time():
     return datetime.utcnow() - hours_to_close_tournament
 
+# BUYIN TICKET READING FUNCTION
 def ocr_reading(result):
     client = vision.ImageAnnotatorClient()
     print('client', client, result, vision)
     # image = vision.types.Image()
     image = vision.Image()
     image.source.image_uri = result['secure_url']
-
-    
     response = client.text_detection(image=image)
     texts = response.text_annotations
     return texts and texts[0].description
