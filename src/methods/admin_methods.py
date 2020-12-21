@@ -454,6 +454,13 @@ def attach(app):
                 total_swap_earnings += amount_owed_recipient
                 total_amount_of_swaps += swapdata['count']
 
+            if total_swap_earnings >= 0:
+                for swap in all_agreed_swaps:
+                    a_swap = Swaps.query.get( swap.id )
+                    a_swap.paid = True
+                    a_swap.paid_at = datetime.utcnow()
+                    a_swap.confirmed = True
+                    a_swap.confirmed_at = datetime.utcnow()
 
             # Update user and buy ins
             user.roi_rating = user.calculate_roi_rating()
@@ -468,11 +475,12 @@ def attach(app):
             
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
-            
+            print('coming in')
             a_user = Profiles.query.get(user.id)
+            print('isr esult update true', a_user.result_update, user.id)
             if a_user.result_update == True:
                 send_fcm(
-                    user_id = a_user.id,
+                    user_id = user.id,
                     title = "Results Posted",
                     body = trmnt.name + " posted their results.",
                     data = {

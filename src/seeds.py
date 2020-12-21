@@ -100,7 +100,7 @@ def run():
     ))
 
     gabe = Users(
-        email='gherndon5@gmail.com',
+        email='techpriest.gabriel@gmail.com',
         password=sha256('casper5'),
         status='valid'
     )
@@ -243,59 +243,57 @@ def run():
         coins=5,
         user=bobby
     ))
-    db.session.flush()
-
     ########################
     #     TOURNAMENTS
     ########################
-    d1 = datetime.utcnow()
-    d2 = datetime.utcnow() - timedelta(days=4,hours=18, minutes=0)
+    # d1 = datetime.utcnow()
+    # d2 = datetime.utcnow() - timedelta(days=4,hours=18, minutes=0)
 
 
-    aboutToStart = Tournaments(
-        casino='Seminole Hard Rock Hotel & Casino',
-        name='About To Start Event',
-        address='1 Seminole Way',
-        city='Davie',
-        state='FL',
-        zip_code='33314',
-        latitude=26.0510,
-        longitude=-80.2097,
-        start_at= d1,
-        time_zone='Etc/GMT-4'
-    )
-    db.session.add(aboutToStart)
-    aboutToEnd = Tournaments(
-        casino='Seminole Hard Rock Hotel & Casino',
-        name='About To End Event',
-        address='1 Seminole Way',
-        city='Davie',
-        state='FL',
-        zip_code='33314',
-        latitude=26.0510,
-        longitude=-80.2097,
-        start_at= d2,
-        time_zone='EST',
-    )
-    db.session.add(aboutToEnd)
+    # aboutToStart = Tournaments(
+    #     casino='Seminole Hard Rock Hotel & Casino',
+    #     name='About To Start Event',
+    #     address='1 Seminole Way',
+    #     city='Davie',
+    #     state='FL',
+    #     zip_code='33314',
+    #     latitude=26.0510,
+    #     longitude=-80.2097,
+    #     start_at= d1,
+    #     time_zone='Etc/GMT-4'
+    # )
+    # db.session.add(aboutToStart)
+    # aboutToEnd = Tournaments(
+    #     casino='Seminole Hard Rock Hotel & Casino',
+    #     name='About To End Event',
+    #     address='1 Seminole Way',
+    #     city='Davie',
+    #     state='FL',
+    #     zip_code='33314',
+    #     latitude=26.0510,
+    #     longitude=-80.2097,
+    #     start_at= d2,
+    #     time_zone='EST',
+    # )
+    # db.session.add(aboutToEnd)
 
     ########################
     #       FLIGHTS
     ########################
 
-    flight1_start = Flights(
-        start_at=aboutToStart.start_at,
-        tournament=aboutToStart,
-        day=1
-    )
-    db.session.add(flight1_start)
+    # flight1_start = Flights(
+    #     start_at=aboutToStart.start_at,
+    #     tournament=aboutToStart,
+    #     day=1
+    # )
+    # db.session.add(flight1_start)
 
-    flight1_end = Flights(
-        start_at=aboutToEnd.start_at,
-        tournament=aboutToEnd,
-        day=1
-    )
-    db.session.add(flight1_end)
+    # flight1_end = Flights(
+    #     start_at=aboutToEnd.start_at,
+    #     tournament=aboutToEnd,
+    #     day=1
+    # )
+    # db.session.add(flight1_end)
 
     db.session.flush()
 
@@ -304,99 +302,99 @@ def run():
     #        SWAPS
     ########################
 
-    s1 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=gabe,
-        recipient_user=cary,
-        percentage=10,
-        status='agreed',
-    )
-    s2 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=cary,
-        recipient_user=gabe,
-        percentage=10,
-        status='agreed',
-        counter_swap=s1
-    )
-    s1.counter_swap = s2
-    db.session.add_all([s1, s2])
+    # s1 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=gabe,
+    #     recipient_user=cary,
+    #     percentage=10,
+    #     status='agreed',
+    # )
+    # s2 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=cary,
+    #     recipient_user=gabe,
+    #     percentage=10,
+    #     status='agreed',
+    #     counter_swap=s1
+    # )
+    # s1.counter_swap = s2
+    # db.session.add_all([s1, s2])
     
-    s1 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=gabe,
-        recipient_user=cary,
-        percentage=2,
-        status='agreed',
-    )
-    s2 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=cary,
-        recipient_user=gabe,
-        percentage=3,
-        status='agreed',
-        counter_swap=s1
-    )
-    s1.counter_swap = s2
-    db.session.add_all([s1, s2])
+    # s1 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=gabe,
+    #     recipient_user=cary,
+    #     percentage=2,
+    #     status='agreed',
+    # )
+    # s2 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=cary,
+    #     recipient_user=gabe,
+    #     percentage=3,
+    #     status='agreed',
+    #     counter_swap=s1
+    # )
+    # s1.counter_swap = s2
+    # db.session.add_all([s1, s2])
 
-    s1 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=gabe,
-        recipient_user=cary,
-        percentage=2,
-        status='canceled',
-    )
-    s2 = Swaps(
-        tournament=aboutToEnd,
-        sender_user=cary,
-        recipient_user=gabe,
-        percentage=3,
-        status='canceled',
-        counter_swap=s1
-    )
-    s1.counter_swap = s2
-    db.session.add_all([s1, s2])
+    # s1 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=gabe,
+    #     recipient_user=cary,
+    #     percentage=2,
+    #     status='canceled',
+    # )
+    # s2 = Swaps(
+    #     tournament=aboutToEnd,
+    #     sender_user=cary,
+    #     recipient_user=gabe,
+    #     percentage=3,
+    #     status='canceled',
+    #     counter_swap=s1
+    # )
+    # s1.counter_swap = s2
+    # db.session.add_all([s1, s2])
 
     ########################
     #       BUY INS
     ########################
 
-    db.session.add(Buy_ins(
-        chips=770,
-        table='1',
-        seat=2,
-        user=gabe,
-        flight=flight1_start,
-        status='active'
-    ))
-    db.session.add(Buy_ins(
-        chips=1600,
-        table='14',
-        seat=8,
-        user=cary,
-        flight=flight1_start,
-        status='active'
-    ))
+    # db.session.add(Buy_ins(
+    #     chips=770,
+    #     table='1',
+    #     seat=2,
+    #     user=gabe,
+    #     flight=flight1_start,
+    #     status='active'
+    # ))
+    # db.session.add(Buy_ins(
+    #     chips=1600,
+    #     table='14',
+    #     seat=8,
+    #     user=cary,
+    #     flight=flight1_start,
+    #     status='active'
+    # ))
 
-    db.session.add(Buy_ins(
-        chips=770,
-        table='1',
-        seat=2,
-        user=gabe,
-        flight=flight1_end,
-        status='active'
-    ))
-    db.session.add(Buy_ins(
-        chips=1600,
-        table='14',
-        seat=8,
-        user=cary,
-        flight=flight1_end,
-        status='active'
-    ))
+    # db.session.add(Buy_ins(
+    #     chips=770,
+    #     table='1',
+    #     seat=2,
+    #     user=gabe,
+    #     flight=flight1_end,
+    #     status='active'
+    # ))
+    # db.session.add(Buy_ins(
+    #     chips=1600,
+    #     table='14',
+    #     seat=8,
+    #     user=cary,
+    #     flight=flight1_end,
+    #     status='active'
+    # ))
 
-    db.session.flush()
+    # db.session.flush()
 
     db.session.commit()
 

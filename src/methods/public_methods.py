@@ -30,14 +30,14 @@ def attach(app):
                 .filter_by( email=email, password=sha256(req['password']) )
                 .first())
 
-        if user and user.status._value_ == 'invalid':     
+        if user and user.status._value_ == 'unclaimed':     
             data = {'validation_link': jwt_link(user.id)}
             send_email( template='email_validation', emails=user.email, data=data)
             
             return jsonify({'message':'Another email has been sent for email validation'})
 
         elif user and user.status._value_ == 'valid':
-            raise APIException('User already exists', 405)
+            raise APIException('User already exists', 400)
 
         user = Users(
             email = email,

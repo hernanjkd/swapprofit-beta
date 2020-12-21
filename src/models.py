@@ -200,9 +200,14 @@ class Swaps(db.Model):
     tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
     percentage = db.Column(db.Integer, nullable=False)
     due_at = db.Column(db.DateTime, default=None)
+    
     paid = db.Column(db.Boolean, default=False)
     paid_at = db.Column(db.DateTime, default=None)
     confirmed = db.Column(db.Boolean, default=False)
+    confirmed_at = db.Column(db.DateTime, default=None)
+    disputed = db.Column(db.Boolean, default=False)
+    disputed_at = db.Column(db.DateTime, default=None)
+    
     swap_rating = db.Column(db.Integer)
     result_winnings = db.Column(db.Boolean, default=None)
     cost = db.Column(db.Integer, default=1)
@@ -241,6 +246,9 @@ class Swaps(db.Model):
             'paid': self.paid,
             'paid_at': self.paid_at,
             'confirmed': self.confirmed,
+            'confirmed_at': self.confirmed_at,
+            'disputed': self.disputed,
+            'disputed': self.disputed_at,
             'cost': self.cost,
             'counter_swap_id': self.counter_swap_id,
             'counter_percentage': self.counter_swap.percentage,

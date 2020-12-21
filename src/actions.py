@@ -71,7 +71,9 @@ def swap_tracker_json(trmnt, user_id):
         they_owe_total = 0
         for swap in swaps:
             single_swap_data = { **swap.serialize(),
-                'counter_percentage': swap.counter_swap.percentage }
+                'counter_percentage': swap.counter_swap.percentage,
+                'they_paid': swap.counter_swap.paid,
+                'they_confirmed': swap.counter_swap.confirmed, }
             
             if swap.status._value_ == 'agreed':
                 you_owe = ( float(my_buyin.winnings) * swap.percentage / 100 ) \
@@ -94,6 +96,19 @@ def swap_tracker_json(trmnt, user_id):
         data['they_owe_total'] = they_owe_total
         final_profit -= you_owe_total
         final_profit += they_owe_total
+
+        # IF user doesn't owe anything to other guy, 
+        # make all agreed swaps paid for themselves
+        # if final_profit >= 0:
+        #     for swap in data['agreed_swaps']:
+        #         # swap['paid'] = True
+        #         the_swap = Swaps.query.get( swap.id)
+        #         print('the_swap', the_swap)
+        #         the_swap.paid = True
+        #         the_swap.paid_at = datetime.utcnow()
+        #         the_swap.confirmed = True
+        #         the_swap.confirmed_at = datetime.utcnow()
+
 
         # Append json
         swaps_buyins.append(data)

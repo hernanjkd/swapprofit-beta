@@ -1052,22 +1052,22 @@ def attach(app):
             9 days -> 1 star
             10+ days -> suspension (naughty list)
         '''
-        now = datetime.utcnow()
-        time_after_due_date = now - swap.due_at
+        # now = datetime.utcnow()
+        # time_after_due_date = now - swap.due_at
 
-        if time_after_due_date < timedelta(days=2):
-            swap_rating = 5
-        elif time_after_due_date < timedelta(days=4):
-            swap_rating = 4
-        elif time_after_due_date < timedelta(days=6):
-            swap_rating = 3
-        elif time_after_due_date < timedelta(days=8):
-            swap_rating = 2
-        elif time_after_due_date < timedelta(days=9):
-            swap_rating = 1
-        # Suspend account
-        else:
-            swap_rating = 0
+        # if time_after_due_date < timedelta(days=2):
+        #     swap_rating = 5
+        # elif time_after_due_date < timedelta(days=4):
+        #     swap_rating = 4
+        # elif time_after_due_date < timedelta(days=6):
+        #     swap_rating = 3
+        # elif time_after_due_date < timedelta(days=8):
+        #     swap_rating = 2
+        # elif time_after_due_date < timedelta(days=9):
+        #     swap_rating = 1
+        # # Suspend account
+        # else:
+        #     swap_rating = 0
 
         # Set to paid and add swap_rating to all the swaps with that user and that trmnt
         swaps_to_pay = Swaps.query.filter_by(
@@ -1078,21 +1078,21 @@ def attach(app):
         for swap in swaps_to_pay:
             # swap.swap_rating = swap_rating
             swap.paid = True
-            swap.paid_at = datetime.utcnow()
+            swap.paid_at = datetime.utcnow() 
 
         db.session.commit()
 
         user = Profiles.query.get( user_id )
         # user.swap_rating = user.calculate_swap_rating()
-        db.session.commit()
+        # db.session.commit()
 
         send_fcm(
             user_id = req['recipient_id'],
             title = fullName + " - Paid Swaps",
-            body = "Please confirm " + fullName + ' paid their swaps to you' ,
+            body = "Confirm " + fullName + ' paid their swaps to you' ,
             data = {
                 'id': req['tournament_id'],
-                'alert': "Swap Paid. Please Confirm",
+                'alert': "Confirm if Swaps were paid.",
                 'type': 'result',
                 'initialPath': 'Event Results',
                 'finalPath': 'Swap Results' }
@@ -1106,11 +1106,17 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
         prof = Profiles.query.get(user_id)
+        
         fullName = prof.first_name + ' ' + prof.last_name
+        print('full name', fullName, user_id)
+        print('Other User:', req['recipient_id'])
+        print('their swap', id)
         # Security validation for single swap
+        # Swap that will be confirmed
         swap = Swaps.query.get(id)
+        print('Swap', swap.recipient_id, req['recipient_id'])
         if req['tournament_id'] !=  swap.tournament_id \
-            or req['recipient_id'] != swap.recipient_id:
+            or req['recipient_id'] != swap.sender_id :
             raise APIException('Swap data does not match json data', 400)
 
         if swap.status._value_ != 'agreed':
@@ -1130,41 +1136,50 @@ def attach(app):
             10+ days -> suspension (naughty list)
         '''
         now = datetime.utcnow()
-        time_after_due_date = swap.paid_at - swap.due_at
-
-        if time_after_due_date < timedelta(days=2):
+        swap_rating = None
+        time_after_due_date = swap.due_at - swap.paid_at
+        print('time_after_due_date', time_after_due_date)
+        if time_after_due_date < timedelta(days=0):
             swap_rating = 5
-        elif time_after_due_date < timedelta(days=4):
+        elif time_after_due_date < timedelta(days=2):
             swap_rating = 4
-        elif time_after_due_date < timedelta(days=6):
+        elif time_after_due_date < timedelta(days=4):
             swap_rating = 3
-        elif time_after_due_date < timedelta(days=7):
+        elif time_after_due_date < timedelta(days=6):
             swap_rating = 2
-        elif time_after_due_date < timedelta(days=9):
+        elif time_after_due_date < timedelta(days=8):
             swap_rating = 1
+        # elif time_after_due_date < timedelta(days=10):
+        #     swap_rating = 0
         # Suspend account
         else:
+            swap_rating = 0
+
             print("Out of anughty prison")
 
 
-
+        print("Swap raeting", swap_rating)
         # Set to confirmed and add swap_rating to all the swaps with that user and that trmnt
-        swaps_to_pay = Swaps.query.filter_by(
+        swaps_to_confirm = Swaps.query.filter_by(
             tournament_id = req['tournament_id'],
-            recipient_id = req['recipient_id'],
+            sender_id = req['recipient_id'],
             status = 'agreed'
         )
-        for swap in swaps_to_pay:
+        for swap in swaps_to_confirm:
+            print('a Swap to confirm', swap, swap.confirmed)
             swap.swap_rating = swap_rating
             swap.confirmed = True
+            swap.confirmed_at = now
 
         db.session.commit()
 
-        user = Profiles.query.get( user_id )
+        an_user = Profiles.query.get( req['recipient_id'] )
+        print("Before calculation: ", an_user.swap_rating)
+        an_user.swap_rating = an_user.calculate_swap_rating()
+        print("After calculation: ", an_user.swap_rating)
 
-        user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
-
+        print('Recipe', req['recipient_id'])
         send_fcm(
             user_id = req['recipient_id'],
             title = "Confirmed Swaps",
@@ -1177,7 +1192,61 @@ def attach(app):
                 'finalPath': 'Swap Results' }
         )
 
-        return jsonify({'message':'Swap/s has been paid'}) 
+        return jsonify({'message':'Swap/s has been confirmed'}) 
+
+    @app.route('/users/me/swaps/<int:id>/disputed', methods=['PUT'])
+    @role_jwt_required(['user'])
+    def set_swap_disputed(user_id, id):
+        req = request.get_json()
+        utils.check_params(req, 'tournament_id', 'recipient_id')
+        prof = Profiles.query.get(user_id)
+
+        swap = Swaps.query.get(id)
+
+        fullName = prof.first_name + ' ' + prof.last_name
+        
+
+        if req['tournament_id'] !=  swap.tournament_id \
+            or req['recipient_id'] != swap.recipient_id:
+            raise APIException('Swap data does not match json data', 400)
+
+        if swap.status._value_ != 'agreed':
+            raise APIException('This swap has not been agreed upon', 400)
+
+        if swap.confirmed == True:
+            raise APIException('This swap is already confirmed', 400)
+
+        # Set to confirmed and add swap_rating to all the swaps with that user and that trmnt
+        swaps_to_dispute = Swaps.query.filter_by(
+            tournament_id = req['tournament_id'],
+            recipient_id = req['recipient_id'],
+            status = 'agreed'
+        )
+        for swap in swaps_to_dispute:
+            swap.disputed = True
+            swap.disputed_at = datetime.utcnow()
+
+        db.session.commit()
+
+        user = Profiles.query.get( user_id )
+
+        # user.swap_rating = user.calculate_swap_rating()
+        db.session.commit()
+
+        send_fcm(
+            user_id = req['recipient_id'],
+            title = "Confirmed Swaps",
+            body = fullName + ' disputed your payment.',
+            data = {
+                'id': req['tournament_id'],
+                'alert': fullName + ' disputed your payment',
+                'type': 'result',
+                'initialPath': 'Event Results',
+                'finalPath': 'Swap Results' }
+        )
+
+        return jsonify({'message':'Swap/s has been disputed'}) 
+
 
 
     # GET SWAP TRACKER (CURRENT/UPCOMING)

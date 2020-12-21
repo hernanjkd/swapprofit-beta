@@ -49,7 +49,8 @@ swapsToBePaid = session.query(m.Swaps) \
 swapsToBeConfirmed = session.query(m.Swaps) \
     .filter( m.Swaps.due_at != None ) \
     .filter( m.Swaps.paid == True ) \
-    .filter(m.Swaps.confirmed == False)
+    .filter(m.Swaps.confirmed == False) \
+    .filter(m.Swaps.disputed == False)
 
 now = datetime.utcnow()
 users_to_update_swaprating = []
@@ -58,29 +59,30 @@ users_to_notify = []
 # REMINDERS FOR SWAPS TO BE PAID (SEND ONE NOTIFICATION PER USER, PER TOURNAMENT ID)
 for swap in swapsToBePaid:
     user = session.query(m.Profiles).get( swap.sender_id )
-    # swap due_at has end of tournament
-    first_due = swap.due_at + timedelta(days=4) 
+    # swap due_at has 4 days after results posted
+    print("User that has to pay: ", user)
+    first_due = swap.due_at 
     time_after_due_date = now - swap.due_at
     trmt_id = swap.tournament_id
     title = ''
     body = ''
     if now < swap.due_at:
         title="5 Star Reminder"
-        body="2 days after results"
+        body="Pay before Swap Due"
     elif time_after_due_date < timedelta(days=2):
-        title="5 Star Reminder"
-        body="2 days after results"
-    elif time_after_due_date < timedelta(days=4):
         title="4 Star Reminder"
-        body="4 days after results"
-    elif time_after_due_date < timedelta(days=6):
+        body="Pay before 2 Days after Due Date"
+    elif time_after_due_date < timedelta(days=4):
         title="3 Star Reminder"
-        body="6 days after results"
-    elif time_after_due_date < timedelta(days=8):
+        body="Pay before 4 Days after Due Date"
+    elif time_after_due_date < timedelta(days=6):
         title="2 Star Reminder"
+        body="Pay before 6 Days after Due Date"
+    elif time_after_due_date < timedelta(days=8):
+        title="1 Star Reminder"
         body="8 days after results"
     elif time_after_due_date < timedelta(days=9):
-        title="1 Star Reminder"
+        title="Warning: Account Suspension"
         body="9 days after results"
         time=datetime.utcnow()
         domain = os.environ['MAILGUN_DOMAIN']
@@ -115,12 +117,71 @@ for swap in swapsToBePaid:
             # data={'validation_link': utils.jwt_link(user.id, role='email_change')} 
             )
 
-    if swap.swap_rating != swap_rating:
-        # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-        swap.swap_rating = swap_rating
-        session.commit()
+    # if swap.swap_rating != swap_rating:
+    #     # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
+    #     swap.swap_rating = swap_rating
+    #     session.commit()
         
-        users_to_update_swaprating.append(user)
+    # users_to_update_swaprating.append(user)
+    proto = {"user_id":user.id, "trmnt_id":trmt_id, "title":title, "body":body, "update":user.result_update}
+    print('Proto:', proto)
+
+    if users_to_notify == []:
+        users_to_notify.append(proto)
+    else:
+        for obj in users_to_notify:
+            print('obj', obj)
+            if any(obj['user_id'] == user.id):
+                print("Success!")
+                index = -1
+                for i, obj in enumerate(users_to_notify):
+                    if obj['user_id'] == user.id:
+                        index = i
+                        if users_to_notify[i]['trmnt_id'] != trmt_id:
+                            print("Sending to User Id:", proto['user_id'])
+                            users_to_notify.append(proto)
+                        else:
+                            print("Same tournament")
+
+
+
+# REMINDERS FOR SWAPS TO BE CONFIRMED (SEND ONE NOTIFICATION PER USER, PER TOURNAMENT ID)
+for swap in swapsToBeConfirmed:
+    user = session.query(m.Profiles).get( swap.sender_id )
+    a_user = session.query(m.Profiles).get( swap.recipient_id )
+
+    time_after_due_date = swap.paid_at - swap.due_at
+    trmt_id = swap.tournament_id
+    title = None
+    body = None
+    swap_rating = None
+
+    #If User had failed to confirm paid swaps after 5 days
+    if now >= swap.paid_at + timedelta(days=5):
+        if time_after_due_date < timedelta(days=0):
+            swap_rating = 5
+        elif time_after_due_date < timedelta(days=2):
+            swap_rating = 4
+        elif time_after_due_date < timedelta(days=4):
+            swap_rating = 3
+        elif time_after_due_date < timedelta(days=6):
+            swap_rating = 2
+        elif time_after_due_date < timedelta(days=8):
+            swap_rating = 1
+        else:
+            swap_rating = 0
+        title="Swap Confirmation Auto-Completed"
+        body="You Swap Rating has been updated accordingly."
+        swap.confirmed = True
+
+        # ADD TO SWAP RATINGS TO UPDATE
+        if swap.swap_rating != swap_rating:
+            # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
+            swap.swap_rating = swap_rating
+            session.commit()
+            users_to_update_swaprating.append(user)
+        
+        # ADD TO USERS TO UPDATE ( ONE PER PERSON SWAPPED WITH, PER TOURNAMENT)
         proto = {"user_id":user.id, "trmnt_id":trmt_id, "title":title, "body":body, "update":user.result_update}
         if any(obj['user_id'] == user.id for obj in users_to_notify):
             index = -1
@@ -131,35 +192,31 @@ for swap in swapsToBePaid:
                         users_to_notify.append(proto)
                     else:
                         print("Same tournament")
-
-
-
-# REMINDERS FOR SWAPS TO BE CONFIRMED (SEND ONE NOTIFICATION PER USER, PER TOURNAMENT ID)
-for swap in swapsToBeConfirmed:
-    user = session.query(m.Profiles).get( swap.sender_id )
-    time_after_due_date = swap.paid_at - swap.due_at
-    trmt_id = swap.tournament_id
-    if now > swap.paid_at + timedelta(days=5):
-        if time_after_due_date < timedelta(days=2):
-            swap_rating = 5
-        elif time_after_due_date < timedelta(days=4):
-            swap_rating = 4
-        elif time_after_due_date < timedelta(days=6):
-            swap_rating = 3
-        elif time_after_due_date < timedelta(days=8):
-            swap_rating = 2
-        elif time_after_due_date < timedelta(days=9):
-            swap_rating = 1
+    else:
+        # if now < swap.paid_at + timedelta(days=2) and now > swap.paid_at + timedelta(days=1):
+        if now > swap.paid_at:
+            title="Confirm Swap Payment"
+            body="Confirm the swap payment made to you"
+        elif now > swap.paid_at + timedelta(days=4) and now < swap.paid_at + timedelta(days=5):
+            title="Your Confirmation will be Autocompleted"
+            body="Confirm or Dispute before 5 days have pass after being paid"
+        
+        # ADD TO USERS TO UPDATE ( ONE PER PERSON SWAPPED WITH, PER TOURNAMENT)
+        proto = {"user_id":a_user.id, "trmnt_id":trmt_id, "title":title, "body":body, "update":user.result_update}
+        print("Proto: ", proto)
+        if users_to_notify == []:
+            users_to_notify.append(proto)
         else:
-            swap_rating = 0
-
-        swap.confirmed = True
+            if any(obj['user_id'] == a_user.id for obj in users_to_notify):
+                index = -1
+                for i, obj in enumerate(users_to_notify):
+                    if obj['user_id'] == a_user.id:
+                        index = i
+                        if users_to_notify[i]['trmnt_id'] != trmt_id:
+                            users_to_notify.append(proto)
+                        else:
+                            print("Same tournament")
     
-    if swap.swap_rating != swap_rating:
-        # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-        swap.swap_rating = swap_rating
-        session.commit()
-        users_to_update_swaprating.append(user)
 
 # # Helper function to calculate the swap rating, used below
 def calculate_swap_rating(user_id):
@@ -177,14 +234,15 @@ for user in users_to_update_swaprating:
     session.commit()
 
 for a_user in users_to_notify:
-    if a_user.update == True:
+    print("User being notified",a_user['user_id'], " about ", a_user['body'])
+    if a_user['update'] == True:
         send_fcm(
-            user_id = a_user.user_id,
-            title = a_user.title,
-            body = a_user.body,
+            user_id = a_user['user_id'],
+            title = a_user['title'],
+            body = a_user['body'],
             data = {
-                'id': a_user.trmnt_id,
-                'alert': a_user.body,
+                'id': a_user['trmnt_id'],
+                'alert': a_user['body'],
                 'type': 'result',
                 'initialPath': 'Event Results',
                 'finalPath': 'Swap Results'
