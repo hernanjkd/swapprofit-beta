@@ -21,6 +21,8 @@ from notifications import send_email, send_fcm
 
 def attach(app):
     
+    ########## PROFILE/USER REQUESTS ################
+
     # UPDATE EMAIL
     @app.route('/users/me/email', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -253,7 +255,6 @@ def attach(app):
         return jsonify(prof.serialize())
 
 
-
     # UPDATE PROFILE PICTURE
     @app.route('/profiles/image', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -284,6 +285,38 @@ def attach(app):
 
         return jsonify({'profile_pic_url': result['secure_url']}), 200
 
+
+    # UPDATE USER NOTIFICATION SETTINGS
+    @app.route('/me/notification/setting/update', methods=['PUT'])
+    @role_jwt_required(['user'])
+    def update_notification(user_id):
+        prof = Profiles.query.get(user_id)
+
+        req = request.get_json()
+        utils.check_params(req, 'notification_type')
+
+        attribute = req['notification_type']
+
+        if attribute =='chat':
+            prof.chat_update =  not prof.chat_update
+        elif attribute =='swap':
+            prof.swap_update =  not prof.swap_update
+        elif attribute =='coin':
+            prof.coin_update =  not prof.coin_update
+        elif attribute =='result':
+            prof.result_update =  not prof.result_update
+        elif attribute =='buyin':
+            prof.buyin_update = not prof.buyin_update
+        elif attribute =='event':
+            prof.event_update = not prof.event_update
+        else:
+            raise APIException('Invalid Notification Type: ' + req['notification_type'], 400)
+       
+        db.session.commit()
+        return jsonify(prof.serialize())
+
+
+    ############### BUYIN REQUESTS ##################
 
     # GET MY MOST RECENT BUYIN
     @app.route('/me/buy_ins', methods=['GET'])
@@ -584,36 +617,6 @@ def attach(app):
         return jsonify({'buy_in': buyin.serialize()})
 
 
-    # UPDATE NOTIFICATIONS
-    @app.route('/me/notification/setting/update', methods=['PUT'])
-    @role_jwt_required(['user'])
-    def update_notification(user_id):
-        prof = Profiles.query.get(user_id)
-
-        req = request.get_json()
-        utils.check_params(req, 'notification_type')
-
-        attribute = req['notification_type']
-
-        if attribute =='chat':
-            prof.chat_update =  not prof.chat_update
-        elif attribute =='swap':
-            prof.swap_update =  not prof.swap_update
-        elif attribute =='coin':
-            prof.coin_update =  not prof.coin_update
-        elif attribute =='result':
-            prof.result_update =  not prof.result_update
-        elif attribute =='buyin':
-            prof.buyin_update = not prof.buyin_update
-        elif attribute =='event':
-            prof.event_update = not prof.event_update
-        else:
-            raise APIException('Invalid Notification Type: ' + req['notification_type'], 400)
-       
-        db.session.commit()
-        return jsonify(prof.serialize())
-
-
     # GET SPECIFIC TOURNAMENT
     @app.route('/tournaments/<id>', methods=['GET'])
     @role_jwt_required(['user'])
@@ -725,6 +728,9 @@ def attach(app):
         raise APIException('Invalid id', 400)
 
 
+
+    ############### SWAP REQUESTS #################
+    
     # CREATE A SWAP
     @app.route('/me/swaps', methods=['POST'])
     @role_jwt_required(['user'])
@@ -844,7 +850,7 @@ def attach(app):
         }), 200
 
 
-    # UPDATE SWAP
+    # UPDATE A SWAP
     @app.route('/me/swaps/<int:id>', methods=['PUT'])
     @role_jwt_required(['user'])
     def update_swap(user_id, id):
@@ -1011,7 +1017,7 @@ def attach(app):
         ])
 
 
-    # GET ACTION
+    # GET ACTION IN AN EVENT
     @app.route('/swaps/me/tournament/<int:id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_swaps_actions(user_id, id):
@@ -1021,7 +1027,7 @@ def attach(app):
         return jsonify(prof.get_swaps_actions(id))
 
 
-    # UPDATE SWAP PAID STATUS
+    # PAY SWAPS TO ONE USER, IN ONE EVENT
     @app.route('/users/me/swaps/<int:id>/paid', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_paid(user_id, id):
@@ -1100,6 +1106,8 @@ def attach(app):
 
         return jsonify({'message':'Swap/s has been paid'})
 
+
+    # CONFIRM SWAPS FROM ONE USER, IN ONE EVENT
     @app.route('/users/me/swaps/<int:id>/confirmed', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_confirmed(user_id, id):
@@ -1137,8 +1145,9 @@ def attach(app):
         '''
         now = datetime.utcnow()
         swap_rating = None
-        time_after_due_date = swap.due_at - swap.paid_at
+        time_after_due_date =  swap.paid_at - swap.due_at
         print('time_after_due_date', time_after_due_date)
+        print('Is before duetime', time_after_due_date < timedelta(days=0))
         if time_after_due_date < timedelta(days=0):
             swap_rating = 5
         elif time_after_due_date < timedelta(days=2):
@@ -1163,6 +1172,7 @@ def attach(app):
         swaps_to_confirm = Swaps.query.filter_by(
             tournament_id = req['tournament_id'],
             sender_id = req['recipient_id'],
+            recipient_id = user_id,
             status = 'agreed'
         )
         for swap in swaps_to_confirm:
@@ -1194,6 +1204,8 @@ def attach(app):
 
         return jsonify({'message':'Swap/s has been confirmed'}) 
 
+
+    # DISPUTE SWAPS FROM ONE USER, IN ONE TOURNAMENT
     @app.route('/users/me/swaps/<int:id>/disputed', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_disputed(user_id, id):
@@ -1248,7 +1260,6 @@ def attach(app):
         return jsonify({'message':'Swap/s has been disputed'}) 
 
 
-
     # GET SWAP TRACKER (CURRENT/UPCOMING)
     @app.route('/me/swap_tracker', methods=['GET'])
     @role_jwt_required(['user'])
@@ -1269,6 +1280,8 @@ def attach(app):
 
         return jsonify( swap_trackers )
 
+
+    ############# SWAP TOKEN REQUESTS ###############
 
     # ADD COINS TO PROFILE
     @app.route('/me/transactions', methods=['POST'])
@@ -1303,9 +1316,9 @@ def attach(app):
 
         return jsonify([x.serialize() for x in report])
 
+    ############## CHAT RESQUESTS #################
 
-
-
+    # STARTING A NEW CHAT WITH ANOTHER USER
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
     def create_chat(user_id):
@@ -1368,6 +1381,8 @@ def attach(app):
 
         return jsonify( chat.serialize() )
 
+
+    # GETTING ALL MY CHATS
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
@@ -1388,6 +1403,7 @@ def attach(app):
         #     return jsonify( my_chats )
 
 
+    # GETTING A SPECIFIC CHAT 
     @app.route('/chats/<int:chat_id>')
     @app.route('/chats/me/users/<int:user2_id>')
     @role_jwt_required(['user'])
@@ -1403,7 +1419,7 @@ def attach(app):
         return jsonify( chat.serialize() )
 
 
-
+    # SENDING A MESSAGE TO CHAT
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
     @role_jwt_required(['user'])
     def send_message(user_id, chat_id):
@@ -1443,8 +1459,6 @@ def attach(app):
             print("Not sending")
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
-
-
 
 
     return app

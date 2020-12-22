@@ -117,10 +117,22 @@ class Profiles(db.Model):
             return list(filter(
                 lambda swap: \
                     swap.tournament_id == tournament_id and \
-                    swap.status._value_ == 'agreed' \
+                    swap.status._value_ == 'agreed'
                 , self.sending_swaps ))
         return list(filter(
             lambda swap: swap.status._value_ == 'agreed',
+            self.sending_swaps ))
+
+    def get_confirmed_swaps(self, tournament_id=None):
+        if tournament_id:
+            return list(filter(
+                lambda swap: \
+                    swap.tournament_id == tournament_id and \
+                    swap.status._value_ == 'agreed' and \
+                    swap.confirmed == True
+                , self.sending_swaps ))
+        return list(filter(
+            lambda swap: swap.status._value_ == 'agreed' and swap.confirmed == True,
             self.sending_swaps ))
 
     def calculate_roi_rating(self):
@@ -138,7 +150,8 @@ class Profiles(db.Model):
     def calculate_swap_rating(self):
         swaps = Swaps.query \
             .filter_by( sender_id=self.id ) \
-            .filter( Swaps.due_at != None )
+            .filter( Swaps.due_at != None ) \
+            .filter_by( confirmed = True)
         total_swap_ratings = 0
         for swap in swaps:
             print("SWAP", swap.swap_rating)
@@ -163,7 +176,7 @@ class Profiles(db.Model):
             'email': self.user.email,
             'profile_pic_url': self.profile_pic_url,
             'hendon_url': self.hendon_url,
-            'total_swaps': len( self.get_agreed_swaps() ),
+            'total_swaps': len( self.get_confirmed_swaps() ),
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
             'coins': self.get_coins(),

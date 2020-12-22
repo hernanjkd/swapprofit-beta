@@ -533,6 +533,11 @@ def attach(app):
 
         return jsonify(prof.serialize())
 
+
+
+    ################ DEVICE REQUESTS ###################
+
+    # GET USER DEVICE
     @app.route('/users/<int:id>/devices')
     def get_user_device(id):
 
@@ -543,8 +548,7 @@ def attach(app):
         return jsonify([x.serialize() for x in devices])
 
 
-
-
+    # ADD USER DEVICE
     @app.route('/users/me/devices', methods=['POST'])
     @role_jwt_required(['user'])
     def add_device(user_id):
@@ -557,8 +561,7 @@ def attach(app):
         return jsonify({'message':'Device added successfully'})
 
 
-
-
+    # DELETE USER DEVICE
     @app.route('/users/me/devices', methods=['DELETE'])
     @role_jwt_required(['user'])
     def delete_device(user_id):
