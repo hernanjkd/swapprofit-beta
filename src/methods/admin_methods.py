@@ -13,6 +13,8 @@ import utils
 import json
 import os
 import re
+import pytz
+
 
 
 def attach(app):
@@ -30,7 +32,7 @@ def attach(app):
         gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
         return jsonify({
-            "1 Lou's id": gabe.id,
+            "1 Gabe's id": gabe.id,
             "2 token_data": {
                 "id": gabe.id,
                 "role": "admin",
@@ -44,84 +46,135 @@ def attach(app):
         })
 
 
-
-
     @app.route('/create/token', methods=['POST'])
     def create_token():
         return jsonify( create_jwt(request.get_json()) ), 200
 
+
     @app.route('/tournaments/onTime')
     def check_tournaments():
-       # Update from days ago or hours ago, default to 1 hour ago
-        span = request.args.get('span') # days, hours
-        amount = request.args.get('amount')
 
-        if None not in [span, amount]:
-            args = f'?span={span}&amount={amount}'
-        else: args = ''
-
-        resp = requests.get( 
-            f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/update{args}" )
-        if not resp.ok:
-            raise APIException( resp.content.decode("utf-8")[-233:] , 500)
-
-        def get_all_players_from_trmnt(trmnt):
+        def get_all_players_from_trmnt(trmnte):
             the_users = []
-            for flight in trmnt.flights:
+            for flight in trmnte.flights:
                 for a_buyin in flight.buy_ins:
                     if a_buyin.user not in the_users: # no repeats
                         the_users.append( a_buyin.user )
             return the_users
 
+        close_time = utils.designated_trmnt_close_time()
+
+        # any tournaments that are open and latest flight start at isnt later close_time
+        trmnts = db.session.query(m.Tournaments) \
+            .filter( m.Tournaments.status == 'open') \
+            .filter( m.Tournaments.flights.any(
+                m.Flights.start_at < close_time
+            ))
+
+        if trmnts is not None:
+            for trmnt in trmnts:
+                latest_flight = trmnt.flights[-1]
+                print(latest_flight.start_at.strftime("%c"))
+                start_time = latest_flight.start_at + timedelta(hours=17)
+                # lastTime = start_time.strftime("%b. %d %I:%M %p")
+                if latest_flight.start_at < close_time:
+                    # This tournament is over: change status and clean swaps
+                    trmnt.status = 'waiting_results' 
+                    swaps = db.session.query(Swaps) \
+                        .filter( Swaps.tournament_id == trmnt.id ) \
+                        .filter( or_(
+                            Swaps.status == 'pending',
+                            Swaps.status == 'incoming',
+                            Swaps.status == 'counter_incoming' ) )
+
+                    if swaps is not None:
+                        for swap in swaps:
+                            print('Update swap status to "canceled", id:', swap.id)
+                            swap.status = 'canceled'
+                        db.session.commit()
+
+                    eww = db.session.query(m.Tournaments).get(trmnt.id)
+
+
+                    users = get_all_players_from_trmnt(eww)
+
+                    print('Update tournament status to "waiting_results", id:', trmnt.id)
+                    # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+
+
         ###############################################################################
         # Send fcm to all players when trmnt opens
 
-        _4mins_ago = datetime.utcnow() - timedelta(minutes=5)
-        _4mins_ahead = datetime.utcnow() + timedelta(minutes=5)
+        _5mins_ago = datetime.utcnow() - timedelta(minutes=5)
+        _5mins_ahead = datetime.utcnow() + timedelta(minutes=5)
 
         trmnts = db.session.query(m.Tournaments) \
-            .filter( m.Tournaments.start_at < _4mins_ahead) \
-            .filter( m.Tournaments.start_at > _4mins_ago )
+            .filter( m.Tournaments.start_at < _5mins_ahead) \
+            .filter( m.Tournaments.start_at > _5mins_ago )
 
-        for trmnt in trmnts:
-            users = get_all_players_from_trmnt( trmnt )
-            for user in users:
-                buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
-                time=datetime.utcnow()
-                domain = os.environ['MAILGUN_DOMAIN']
-                requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
-                    auth=(
-                        'api',
-                        os.environ.get('MAILGUN_API_KEY')),
-                    data={
-                        'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
-                        'to': f'{user.user.email}',
-                        'subject': trmnt.name + ' has just started',
-                        'text': 'Sending text email',
-                        'html': f'''
-                            <div>trmnt.id {trmnt.id}</div><br />
-                            <div>{trmnt.start_at} trmnt.start_at</div>
-                            <div>{time} datetime.utcnow()</div>
-                            <div>{_4mins_ago} _4mins_ago</div>
-                            <div>{_4mins_ahead} _4mins_ahead</div>
-                        '''
-                })
+        if trmnts is not None:
+            for trmnt in trmnts:
+                users = get_all_players_from_trmnt( trmnt )
+                for user in users:
+                    # buyin = m.Buy_ins.get_latest(user_id=user.id, tournament_id=trmnt.id )
+                    time=datetime.utcnow()
+                    domain = os.environ['MAILGUN_DOMAIN']
+                    requests.post(f'https://api.mailgun.net/v3/{domain}/messages',
+                        auth=(
+                            'api',
+                            os.environ.get('MAILGUN_API_KEY')),
+                        data={
+                            'from': f'{domain} <mailgun@swapprofit.herokuapp.com>',
+                            'to': user.user.email,
+                            'subject': 'Event Started: ' + trmnt.name,
+                            'text': 'Sending text email',
+                            'html': f'''
+                                <div>trmnt.id {trmnt.id}</div><br />
+                                <div>{trmnt.start_at} trmnt.start_at</div>
+                                <div>{time} datetime.utcnow()</div>
+                                <div>{_5mins_ago} _4mins_ago</div>
+                                <div>{_5mins_ahead} _4mins_ahead</div>
+                            '''
+                    })
 
-                if user.event_update is True:
-                    send_fcm(
-                        user_id = user.id,
-                        title = "Event Started",
-                        body = 'Event Started:' + f'{trmnt.name}',
-                        data = {
-                            'id': trmnt.id,
-                            'buy_in': buyin and buyin.id,
-                            'alert': 'Event Started:' + f'{trmnt.name}',
-                            'type': 'event',
-                            'initialPath': 'Event Listings',
-                            'finalPath': 'Event Lobby' }
-                    )
-    
-        return 'Tournaments checked successfully'
+                    my_buyin = db.session.query(m.Buy_ins) \
+                        .filter( Buy_ins.flight.has( tournament_id=trmnt.id )) \
+                        .filter( m.Buy_ins.user_id==user.id ) \
+                        .order_by( m.Buy_ins.id.desc() ).first()
+        
+                    if user.event_update is True:
+                        isdst_now_in = lambda zonename: bool(datetime.now(pytz.timezone(zonename)).dst())
+                        y = 0 if isdst_now_in(trmnt.time_zone) else -1
+                        z = y + int(trmnt.time_zone[7:])
+                        est = pytz.timezone(trmnt.time_zone).localize(trmnt.start_at) + timedelta(hours=z)
+                        start_time = est.strftime("%b. %d, %a. %I:%M %p")
+
+                        send_fcm(
+                            user_id = user.id,
+                            title = "Event Started",
+                            body = trmnt.name + '\nopened at ' + start_time,
+                            data = {
+                                'id': trmnt.id,
+                                'alert': trmnt.name + '\nopened at ' + start_time,
+                                'buyin_id': my_buyin.id,
+                                'type': 'event',
+                                'initialPath': 'Event Listings',
+                                'finalPath': 'Event Lobby'
+                            }
+                        )
+
+        ###############################################################################
+        # Delete buy-ins created before close time with status 'pending'
+
+        buyins = db.session.query(m.Buy_ins) \
+            .filter_by( status = 'pending' ) \
+            .filter( m.Buy_ins.flight.has( m.Flights.start_at < close_time ))
+
+        for buyin in buyins:
+            print('Deleting buy-in', buyin.id)
+            db.session.delete(buyin)
+
+        db.session.commit()
     
 
     @app.route('/tournaments/update')
@@ -292,8 +345,6 @@ def attach(app):
                 json.dump( cache, f, indent=2 )
 
         return jsonify({'message':'Tournaments have been updated'}), 200
-
-
 
 
     @app.route('/results/update', methods=['POST'])
@@ -513,9 +564,7 @@ def attach(app):
 
         return jsonify({'message':'Results processed successfully'}), 200
 
-
-
-     
+    
     @app.route('/profiles/naughty/yes/<int:user_id>', methods=['PUT'])
     def naughty_list_add(user_id):
         prof = Profiles.query.get(user_id)
@@ -524,6 +573,7 @@ def attach(app):
         db.session.commit()
 
         return jsonify(prof.serialize())
+
 
     @app.route('/profiles/naughty/no/<int:user_id>', methods=['PUT'])
     def naughty_list_minus(user_id):
