@@ -52,8 +52,8 @@ def run():
     ########################
 
     johnDoe = Users(
-        email='lou@gmail.com',
-        password=sha256('loustadler'),
+        email='lou@gsmail.com',
+        password=sha256('loustadsler'),
         status='valid'
     )
     db.session.add(johnDoe)
@@ -123,126 +123,126 @@ def run():
         user=gabe
     ))
 
-    lou = Users(
-        email='lou@pokersociety.com',
-        password=sha256('swaptest'),
-        status='valid'
-    )
-    db.session.add(lou)
-    lou = Profiles(
-        first_name='Luiz', 
-        last_name='Stadler',
-        nickname='Lou',
-        hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=207424',
-        profile_pic_url='https://pokerdb.thehendonmob.com/pictures/Lou_Stadler_Winner.JPG',
-        pokersociety_id=4,
-        user=lou,
-        # naughty =False,
-        roi_rating=0.0,
-        swap_rating=0.0
-    )
-    db.session.add(lou)
-    db.session.add( Transactions(
-        coins=5,
-        user=lou
-    ))
+    # lou = Users(
+    #     email='lou@pokersociety.com',
+    #     password=sha256('swaptest'),
+    #     status='valid'
+    # )
+    # db.session.add(lou)
+    # lou = Profiles(
+    #     first_name='Luiz', 
+    #     last_name='Stadler',
+    #     nickname='Lou',
+    #     hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=207424',
+    #     profile_pic_url='https://pokerdb.thehendonmob.com/pictures/Lou_Stadler_Winner.JPG',
+    #     pokersociety_id=4,
+    #     user=lou,
+    #     # naughty =False,
+    #     roi_rating=0.0,
+    #     swap_rating=0.0
+    # )
+    # db.session.add(lou)
+    # db.session.add( Transactions(
+    #     coins=5,
+    #     user=lou
+    # ))
 
-    perry = Users(
-        email='perry1830@msn.com',
-        password=sha256('Kobe$$'),
-        status='valid'
-    )
-    db.session.add(perry)
-    perry = Profiles(
-        first_name='Perry', 
-        last_name='Shiao',
-        nickname='',
-        # naughty =False,
-        hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=371190',
-        profile_pic_url='https://i.imgur.com/qIq2VPH.jpg',
-        pokersociety_id=5,
-        user=perry,
-        roi_rating=0.0,
-        swap_rating=0.0
-    )
-    db.session.add(perry)
-    db.session.add( Transactions(
-        coins=5,
-        user=perry
-    ))
+    # perry = Users(
+    #     email='perry1830@msn.com',
+    #     password=sha256('Kobe$$'),
+    #     status='valid'
+    # )
+    # db.session.add(perry)
+    # perry = Profiles(
+    #     first_name='Perry', 
+    #     last_name='Shiao',
+    #     nickname='',
+    #     # naughty =False,
+    #     hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=371190',
+    #     profile_pic_url='https://i.imgur.com/qIq2VPH.jpg',
+    #     pokersociety_id=5,
+    #     user=perry,
+    #     roi_rating=0.0,
+    #     swap_rating=0.0
+    # )
+    # db.session.add(perry)
+    # db.session.add( Transactions(
+    #     coins=5,
+    #     user=perry
+    # ))
     
-    neal = Users(
-        email='neal_corcoran@yahoo.com',
-        password=sha256('Brooklyn1'),
-        status='valid'
-    )
-    db.session.add(neal)
-    neal = Profiles(
-        first_name='Neal', 
-        last_name='Corcoran',
-        nickname='',
-        # naughty =False,
-        hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=506855',
-        profile_pic_url='https://i.imgur.com/PYNkNgc.jpg',
-        pokersociety_id=6,
-        user=neal,
-        roi_rating=0.0,
-        swap_rating=0.0
-    )
-    db.session.add(neal)
-    db.session.add( Transactions(
-        coins=5,
-        user=neal
-    ))
+    # neal = Users(
+    #     email='neal_corcoran@yahoo.com',
+    #     password=sha256('Brooklyn1'),
+    #     status='valid'
+    # )
+    # db.session.add(neal)
+    # neal = Profiles(
+    #     first_name='Neal', 
+    #     last_name='Corcoran',
+    #     nickname='',
+    #     # naughty =False,
+    #     hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=506855',
+    #     profile_pic_url='https://i.imgur.com/PYNkNgc.jpg',
+    #     pokersociety_id=6,
+    #     user=neal,
+    #     roi_rating=0.0,
+    #     swap_rating=0.0
+    # )
+    # db.session.add(neal)
+    # db.session.add( Transactions(
+    #     coins=5,
+    #     user=neal
+    # ))
 
-    brian = Users(
-        email='brooklynbman@yahoo.com',
-        password=sha256('Brooklyn1'),
-        status='valid'
-    )
-    db.session.add(brian)
-    brian = Profiles(
-        first_name='Brian', 
-        last_name='Gelrod',
-        nickname='',
-        # naughty =False,
-        hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=239802',
-        profile_pic_url='https://i.imgur.com/1bMetyL.jpg',
-        pokersociety_id=7,
-        user=brian,
-        roi_rating=0.0,
-        swap_rating=0.0
-    )
-    db.session.add(brian)
-    db.session.add( Transactions(
-        coins=5,
-        user=brian
-    ))
+    # brian = Users(
+    #     email='brooklynbman@yahoo.com',
+    #     password=sha256('Brooklyn1'),
+    #     status='valid'
+    # )
+    # db.session.add(brian)
+    # brian = Profiles(
+    #     first_name='Brian', 
+    #     last_name='Gelrod',
+    #     nickname='',
+    #     # naughty =False,
+    #     hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=239802',
+    #     profile_pic_url='https://i.imgur.com/1bMetyL.jpg',
+    #     pokersociety_id=7,
+    #     user=brian,
+    #     roi_rating=0.0,
+    #     swap_rating=0.0
+    # )
+    # db.session.add(brian)
+    # db.session.add( Transactions(
+    #     coins=5,
+    #     user=brian
+    # ))
 
 
-    bobby = Users(
-        email='leff1117@aol.com',
-        password=sha256('eatme'),
-        status='valid'
-    )
-    db.session.add(bobby)
-    bobby = Profiles(
-        first_name='Bobby', 
-        last_name='Leff',
-        nickname='',
-        # naughty ='nice',
-        hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=187837',
-        profile_pic_url='https://i.imgur.com/ZMo8UJ8.jpg',
-        pokersociety_id=8,
-        user=bobby,
-        roi_rating=0.0,
-        swap_rating=0.0
-    )
-    db.session.add(bobby)
-    db.session.add( Transactions(
-        coins=5,
-        user=bobby
-    ))
+    # bobby = Users(
+    #     email='leff1117@aol.com',
+    #     password=sha256('eatme'),
+    #     status='valid'
+    # )
+    # db.session.add(bobby)
+    # bobby = Profiles(
+    #     first_name='Bobby', 
+    #     last_name='Leff',
+    #     nickname='',
+    #     # naughty ='nice',
+    #     hendon_url='https://pokerdb.thehendonmob.com/player.php?a=r&n=187837',
+    #     profile_pic_url='https://i.imgur.com/ZMo8UJ8.jpg',
+    #     pokersociety_id=8,
+    #     user=bobby,
+    #     roi_rating=0.0,
+    #     swap_rating=0.0
+    # )
+    # db.session.add(bobby)
+    # db.session.add( Transactions(
+    #     coins=5,
+    #     user=bobby
+    # ))
     ########################
     #     TOURNAMENTS
     ########################
