@@ -51,7 +51,7 @@ def attach(app):
         return jsonify( create_jwt(request.get_json()) ), 200
 
 
-    @app.route('/tournaments/onTime')
+    @app.route('/tournaments/schedueler')
     def check_tournaments():
 
         def get_all_players_from_trmnt(trmnte):
@@ -175,6 +175,8 @@ def attach(app):
             db.session.delete(buyin)
 
         db.session.commit()
+
+        return 'Tournaments updated are on time'
     
 
     @app.route('/tournaments/update')
