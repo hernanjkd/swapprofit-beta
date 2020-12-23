@@ -27,17 +27,17 @@ def attach(app):
 
         seeds.run()
 
-        lou = Profiles.query.filter_by(nickname='Lou').first()
+        gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
         return jsonify({
-            "1 Lou's id": lou.id,
+            "1 Lou's id": gabe.id,
             "2 token_data": {
-                "id": lou.id,
+                "id": gabe.id,
                 "role": "admin",
                 "exp": 600000
             },
             "3 token": create_jwt({
-                    'id': lou.id,
+                    'id': gabe.id,
                     'role': 'admin',
                     'exp': 600000
                 })
