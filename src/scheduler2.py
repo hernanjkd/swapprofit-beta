@@ -117,21 +117,15 @@ for swap in swapsToBePaid:
             # data={'validation_link': utils.jwt_link(user.id, role='email_change')} 
             )
 
-    # if swap.swap_rating != swap_rating:
-    #     # print(f'Updating swap rating for swap {swap.id} from {swap.swap_rating} to {swap_rating}')
-    #     swap.swap_rating = swap_rating
-    #     session.commit()
-        
-    # users_to_update_swaprating.append(user)
     proto = {"user_id":user.id, "trmnt_id":trmt_id, "title":title, "body":body, "update":user.result_update}
     print('Proto:', proto)
 
     if users_to_notify == []:
         users_to_notify.append(proto)
     else:
-        for obj in users_to_notify:
-            print('obj', obj)
-            if any(obj['user_id'] == user.id):
+        for objx in users_to_notify:
+            print('obj', objx)
+            if any(objx['user_id'] == user.id):
                 print("Success!")
                 index = -1
                 for i, obj in enumerate(users_to_notify):
