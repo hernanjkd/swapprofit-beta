@@ -492,7 +492,7 @@ class Buy_ins(db.Model):
             'receipt_img_url': self.receipt_img_url,
             'player_name': self.player_name,
             'status': self.status._value_,
-            'user_name': u.nickname if u.nickname else f'{u.first_name} {u.last_name}',
+            'user_name': f'{u.first_name} {u.last_name}',
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
