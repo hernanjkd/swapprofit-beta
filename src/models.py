@@ -165,6 +165,7 @@ class Profiles(db.Model):
         for swap in self.sending_swaps:
             if swap.status._value_ in status_to_consider:
                 reserved_coins += swap.cost
+        print('reserved_coins',reserved_coins)
         return reserved_coins        
 
     def serialize(self):

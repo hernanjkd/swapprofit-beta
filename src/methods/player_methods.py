@@ -868,6 +868,7 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req)
         
+        print('check 0')
 
         # Get swaps
         swap = Swaps.query.get(id)
@@ -877,17 +878,23 @@ def attach(app):
         if sender.id != swap.sender_id:
             raise APIException('Access denied: You are not the sender of this swap', 401)
         current_percentage = swap.percentage
-        if sender.get_coins() < swap.cost:
-            raise APIException('Insufficient coins to see this swap', 402)
+        print('check a')
+        # MAKE FIX HERE
+        # if sender.get_coins() < swap.cost:
+        #     raise APIException('Insufficient coins to see this swap', 402)
+        print('check b')
 
         if swap.status._value_ in ['canceled','rejected','agreed']:
             raise APIException('This swap can not be modified', 400)
+
+        print('check c')
 
         counter_swap_body = {}
         counter_swap = Swaps.query.get( swap.counter_swap_id )
         if counter_swap is None:
             raise APIException('Counter swap not found', 404)
 
+        print('check d')
 
         # Get recipient user
         recipient = Profiles.query.get( swap.recipient_id )
@@ -897,7 +904,7 @@ def attach(app):
 
         new_status = req.get('status')
         current_status = swap.status._value_
-
+        print('check 1')
         if 'percentage' in req and new_status not in ['agreed','rejected','canceled']:
 
             # Handle percentage errors
@@ -923,6 +930,7 @@ def attach(app):
             swap.percentage = percentage
             counter_swap.percentage = counter
 
+        print('check 2')
 
         # Handle status errors
         if current_status == 'pending':
@@ -933,11 +941,13 @@ def attach(app):
         if current_status in ['incoming','counter_incoming'] and new_status == 'canceled':
             raise APIException('Cannot cancel this swap', 400)
         
+        print('check 3')
+
         # Update status
         if new_status in ['agreed','rejected','canceled']:
             if new_status == 'agreed':
-                if recipient.get_coins() < swap.cost:
-                    raise APIException('Recipient has insufficient coins to process this swap')
+                # if recipient.get_coins() < swap.cost:
+                #     raise APIException('Recipient has insufficient coins to process this swap')
                 if current_status == 'incoming':
                     overdraft = current_percentage - sender.available_percentage( swap.tournament_id )
                     if overdraft > 0:
@@ -954,6 +964,7 @@ def attach(app):
         db.session.commit()
 
 
+        print('check 4')
 
         if new_status == 'agreed':
 
@@ -986,7 +997,8 @@ def attach(app):
                     'user2_receipt_url': user2_receipt and user2_receipt.receipt_img_url
                 })
 
-        
+        print('check 5')
+
         # Notifications
         status_to_fcm = ['counter_incoming','canceled','rejected','agreed']
         status = counter_swap.status._value_
@@ -1001,6 +1013,7 @@ def attach(app):
                 'agreed': ('Swap Agreed','agreed to')
             }
             msg = f'{sender.get_name()} {data[status][1]} your swap'
+            print(str(recipient.id) + 'should get this message: ' + msg)
             if recipient.swap_update is True:
                 send_fcm(
                     user_id = recipient.id,
@@ -1017,7 +1030,8 @@ def attach(app):
             else:
                 print("Not sending")
 
-
+        print(swap)
+        print(counter_swap)
         return jsonify([
             swap.serialize(),
             counter_swap.serialize(),
@@ -1030,7 +1044,6 @@ def attach(app):
     def get_swaps_actions(user_id, id):
 
         prof = Profiles.query.get(user_id)
-
         return jsonify(prof.get_swaps_actions(id))
 
 
