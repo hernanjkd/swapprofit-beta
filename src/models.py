@@ -55,16 +55,20 @@ class Profiles(db.Model):
     hendon_url = db.Column(db.String(200))
     pokersociety_id = db.Column(db.Integer)
     profile_pic_url = db.Column(db.String(250), default=None)
+    
     roi_rating = db.Column(db.Float, default=0)
     swap_rating = db.Column(db.Float, default=0)
     swap_availability_status = db.Column(db.Enum(SwapAvailabilityStatus), default=SwapAvailabilityStatus.active)
+    naughty = db.Column(db.Boolean, default=False)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    naughty = db.Column(db.Boolean, default=False)
+    
     user = db.relationship('Users', back_populates='profile', uselist=False)
     buy_ins = db.relationship('Buy_ins', back_populates='user')
     transactions = db.relationship('Transactions', back_populates='user')
     devices = db.relationship('Devices', back_populates='user')
+    
     buyin_update = db.Column(db.Boolean, default=True)
     swap_update = db.Column(db.Boolean, default=True)
     event_update = db.Column(db.Boolean, default=True)
@@ -180,7 +184,7 @@ class Profiles(db.Model):
             'total_swaps': len( self.get_confirmed_swaps() ),
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
-            'coins': self.get_coins(),
+            'coins': self.get_coins() - self.get_reserved_coins(),
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,

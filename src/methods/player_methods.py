@@ -175,6 +175,9 @@ def attach(app):
             raise APIException('Invalid id: ' + id, 400)
 
         user = Profiles.query.get(int(id))
+        print(user.sending_swaps)
+        print('coins',user.get_coins())
+        print('reserved', user.get_reserved_coins())
         if user is None:
             raise APIException('Profile not found', 404)
 
@@ -829,6 +832,9 @@ def attach(app):
         swap.counter_swap = counter_swap
 
         db.session.add_all([ swap, counter_swap ])
+
+        # sender.get
+
         db.session.commit()
 
         # Notification
