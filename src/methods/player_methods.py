@@ -205,6 +205,7 @@ def attach(app):
 
         # Create user at Poker Society if there is none, get back pokersociety_id
         user = Users.query.get( user_id )
+        print("WHO IS THIS", user.email)
         resp = requests.post( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/user',
             json={
                 'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
@@ -212,7 +213,7 @@ def attach(app):
                 'password': user.password,
                 **prof_data
             })
-
+        print('resp', resp)
         if not resp.ok:
             raise APIException('Error creating user in Poker Society', 500)
 
@@ -264,6 +265,8 @@ def attach(app):
     def update_profile_image(user_id):
 
         user = Users.query.get(user_id)
+        print('Users Profuile is:', user)
+
 
         if 'image' not in request.files:
             raise APIException('"image" property missing on the files array', 404)
@@ -281,7 +284,6 @@ def attach(app):
             }],
             tags = ['profile_pic']
         )
-        print('Users Profuile is:', user.profile)
         user.profile.profile_pic_url = result['secure_url']
 
         db.session.commit()
