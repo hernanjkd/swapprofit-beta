@@ -281,7 +281,7 @@ def attach(app):
             }],
             tags = ['profile_pic']
         )
-
+        print('Users Profuile is:', user.profile)
         user.profile.profile_pic_url = result['secure_url']
 
         db.session.commit()
