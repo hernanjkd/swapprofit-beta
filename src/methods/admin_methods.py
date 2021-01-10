@@ -1,11 +1,14 @@
-from flask import request, jsonify, render_template
-from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
+from flask import ( Flask, request, jsonify, render_template, send_file, \
+    make_response, redirect )
+from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
 from utils import APIException, role_jwt_required
 from notifications import send_email, send_fcm
 import models as m
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
     Transactions, Users
+import pandas as pd
+import actions
 from datetime import datetime, timedelta
 import requests
 import seeds
@@ -38,12 +41,23 @@ def attach(app):
                 "role": "admin",
                 "exp": 600000
             },
-            "3 token": create_jwt({
+             "3 token": create_jwt({
                     'id': gabe.id,
                     'role': 'admin',
                     'exp': 600000
                 })
-        })
+        
+            # "3 token": create_jwt({
+            #         'id': gabe.id,
+            #         'role': 'admin',
+            #         'exp': 600000
+            # #     })
+            # "3 token": create_jwt({
+            #         'id': gabe.id,
+            #         'role': 'admin',
+            #         'exp': 600000
+            #     })
+        }, 200)
 
 
     @app.route('/create/token', methods=['POST'])
@@ -393,11 +407,13 @@ def attach(app):
         resp = requests.get( 
             f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/update{args}" )
         if not resp.ok:
-            raise APIException( resp.content.decode("utf-8")[-233:] , 500)
+            raise APIException( resp.content , 500)
 
 
         data = resp.json()
+
         for d in data:
+            print('DDDDD',d)
 
             # TOURNAMENTS
             trmntjson = d['tournament']
@@ -568,8 +584,8 @@ def attach(app):
         r  = request.get_json()
 
         # Security token check
-        # if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
-        #     return jsonify({'error':r['api_token']})
+        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+            return jsonify({'error':r['api_token']})
         
         # print('Buyin ID', r['tournament_buyin'])
         trmnt = Tournaments.query.get( r['tournament_id'] )
@@ -728,9 +744,9 @@ def attach(app):
             
             sign = '-' if total_swap_earnings < 0 else '+'
             s = 's' if total_amount_of_swaps > 1 else ''
-            print('coming in')
+            # print('coming in')
             a_user = Profiles.query.get(user.id)
-            print('isr esult update true', a_user.result_update, user.id)
+            # print('isr esult update true', a_user.result_update, user.id)
             if a_user.result_update == True:
                 send_fcm(
                     user_id = user.id,
@@ -786,6 +802,32 @@ def attach(app):
         return jsonify(prof.serialize())
 
 
+    @app.route('/', methods=['GET','POST'])
+    @app.route('/users/login', methods=['GET','POST'])
+    def login_admin():
+        
+        if request.method == 'GET':
+            return render_template('login.html',
+                host=os.environ.get('API_HOST'))
+
+        json = request.get_json()
+        utils.check_params(json, 'email', 'password')
+
+        user = Users.query.filter_by( 
+            email = json['email'],
+            password = utils.sha256( json['password'] )
+        ).first()
+        
+        if user is None:
+            return jsonify({
+                'login': False,
+                'message':'Email and password are incorrect',
+            })
+        
+        return jsonify({
+            'login': True,
+            'jwt': create_jwt({'id':user.id, 'role':'admin'})
+        })
 
     ################ DEVICE REQUESTS ###################
 
@@ -1016,7 +1058,8 @@ def attach(app):
                 'email': user.user.email,
                 'first name': user.first_name,
                 'last name': user.last_name,
-                'ID (poker society)': user.pokersociety_id }
+                # 'ID (poker society)': user.pokersociety_id 
+                }
             if swap.status._value_ == 'agreed':
                 if data not in users:
                     users.append(data)

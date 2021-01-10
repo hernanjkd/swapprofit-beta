@@ -26,6 +26,8 @@ class Users(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     profile = db.relationship('Profiles', back_populates='user', uselist=False)
+    results = db.relationship('Results', back_populates='user')
+
 
     def __repr__(self):
         return f'<Users {self.email}>'
@@ -53,7 +55,6 @@ class Profiles(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     nickname = db.Column(db.String(100))
     hendon_url = db.Column(db.String(200))
-    pokersociety_id = db.Column(db.Integer)
     profile_pic_url = db.Column(db.String(250), default=None)
     
     roi_rating = db.Column(db.Float, default=0)
@@ -275,6 +276,63 @@ class Swaps(db.Model):
         }
 
 
+class Casinos(db.Model):
+    __tablename__ = 'casinos'
+    id = db.Column(db.String(10), primary_key=True, nullable=False)
+    name = db.Column(db.String(500), nullable=False)
+    address = db.Column(db.String(200))
+    city = db.Column(db.String(50))
+    state = db.Column(db.String(20))
+    zip_code = db.Column(db.String(14))
+    longitude = db.Column(db.Float)
+    latitude = db.Column(db.Float)
+    time_zone = db.Column(db.String(50))
+    website = db.Column(db.String(100))
+    phone = db.Column(db.String(15))
+    facebook = db.Column(db.String(50))
+    twitter = db.Column(db.String(50))
+    instagram = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    tournaments = db.relationship('Tournaments', back_populates='casino')
+
+    def __repr__(self):
+        return f'<Casino {self.name} {self.city}, {self.state}>'
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'time_zone': self.time_zone,
+            'website': self.website,
+            'phone': self.phone,
+            'facebook': self.facebook,
+            'twitter': self.twitter,
+            'instagram': self.instagram,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
+
+    def serialize_simple(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'time_zone': self.time_zone,
+        }
+
 
 class TournamentStatus(enum.Enum):
     open = 'open'
@@ -283,24 +341,28 @@ class TournamentStatus(enum.Enum):
 
 class Tournaments(db.Model):
     __tablename__ = 'tournaments'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(500), nullable=False)
-    casino = db.Column(db.String(100))
-    address = db.Column(db.String(200))
-    city = db.Column(db.String(50))
-    state = db.Column(db.String(20))
-    zip_code = db.Column(db.String(14))
     start_at = db.Column(db.DateTime)
     results_link = db.Column(db.String(256), default=None)
+    structure_link = db.Column(db.String(500))
+    blinds = db.Column(db.String(20))
+    buy_in_amount = db.Column(db.String(20))
+    starting_stack = db.Column(db.String(20))
+
+
     status = db.Column(db.Enum(TournamentStatus), default=TournamentStatus.open)
-    longitude = db.Column(db.Float)
-    latitude = db.Column(db.Float)
-    time_zone = db.Column(db.String(50))
+    casino_id = db.Column(db.String, db.ForeignKey('casinos.id'))
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    casino = db.relationship('Casinos', back_populates='tournaments')
     flights = db.relationship('Flights', back_populates='tournament')
     swaps = db.relationship('Swaps', back_populates='tournament')
+    results = db.relationship('Results', back_populates='tournament')
+
 
     def __repr__(self):
         return f'<Tournament {self.id} {self.name}>'
@@ -308,7 +370,6 @@ class Tournaments(db.Model):
     @staticmethod
     def get_live_upcoming(user_id=False):
         close_time = utils.designated_trmnt_close_time()
-        print('close time', close_time)
         trmnts = Tournaments.query \
                     .filter( Tournaments.flights.any(
                         Flights.start_at > close_time ))
@@ -358,16 +419,13 @@ class Tournaments(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'casino': self.casino,
-            'address': self.address,
-            'city': self.city,
-            'state': self.state,
-            'zip_code': self.zip_code,
             'start_at': self.start_at,
-            'longitude': self.longitude,
-            'latitude': self.latitude,
-            'time_zone': self.time_zone,
+            'casino': self.casino.serialize(),
+            'buy_in_amount': self.buy_in_amount,
+            'blinds': self.blinds,
+            'starting_stack': self.starting_stack,
             'results_link': self.results_link,
+            'structure_link': self.structure_link,
             'tournament_status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
@@ -376,19 +434,11 @@ class Tournaments(db.Model):
             'buy_ins': self.get_all_users_latest_buyins()
         }
 
-    def serialize2(self):
+    def serialize_simple(self):
         return {
             'id': self.id,
             'name': self.name,
-            'casino': self.casino,
-            'address': self.address,
-            'city': self.city,
-            'state': self.state,
-            'zip_code': self.zip_code,
-            'start_at': self.start_at,
-            'longitude': self.longitude,
-            'latitude': self.latitude,
-            'time_zone': self.time_zone,
+            'casino': self.casino.simple_serialize(),
             'results_link': self.results_link,
             'tournament_status': self.status._value_,
             'created_at': self.created_at,
@@ -498,6 +548,35 @@ class Buy_ins(db.Model):
             'player_name': self.player_name,
             'status': self.status._value_,
             'user_name': f'{u.first_name} {u.last_name}',
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
+
+class Results(db.Model):
+    __tablename__ = 'results'
+    id = db.Column(db.Integer, primary_key=True)
+    tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    full_name = db.Column(db.String(40))
+    place = db.Column(db.String(6))
+    winnings = db.Column(db.String(30), default=None)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    tournament = db.relationship('Tournaments', back_populates='results')
+    user = db.relationship('Users', back_populates='results')
+
+    def __repr__(self):
+        return f'<Results id:{self.id}>'
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'tournament_id': self.tournament_id,
+            'user_id': self.user_id,
+            'full_name': self.full_name,
+            'place': self.place,
+            'winnings': self.winnings,
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }

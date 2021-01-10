@@ -133,6 +133,9 @@ def distance(origin, destination):
 
     return d
 
+
+
+
 # Notes: 'admin' will have access even if arg not passed
 def role_jwt_required(valid_roles=['invalid']):
     def decorator(func):

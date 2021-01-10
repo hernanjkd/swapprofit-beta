@@ -1,10 +1,16 @@
 
 import os
-from flask import Flask, request, jsonify
+import actions
+import utils
+import json
+from flask import ( Flask, request, jsonify, render_template, send_file, 
+    make_response, redirect )
 from flask_migrate import Migrate
 from admin import SetupAdmin
 from flask_cors import CORS
-from flask_jwt_simple import JWTManager
+from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt, jwt_required
+import pandas as pd
+from models import Tournaments, Results, Users
 from utils import APIException
 from datetime import datetime, timedelta
 from methods import player_methods, public_methods, sample_methods, admin_methods
@@ -13,6 +19,7 @@ from models import db
 def create_app(testing=False):
     app = Flask(__name__)
     app.url_map.strict_slashes = False
+
 
     if testing:
         app.config['JWT_SECRET_KEY'] = 'dev_asdasd'
@@ -54,6 +61,41 @@ def create_app(testing=False):
             'sub': id,
             'role': role
         }
+
+
+    # @app.route('/results/tournament/<int:id>')
+    # def get_results(id):
+        
+    #     trmnt = Tournaments.query.get( id )
+
+    #     results = Results.query.filter_by( tournament_id=id ) \
+    #                             .order_by( Results.place.asc() )
+        
+    #     template_data = {}
+    #     if trmnt:
+    #         template_data['trmnt_name'] = trmnt.name
+    #         if trmnt.casino:
+    #             template_data['casino'] = trmnt.casino.name
+
+    #     if results.count() == 0:
+    #         results = False
+        
+    #     else:
+    #         obj = []
+    #         for x in results:
+    #             obj.append({
+    #                 'place': x.place,
+    #                 'full_name': x.full_name,
+    #                 'winnings': x.winnings,
+    #                 'nationality': x.nationality
+    #             })
+    #         results = json.dumps(obj)
+
+        
+    #     return render_template('results_table.html',
+    #         **template_data,
+    #         results = json.dumps(obj)
+    #     )
 
     app = sample_methods.attach(app)
     app = player_methods.attach(app)

@@ -5,7 +5,7 @@ import requests
 from sqlalchemy import or_
 from utils import isfloat
 from datetime import datetime
-from models import db, Profiles, Buy_ins, Swaps, Tournaments, Flights
+from models import db, Profiles, Buy_ins, Swaps, Tournaments, Flights, Casinos, Results
 
 
 
@@ -126,6 +126,7 @@ def swap_tracker_json(trmnt, user_id):
 def load_tournament_file():
 
 
+
     path = os.environ['APP_PATH']
     with open( path + '/src/jsons/tournaments.json' ) as f:
         data = json.load( f )
@@ -204,3 +205,95 @@ def load_tournament_file():
         db.session.commit()
 
     return True
+
+
+    '''
+    {
+        "api_token": 1
+        "tournament_id": 45,
+        "tournament_buyin": 150,
+        "users": {
+            "sdfoij@yahoo.com": {
+                "place": 11,
+                "winnings": 200
+            }
+        }
+    }
+    '''
+    trmnt_data = {}
+    print('hello')
+    
+    for index, r in df.iterrows():
+        # print('r', r)
+        # Get the trmnt data that's in the first row
+        if index == 0:
+            
+            # Check trmnt existance
+            trmnt = Tournaments.query.get( r['Tournament ID'] )
+            print('trmnt.buy_in', trmnt.buy_in)
+
+            if trmnt is None:
+                return None, {
+                    'error':'This tournament ID was not found: '+ str(r['Tournament ID'])
+                }
+            print('tournament', trmnt)
+            trmnt.results_link = (os.environ['API_HOST'] + '/results/tournament/' + str(r['Tournament ID']) )
+
+            # Check to see if file was uploaded already
+            entry = Results.query.filter_by(
+                tournament_id = r['Tournament ID']
+            ).first()
+            
+            if entry is not None:
+                return None, {
+                    'error':'This tournament ID has already been uploaded: '+ str(trmnt.id)
+                }
+            
+            # Swap Profit JSON
+            trmnt_data = {
+                'api_token': utils.sha256( os.environ['API_TOKEN'] ),
+                'tournament_id': trmnt.id,
+                'tournament_buyin': trmnt.buy_in,
+                'users': {}
+            }
+
+        user_id = r['User ID'] or None
+        
+        # Add user to the Swap Profit JSON
+        if user_id:
+            user = Users.query.get( user_id )
+            if user is None:
+                db.session.rollback()
+                return None, {
+                    'error':'Couldn\'t find user with ID: '+ str(user_id)
+                }
+            # Swap Profit JSON
+            trmnt_data['users'][user.email] = {
+                'place': r['Place'],
+                'winnings': r['Winnings']
+                # 'user_id': user.id
+            }
+
+        # Add to PokerSociety database
+        db.session.add( Results(
+            tournament_id = trmnt_data['tournament_id'],
+            user_id = user_id,
+            full_name = r['Full Name'],
+            place = r['Place'],
+            nationality = r['Nationality'],
+            winnings = r['Winnings']
+        ))
+
+    # If no errors, commit all data
+    # db.session.commit()
+    # swapprofit = Subscribers.query.filter_by(company_name='Swap Profit').first()
+    # if swapprofit is None:
+    #     return 'Swap Profit not a subscriber'
+    # resp = requests.post( 
+    #         os.environ['SWAPPROFIT_API_HOST'] + '/results/update',
+    #         json=trmnt_data )
+    # print('resp', resp)
+
+    return trmnt_data, {
+        'message': 'Results excel processed successfully'
+    }

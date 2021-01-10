@@ -175,11 +175,14 @@ def attach(app):
             raise APIException('Invalid id: ' + id, 400)
 
         user = Profiles.query.get(int(id))
+        print('User is:', user)
         # print(user.sending_swaps)
         # print('coins',user.get_coins())
         # print('reserved', user.get_reserved_coins())
         if user is None:
             raise APIException('Profile not found', 404)
+
+
 
         return jsonify(user.serialize()), 200
 
@@ -203,26 +206,11 @@ def attach(app):
             'hendon_url': req.get('hendon_url')
         }
 
-        # Create user at Poker Society if there is none, get back pokersociety_id
-        user = Users.query.get( user_id )
-        print("WHO IS THIS", user.email)
-        resp = requests.post( os.environ['POKERSOCIETY_HOST'] + '/swapprofit/user',
-            json={
-                'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
-                'email': user.email,
-                'password': user.password,
-                **prof_data
-            })
-        print('resp', resp)
-        if not resp.ok:
-            raise APIException('Error creating user in Poker Society', 500)
-
-        data = resp.json()
+       
         
         
         db.session.add( Profiles(
             id = user_id,
-            pokersociety_id = data['pokersociety_id'],
             # naughty=False,
             **prof_data
         ))
@@ -419,7 +407,7 @@ def attach(app):
         }
         
         # Check casino name
-        trmnt_casino = flight.tournament.casino
+        trmnt_casino = flight.tournament.casino.name
         print()
         print(trmnt_casino)
         print()
@@ -690,7 +678,7 @@ def attach(app):
                     'flight': f,
                     'distance': utils.distance( 
                         origin=[float(lat), float(lon)],
-                        destination=[f.tournament.latitude, f.tournament.longitude] )
+                        destination=[f.tournament.casino.latitude, f.tournament.casino.longitude] )
                 } for f in flights]
 
                 flights = sorted( flights, key=cmp_to_key(utils.sort_by_location) )
@@ -701,11 +689,11 @@ def attach(app):
                 
                 return jsonify([{
                     ** x['flight'].serialize(),
-                    'casino': x['flight'].tournament.casino,
-                    'address': x['flight'].tournament.address,
-                    'city': x['flight'].tournament.city,
-                    'state': x['flight'].tournament.state,
-                    'zip_code': x['flight'].tournament.zip_code,
+                    'casino': x['flight'].tournament.casino.serialize_simple(),
+                    # 'address': x['flight'].tournament.casino.address,
+                    # 'city': x['flight'].tournament.casino.city,
+                    # 'state': x['flight'].tournament.casino.state,
+                    # 'zip_code': x['flight'].tournament.casino.zip_code,
                     'buy_in': Buy_ins.get_latest( 
                         user_id, x['flight'].tournament_id ) is not None,
                     'distance': x['distance']
@@ -719,11 +707,11 @@ def attach(app):
                 
                 return jsonify([{
                     **f.serialize(),
-                    'casino': f.tournament.casino,
-                    'address': f.tournament.address,
-                    'city': f.tournament.city,
-                    'state': f.tournament.state,
-                    'zip_code': f.tournament.zip_code,
+                    'casino': f.tournament.casino.serialize_simple(),
+                    # 'address': f.tournament.address,
+                    # 'city': f.tournament.city,
+                    # 'state': f.tournament.state,
+                    # 'zip_code': f.tournament.zip_code,
                     'buy_in': Buy_ins.get_latest( user_id, f.tournament_id ) is not None
                 } for f in flights]), 200
             

@@ -4,6 +4,7 @@ import requests
 from flask import request, jsonify, render_template
 from flask_cors import CORS
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt
+import utils
 from utils import APIException, check_params, jwt_link, update_table, sha256, role_jwt_required
 from models import db, Users, Profiles, Devices
 from notifications import send_email
@@ -112,14 +113,14 @@ def attach(app):
             send_email(template='welcome', emails=user.email)
 
         # If user just updating email, update the email in Poker Society
-        if jwt_data['role'] == 'email_change':
-            prof = Profiles.query.get( user.id )
-            resp = requests.post( 
-                f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/email/user/{prof.pokersociety_id}",
-                json={
-                    'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
-                    'email': user.email
-                })
+        # if jwt_data['role'] == 'email_change':
+        #     prof = Profiles.query.get( user.id )
+        #     resp = requests.post( 
+        #         f"{os.environ['POKERSOCIETY_HOST']}/swapprofit/email/user/{prof.pokersociety_id}",
+        #         json={
+        #             'api_token': utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ),
+        #             'email': user.email
+        #         })
 
         return render_template('email_validated_success.html')
 
