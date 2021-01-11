@@ -7,7 +7,7 @@ from utils import APIException, role_jwt_required
 from notifications import send_email, send_fcm
 import models as m
 from models import db, Profiles, Tournaments, Swaps, Flights, Buy_ins, Devices, \
-    Transactions, Users
+    Transactions, Users, Casinos
 import pandas as pd
 import actions
 from datetime import datetime, timedelta
@@ -415,35 +415,57 @@ def attach(app):
 
         data = resp.json()
 
-        for d in data:
-            print('DDDDD',d)
+        for d in data[0]: 
+        
+            print('d', d)
 
-            # TOURNAMENTS
+            # CASINOS - ADD/UPDATE
+            casinojson = d['casino']
+            csno = Casinos.query.get( casinojson['id'] )
+
+            
+            # CASINO Update
+            if csno is None:
+                print(f'Adding csno id: {casinojson["id"]}')
+                db.session.add( m.Casinos(
+                    **{col:val for col,val in casinojson.items()} ))
+            else:
+                print(f'Updating csno id: {casinojson["id"]}')
+                for col,val in casinojson.items():
+                    if getattr(csno, col) != val:
+                        setattr(csno, col, val)
+
+        for d in data[1]: 
+            # TOURNAMENTS - ADD/UPDATE
             trmntjson = d['tournament']
             trmnt = Tournaments.query.get( trmntjson['id'] )
+            print('LISTEN', trmnt)
+            x = {col:val for col,val in trmntjson.items()}
+            # ADD TOURNAMENT
             if trmnt is None:
                 print(f'Adding trmnt id: {trmntjson["id"]}')
-                # print(f'Checking trmnt json: {trmntjson}')
-                db.session.add( Tournaments(
-                    **{col:val for col,val in trmntjson.items()} ))
+                db.session.add( Tournaments( **trmntjson ))
+            
+            # UPDATE TOURNAMENT
             else:
                 print(f'Updating trmnt id: {trmntjson["id"]}')
-                # print(f'Checking trmnt json: {trmntjson}')
                 for col,val in trmntjson.items():
                     if getattr(trmnt, col) != val:
                         setattr(trmnt, col, val)
                 
-            # FLIGHTS
+            # FLIGHTS - ADD/UPDATE
             for flightjson in d['flights']:
                 flight = Flights.query.get( flightjson['id'] )
+                
+                # ADD FLIGHT
                 if flight is None:
                     print(f'Adding flight id: {flightjson["id"]}')
-                    print(f'Checking flight json: {flightjson}')
                     db.session.add( Flights(
                         **{col:val for col,val in flightjson.items()} ))
+                
+                # UPDATE FLIGHT
                 else:
                     print(f'Updating flight id: {flightjson["id"]}')
-                    print(f'Checking flight json: {flightjson}')
                     for col,val in flightjson.items():
                         if getattr(flight, col) != val:
                             setattr(flight, col, val)
