@@ -5,6 +5,7 @@ import re
 from google.cloud import vision_v1 as vision
 from flask import jsonify, url_for
 from flask_jwt_simple import create_jwt, jwt_required, get_jwt
+import jwt
 from datetime import datetime, timedelta
 from models import Users
 
@@ -52,8 +53,14 @@ def update_table(table, body, ignore=[]):
 
 # FUNCTION FOR FIRST TIME VALIDATION LINK
 def jwt_link(id, path='users/validate/', role='first_time_validation'):
+    
+    identity = {'id':id, 'role':role}
+
+    
     return os.path.join(
-        os.environ['API_HOST'], path, create_jwt({'id':id, 'role':role}) )
+        os.environ['API_HOST'], path, jwt.encode(identity, os.environ['SP_API_TOKEN_LIVE'] , algorithm='HS256') )
+
+
 
 # BASIC ENCRYPTION TO PROTECT API REQUESTS
 def sha256(string):

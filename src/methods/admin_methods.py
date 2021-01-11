@@ -848,10 +848,12 @@ def attach(app):
                 'login': False,
                 'message':'Email and password are incorrect',
             })
+
+        identity = {'id':user.id, 'role':'admin'}
         
         return jsonify({
             'login': True,
-            'jwt': create_jwt({'id':user.id, 'role':'admin'})
+            'jwt': jwt.encode(identity, os.environ['SP_API_TOKEN_LIVE'] , algorithm='HS256')
         })
 
     ################ DEVICE REQUESTS ###################
