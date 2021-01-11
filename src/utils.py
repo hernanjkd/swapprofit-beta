@@ -150,6 +150,8 @@ def role_jwt_required(valid_roles=['invalid']):
         @jwt_required
         def wrapper(*args, **kwargs):
 
+            print('jwt is', get_jwt())
+
             jwt_role = get_jwt()['role']
             valid = jwt_role == 'admin'
 
