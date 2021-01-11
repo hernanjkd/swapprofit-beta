@@ -59,7 +59,7 @@ def attach(app):
     @app.route('/users/reset_password/<token>', methods=['GET','PUT'])
     def html_reset_password(token):
 
-        jwt_data = jwt.decode(token, os.environ("JWT_SECRET_KEY"), algorithms=["HS256"])
+        jwt_data = jwt.decode(token, os.environ.get["JWT_SECRET_KEY"], algorithms=["HS256"])
         # Create new password in a template
         if request.method == 'GET':
             user = Users.query.filter_by(
