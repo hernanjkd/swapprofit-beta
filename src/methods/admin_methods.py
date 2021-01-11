@@ -45,6 +45,8 @@ def attach(app):
 
         x = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
+        print('x')
+
         return jsonify({
             "1 Gabe's id": gabe.id,
             "2 token_data": identity,
@@ -54,6 +56,7 @@ def attach(app):
 
     @app.route('/create/token', methods=['POST'])
     def create_token():
+        print('it is',request.get_json())
         return jsonify( jwt.encode(request.get_json(), os.environ['JWT_SECRET_KEY'], algorithm='HS256') ), 200
 
 
