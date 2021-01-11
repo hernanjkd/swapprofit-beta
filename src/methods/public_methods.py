@@ -99,6 +99,8 @@ def attach(app):
 
         jwt_data = jwt.decode(token, os.environ["JWT_SECRET_KEY"], algorithms=["HS256"])
 
+        print("JWT DATA IS", jwt_data)
+
         accepted_roles = ['first_time_validation','email_change']
         if jwt_data['role'] not in accepted_roles:
             return 'Incorrect token'
