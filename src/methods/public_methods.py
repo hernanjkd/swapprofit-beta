@@ -97,7 +97,7 @@ def attach(app):
     @app.route('/users/validate/<token>', methods=['GET'])
     def validate(token):
 
-        jwt_data = decode_jwt(token)
+        jwt_data = jwt.decode(token)
 
         accepted_roles = ['first_time_validation','email_change']
         if jwt_data['role'] not in accepted_roles:
