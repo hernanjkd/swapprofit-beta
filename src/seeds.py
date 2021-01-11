@@ -9,7 +9,6 @@ import pytz
 
 def run():
     Results.query.delete()
-    Messages.query.delete()
     Chats.query.delete()
     Devices.query.delete()
     Transactions.query.delete()
@@ -18,6 +17,7 @@ def run():
     Flights.query.delete()
     Tournaments.query.delete()
     Casinos.query.delete()
+    Messages.query.delete()
 
     Profiles.query.delete()
     Users.query.delete()
