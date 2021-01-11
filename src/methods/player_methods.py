@@ -17,6 +17,7 @@ from utils import APIException, role_jwt_required, isfloat, \
 from models import (db, Users, Profiles, Tournaments, Swaps, Flights, 
     Buy_ins, Transactions, Devices, Chats, Messages)
 from notifications import send_email, send_fcm
+import jwt
 
 
 def attach(app):
@@ -58,8 +59,7 @@ def attach(app):
     @app.route('/users/reset_password/<token>', methods=['GET','PUT'])
     def html_reset_password(token):
 
-        jwt_data = decode_jwt(token)
-        
+        jwt_data = jwt.decode(token, os.environ("JWT_SECRET_KEY"), algorithms=["HS256"])
         # Create new password in a template
         if request.method == 'GET':
             user = Users.query.filter_by(
