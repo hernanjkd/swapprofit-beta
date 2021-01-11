@@ -2,6 +2,7 @@ from flask import ( Flask, request, jsonify, render_template, send_file, \
     make_response, redirect )
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt, jwt_required
 from sqlalchemy import desc, or_
+from jwt import jwt
 from utils import APIException, role_jwt_required
 from notifications import send_email, send_fcm
 import models as m
@@ -34,6 +35,12 @@ def attach(app):
 
         gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
+        x = jwt.encode({
+                "id": gabe.id,
+                "role": "admin",
+                "exp": 600000
+            }, os.environ['API TOKEN'] ,"HS256")
+
         return jsonify({
             "1 Gabe's id": gabe.id,
             "2 token_data": {
@@ -41,11 +48,7 @@ def attach(app):
                 "role": "admin",
                 "exp": 600000
             },
-             "3 token": create_jwt({
-                    'id': gabe.id,
-                    'role': 'admin',
-                    'exp': 600000
-                })
+             "3 token": x
         
             # "3 token": create_jwt({
             #         'id': gabe.id,
