@@ -104,7 +104,7 @@ def run():
     ))
 
     gabe = Users(
-        email='gherndon5@gmail.com',
+        email='techpriest.gabriel@gmail.com',
         password=sha256('casper5'),
         status='valid'
     )
