@@ -58,7 +58,7 @@ def jwt_link(id, path='users/validate/', role='first_time_validation'):
 
     
     return os.path.join(
-        os.environ['API_HOST'], path, jwt.encode(identity, os.environ['SP_API_TOKEN_LIVE'] , algorithm='HS256') )
+        os.environ['API_HOST'], path, create_jwt(identity))
 
 
 
