@@ -43,23 +43,12 @@ def attach(app):
 
         
 
-        x = jwt.encode( identity, os.environ['SP_API_TOKEN_LIVE'] ,"HS256")
+        x = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
         return jsonify({
             "1 Gabe's id": gabe.id,
             "2 token_data": identity,
              "3 token": x
-        
-            # "3 token": create_jwt({
-            #         'id': gabe.id,
-            #         'role': 'admin',
-            #         'exp': 600000
-            # #     })
-            # "3 token": create_jwt({
-            #         'id': gabe.id,
-            #         'role': 'admin',
-            #         'exp': 600000
-            #     })
         }, 200)
 
 
@@ -853,7 +842,7 @@ def attach(app):
         
         return jsonify({
             'login': True,
-            'jwt': jwt.encode(identity, os.environ['SP_API_TOKEN_LIVE'] , algorithm='HS256')
+            'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         })
 
     ################ DEVICE REQUESTS ###################

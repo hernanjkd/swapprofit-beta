@@ -89,7 +89,7 @@ def attach(app):
         }
 
         return jsonify({
-            'jwt': jwt.encode(identity, os.environ['SP_API_TOKEN_LIVE'] , algorithm='HS256')
+            'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         }), 200
 
 
