@@ -33,6 +33,7 @@ pandas = "==1.0.1"
 xlrd = "*"
 openpyxl = "*"
 mysql-connector-python = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"
