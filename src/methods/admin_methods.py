@@ -25,8 +25,10 @@ def attach(app):
 
 
     @app.route('/reset_database')
-    @jwt_required
-    def run_seeds():
+    @role_jwt_required(['admin'])
+    def run_seeds(user_id, **kwargs):
+
+        print(get_jwt())
 
         if get_jwt()['role'] != 'admin':
             raise APIException('Access denied', 403)
@@ -35,29 +37,47 @@ def attach(app):
 
         gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
+        now = datetime.utcnow()
+        # x['iat'] = now
+        # x['nbf'] = now
+        # x['sub'] = gabe.id
+        # x['exp'] = now + timedelta(days=365)
+
         identity = {
-                "id": gabe.id,
-                "role": "admin",
-                "exp": 600000
-            }
+            "id": gabe.id,
+            "role": "admin",
+            'sub': gabe.id,
+            "exp": now + timedelta(days=365),
+            'iat': now,
+            'nbf': now
+        }
 
         
 
-        x = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
+        xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
         print('x')
 
         return jsonify({
             "1 Gabe's id": gabe.id,
             "2 token_data": identity,
-             "3 token": x
+            "3 token": xx
         }, 200)
 
 
     @app.route('/create/token', methods=['POST'])
     def create_token():
         print('it is',request.get_json())
-        return jsonify( jwt.encode(request.get_json(), os.environ['JWT_SECRET_KEY'], algorithm='HS256') ), 200
+
+        x = request.get_json()
+        now = datetime.utcnow()
+        x['iat'] = now
+        x['nbf'] = now
+        x['sub'] = x['id']
+        x['exp'] = now + timedelta(days=365)
+        print(x)
+        
+        return jsonify( jwt.encode(x, os.environ['JWT_SECRET_KEY'], algorithm='HS256') ), 200
 
 
     @app.route('/tournaments/schedueler')

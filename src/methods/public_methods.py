@@ -9,6 +9,7 @@ import utils
 from utils import APIException, check_params, jwt_link, update_table, sha256, role_jwt_required
 from models import db, Users, Profiles, Devices
 from notifications import send_email
+from datetime import datetime, timedelta
 
 def attach(app):
 
@@ -82,10 +83,15 @@ def attach(app):
             ))
             db.session.commit()
 
+        now = datetime.utcnow()
+
         identity = {
             'id': user.id,
             'role': 'user',
-            'exp': req.get('exp', 15)
+            'exp': now + timedelta(days=60),
+            'sub': user.id,
+            'nbf': now,
+
         }
 
         return jsonify({
