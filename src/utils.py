@@ -54,7 +54,7 @@ def update_table(table, body, ignore=[]):
 # FUNCTION FOR FIRST TIME VALIDATION LINK
 def jwt_link(id, path='users/validate/', role='first_time_validation'):
     
-    identity = {'id':id, 'role':role}
+    identity = {'id':id, 'role':role, 'sub': id}
 
     
     return os.path.join(
@@ -162,7 +162,7 @@ def role_jwt_required(valid_roles=['invalid']):
             if not valid:
                 raise APIException('Access denied', 403)
 
-            user_id = get_jwt()['id']
+            user_id = get_jwt()['sub']
             
             user = Users.query.get(user_id)
             if not user:

@@ -54,7 +54,7 @@ def attach(app):
 
     @app.route('/create/token', methods=['POST'])
     def create_token():
-        return jsonify( create_jwt(request.get_json()) ), 200
+        return jsonify( jwt.encode(request.get_json(), os.environ['JWT_SECRET_KEY'], algorithm='HS256') ), 200
 
 
     @app.route('/tournaments/schedueler')
@@ -838,7 +838,7 @@ def attach(app):
                 'message':'Email and password are incorrect',
             })
 
-        identity = {'id':user.id, 'role':'admin'}
+        identity = {'id':user.id, 'role':'admin', 'sub':user.id}
         
         return jsonify({
             'login': True,
