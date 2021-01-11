@@ -105,7 +105,7 @@ def attach(app):
         if jwt_data['role'] not in accepted_roles:
             return 'Incorrect token'
 
-        user = Users.query.get(jwt_data['sub'])
+        user = Users.query.get(jwt_data['id'])
         if user is None:
             return 'Invalid key payload'
 
