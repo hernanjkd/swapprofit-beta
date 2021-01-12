@@ -5,7 +5,7 @@ import requests
 from sqlalchemy import or_
 from utils import isfloat
 from datetime import datetime
-from models import db, Profiles, Buy_ins, Swaps, Tournaments, Flights, Casinos, Results
+from models import db, Profiles, Buy_ins, Swaps, Tournaments, Flights, Casinos, Results, Users
 
 
 
@@ -285,7 +285,7 @@ def load_tournament_file():
         ))
 
     # If no errors, commit all data
-    # db.session.commit()
+    db.session.commit()
     # swapprofit = Subscribers.query.filter_by(company_name='Swap Profit').first()
     # if swapprofit is None:
     #     return 'Swap Profit not a subscriber'
