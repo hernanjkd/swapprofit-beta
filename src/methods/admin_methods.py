@@ -619,25 +619,28 @@ def attach(app):
         '''
         print("GETTING RESULGX")
         r  = request.get_json()
-
+        print('r', r)
+        print('Token here', r['api_token'])
+        print(os.environ['SP_API_TOKEN_LIVE'])
         # Security token check
         if r['api_token'] !=  os.environ['SP_API_TOKEN_LIVE'] :
             return jsonify({'error':r['api_token']})
         
+        print('b')
         # print('Buyin ID', r['tournament_buyin'])
         trmnt = Tournaments.query.get( r['tournament_id'] )
         if trmnt is None:
             return jsonify(
                 {'error':'Tournament not found with id: '+ r['tournament_id']})
-
+        print('c')
         trmnt_buyin = r['tournament_buyin'] 
         trmnt.results_link = (os.environ['POKERSOCIETY_HOST'] + 
             '/results/tournament/' + str(r['tournament_id']))
-
+        print('d')
         # Add all players that haven't won but have swaps in this trmnt
         all_swaps_in_trmnt = Swaps.query.filter_by( tournament_id=trmnt.id ) \
                                         .filter_by( status='agreed' )
-
+        print('d')
         for swap in all_swaps_in_trmnt:
             email = swap.sender_user.user.email
             if email not in r['users']:
@@ -646,7 +649,7 @@ def attach(app):
                     'winnings': None,
                 }
         
-        
+        print('e')
         # Variable to set swap due date
         due_date = datetime.utcnow() + timedelta(days=4)
 
