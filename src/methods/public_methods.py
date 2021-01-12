@@ -119,8 +119,8 @@ def attach(app):
             db.session.commit()
 
         # First time validating email, send welcome email
-        if jwt_data['role'] == 'first_time_validation':
-            send_email(template='welcome', emails=user.email)
+        # if jwt_data['role'] == 'first_time_validation':
+        #     send_email(template='welcome', emails=user.email)
 
         # If user just updating email, update the email in Poker Society
         # if jwt_data['role'] == 'email_change':

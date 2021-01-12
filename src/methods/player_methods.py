@@ -225,6 +225,11 @@ def attach(app):
         
         db.session.commit()
 
+        user = Users.query.get(user_id)
+        if user is None:
+            return 'Invalid key payload'
+
+        send_email(template='welcome', emails=user.email)
 
         return jsonify({'message':'ok'}), 200
 
