@@ -617,11 +617,11 @@ def attach(app):
                 }
             }
         '''
-
+        print("GETTING RESULGX")
         r  = request.get_json()
 
         # Security token check
-        if r['api_token'] != utils.sha256( os.environ['POKERSOCIETY_API_TOKEN'] ):
+        if r['api_token'] !=  os.environ['SP_API_TOKEN_LIVE'] :
             return jsonify({'error':r['api_token']})
         
         # print('Buyin ID', r['tournament_buyin'])
