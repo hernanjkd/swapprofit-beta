@@ -435,8 +435,6 @@ class Tournaments(db.Model):
                 buyins.append( ueser )
         return buyins
         
-    def get_local_start_time(self):
-        self.start_at
 
     def serialize(self):
         return {
