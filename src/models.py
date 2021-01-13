@@ -300,6 +300,24 @@ class Casinos(db.Model):
     def __repr__(self):
         return f'<Casino {self.name} {self.city}, {self.state}>'
 
+    def getTimeZoneName(self):
+        time_zone_name = ''
+        print('Time Zone', self.time_zone)
+
+        if(self.time_zone){
+
+        }elif(self.time_zone){
+
+        }elif(self.time_zone){
+
+        }elif(self.time_zone){
+
+        }
+
+        print('time_zone_name', time_zone_name)
+        return time_zone_name 
+
+
     def serialize(self):
         return {
             'id': self.id,
@@ -317,7 +335,8 @@ class Casinos(db.Model):
             'twitter': self.twitter,
             'instagram': self.instagram,
             'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'updated_at': self.updated_at,
+            # 'time_zone_name': self.getTimeZoneName()
         }
 
     def serialize_simple(self):
@@ -331,6 +350,7 @@ class Casinos(db.Model):
             'longitude': self.longitude,
             'latitude': self.latitude,
             'time_zone': self.time_zone,
+            # 'time_zone_name': self.getTimeZoneName()
         }
 
 
@@ -414,6 +434,9 @@ class Tournaments(db.Model):
                     .order_by( Buy_ins.id.desc() ).first().serialize()
                 buyins.append( ueser )
         return buyins
+        
+    def get_local_start_time(self):
+        self.start_at
 
     def serialize(self):
         return {
@@ -439,6 +462,7 @@ class Tournaments(db.Model):
             'id': self.id,
             'name': self.name,
             'casino': self.casino.simple_serialize(),
+            'start_at': self.start_at,
             'results_link': self.results_link,
             'tournament_status': self.status._value_,
             'created_at': self.created_at,
