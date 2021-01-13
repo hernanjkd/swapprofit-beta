@@ -300,22 +300,22 @@ class Casinos(db.Model):
     def __repr__(self):
         return f'<Casino {self.name} {self.city}, {self.state}>'
 
-    def getTimeZoneName(self):
-        time_zone_name = ''
-        print('Time Zone', self.time_zone)
+    # def getTimeZoneName(self):
+    #     time_zone_name = ''
+    #     print('Time Zone', self.time_zone)
 
-        if(self.time_zone){
+    #     if(self.time_zone){
 
-        }elif(self.time_zone){
+    #     }elif(self.time_zone){
 
-        }elif(self.time_zone){
+    #     }elif(self.time_zone){
 
-        }elif(self.time_zone){
+    #     }elif(self.time_zone){
 
-        }
+    #     }
 
-        print('time_zone_name', time_zone_name)
-        return time_zone_name 
+    #     print('time_zone_name', time_zone_name)
+    #     return time_zone_name 
 
 
     def serialize(self):
