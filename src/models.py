@@ -4,6 +4,8 @@ from sqlalchemy import asc, desc
 from datetime import datetime, timedelta
 import enum
 import os
+# from pytz import timezone
+# import pytz
 
 db = SQLAlchemy()
 
@@ -300,22 +302,7 @@ class Casinos(db.Model):
     def __repr__(self):
         return f'<Casino {self.name} {self.city}, {self.state}>'
 
-    # def getTimeZoneName(self):
-    #     time_zone_name = ''
-    #     print('Time Zone', self.time_zone)
 
-    #     if(self.time_zone){
-
-    #     }elif(self.time_zone){
-
-    #     }elif(self.time_zone){
-
-    #     }elif(self.time_zone){
-
-    #     }
-
-    #     print('time_zone_name', time_zone_name)
-    #     return time_zone_name 
 
 
     def serialize(self):

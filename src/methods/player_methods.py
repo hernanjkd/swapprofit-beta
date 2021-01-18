@@ -128,7 +128,7 @@ def attach(app):
             password=utils.sha256(req['password'])
         ).first()
         if user is None:
-            raise APIException('User not found', 404)
+            raise APIException('You entered an incorrect email or password', 404)
 
         user.password = utils.sha256(req['new_password'])
 
