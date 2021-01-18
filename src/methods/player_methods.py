@@ -32,6 +32,9 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req, 'email', 'password', 'new_email')
 
+        print('i', user_id)
+        print('i', req['email'])
+        print('i', req['password'])
         if req['email'] == req['new_email']:
             return jsonify({'message':'Your email is already '+req['new_email']})
 
@@ -42,7 +45,7 @@ def attach(app):
         ).first()
         
         if user is None:
-            raise APIException('User not found', 404)
+            raise APIException('You entered an ncorrect email or password', 404)
 
         user.status = 'invalid'
         user.email = req['new_email']
