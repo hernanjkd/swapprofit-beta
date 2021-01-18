@@ -45,7 +45,7 @@ def attach(app):
         ).first()
         
         if user is None:
-            raise APIException('You entered an ncorrect email or password', 404)
+            raise APIException('You entered an incorrect email or password', 404)
 
         user.status = 'invalid'
         user.email = req['new_email']
@@ -564,10 +564,10 @@ def attach(app):
             buyin.table = req['table']
         if req.get('seat') is not None:
             buyin.seat = req['seat']
-
-        if (x != req['chips'] or x == 0):
-            for key, value in  a_tournament['buyins'][0].items():
-                print (key)
+        # print(a_tournament['buyins'])
+        if (buyin.chips != req['chips'] or x == 0):
+            # for key, value in  a_tournament['buyins'][0].items():
+            #     print (key)
 
             for tbuyin in a_tournament['buyins']:
                 prof = Profiles.query.get(tbuyin['recipient_user']['id'])
