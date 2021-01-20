@@ -172,19 +172,16 @@ def attach(app):
                         .order_by( m.Buy_ins.id.desc() ).first()
         
                     if user.event_update is True:
-                        isdst_now_in = lambda zonename: bool(datetime.now(pytz.timezone(zonename)).dst())
-                        y = 0 if isdst_now_in(trmnt.time_zone) else -1
-                        z = y + int(trmnt.time_zone[7:])
-                        est = pytz.timezone(trmnt.time_zone).localize(trmnt.start_at) + timedelta(hours=z)
-                        start_time = est.strftime("%b. %d, %a. %I:%M %p")
+                        
+                        # start_time = est.strftime("%b. %d, %a. %I:%M %p")
 
                         send_fcm(
                             user_id = user.id,
                             title = "Event Started",
-                            body = trmnt.name + '\nopened at ' + start_time,
+                            body = trmnt.name + '\nopened just now',
                             data = {
                                 'id': trmnt.id,
-                                'alert': trmnt.name + '\nopened at ' + start_time,
+                                'alert': trmnt.name + '\nopened just now',
                                 'buyin_id': my_buyin.id,
                                 'type': 'event',
                                 'initialPath': 'Event Listings',

@@ -564,10 +564,8 @@ def attach(app):
             buyin.table = req['table']
         if req.get('seat') is not None:
             buyin.seat = req['seat']
-        # print(a_tournament['buyins'])
+
         if (buyin.chips != req['chips'] or x == 0):
-            # for key, value in  a_tournament['buyins'][0].items():
-            #     print (key)
 
             for tbuyin in a_tournament['buyins']:
                 prof = Profiles.query.get(tbuyin['recipient_user']['id'])
