@@ -171,7 +171,7 @@ def attach(app):
                         .filter( m.Buy_ins.user_id==user.id ) \
                         .order_by( m.Buy_ins.id.desc() ).first()
                     
-                    print('check if this correct', user, user.id)
+                    print('check if this correct', user, user.id, user.event_update)
 
                     if user.event_update is True:
                         

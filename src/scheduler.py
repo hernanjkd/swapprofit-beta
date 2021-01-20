@@ -164,7 +164,7 @@ if trmnts is not None:
                 .filter( Buy_ins.flight.has( tournament_id=trmnt.id )) \
                 .filter( m.Buy_ins.user_id==user.id ) \
                 .order_by( m.Buy_ins.id.desc() ).first()
-            print("check if this goes through", user.id)
+            print("check if this goes through", user.id, user.event_update)
             if user.event_update is True:
 
                 send_fcm(
