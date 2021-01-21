@@ -110,6 +110,7 @@ class Profiles(db.Model):
         actions = 0
         swaps = 0
         for swap in self.sending_swaps:
+            print("SWAP COUNTED", swap)
             if swap.tournament_id == tournament_id:
                 if swap.status._value_ in status_to_consider:
                     actions += swap.percentage

@@ -80,6 +80,7 @@ def resolve_pagination(request_args, limit_default=10):
 
 # IF MULTIPLE FLIGHTS, returns their names into days
 def resolve_name_day(string):
+    print('string', string)
     a = re.search(r'(.*) - Day ([\d\w]+)', string)
     tournament_name = string if a is None else a.group(1)
     flight_day = a and a.group(2)
@@ -150,7 +151,7 @@ def role_jwt_required(valid_roles=['invalid']):
         @jwt_required
         def wrapper(*args, **kwargs):
 
-            print('jwt is', get_jwt())
+            # print('jwt is', get_jwt())
 
             jwt_role = get_jwt()['role']
             valid = jwt_role == 'admin'

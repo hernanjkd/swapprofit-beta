@@ -134,7 +134,7 @@ trmnts = session.query(m.Tournaments) \
     .filter( m.Tournaments.start_at < _5mins_ahead) \
     .filter( m.Tournaments.start_at > _5mins_ago )
 
-print('check', trmnts)
+# print('check', trmnts)
 if trmnts is not None:
     for trmnt in trmnts:
         users = get_all_players_from_trmnt( trmnt )

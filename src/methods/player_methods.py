@@ -32,9 +32,9 @@ def attach(app):
         req = request.get_json()
         utils.check_params(req, 'email', 'password', 'new_email')
 
-        print('i', user_id)
-        print('i', req['email'])
-        print('i', req['password'])
+        # print('i', user_id)
+        # print('i', req['email'])
+        # print('i', req['password'])
         if req['email'] == req['new_email']:
             return jsonify({'message':'Your email is already '+req['new_email']})
 
