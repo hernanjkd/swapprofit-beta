@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9ea5ebbd5b28
+Revision ID: 2d2c9ab96478
 Revises: 
-Create Date: 2021-01-06 18:16:27.571585
+Create Date: 2021-01-23 11:04:12.406943
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9ea5ebbd5b28'
+revision = '2d2c9ab96478'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -67,13 +67,18 @@ def upgrade():
     sa.Column('coin_update', sa.Boolean(), nullable=True),
     sa.Column('result_update', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('hendon_url')
     )
     op.create_table('tournaments',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=500), nullable=False),
     sa.Column('start_at', sa.DateTime(), nullable=True),
     sa.Column('results_link', sa.String(length=256), nullable=True),
+    sa.Column('structure_link', sa.String(length=500), nullable=True),
+    sa.Column('blinds', sa.String(length=20), nullable=True),
+    sa.Column('buy_in_amount', sa.String(length=20), nullable=True),
+    sa.Column('starting_stack', sa.String(length=20), nullable=True),
     sa.Column('status', sa.Enum('open', 'closed', 'waiting_results', name='tournamentstatus'), nullable=True),
     sa.Column('casino_id', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -109,6 +114,19 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['tournament_id'], ['tournaments.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('results',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('tournament_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('full_name', sa.String(length=40), nullable=True),
+    sa.Column('place', sa.String(length=6), nullable=True),
+    sa.Column('winnings', sa.String(length=30), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['tournament_id'], ['tournaments.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('swaps',
@@ -186,6 +204,7 @@ def downgrade():
     op.drop_table('buy_ins')
     op.drop_table('transactions')
     op.drop_table('swaps')
+    op.drop_table('results')
     op.drop_table('flights')
     op.drop_table('devices')
     op.drop_table('chats')

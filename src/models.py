@@ -56,7 +56,7 @@ class Profiles(db.Model):
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     nickname = db.Column(db.String(100))
-    hendon_url = db.Column(db.String(200))
+    hendon_url = db.Column(db.String(200), unique=True,)
     profile_pic_url = db.Column(db.String(250), default=None)
     
     roi_rating = db.Column(db.Float, default=0)
