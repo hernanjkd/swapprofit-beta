@@ -23,7 +23,6 @@ def run():
     Users.query.delete()
 
     # db.session.execute("ALTER SEQUENCE casinos_id_seq RESTART")
-    db.session.execute("ALTER SEQUENCE users_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE results_id_seq RESTART")
     # db.session.execute("ALTER SEQUENCE casinos RESTART")
 
@@ -35,6 +34,8 @@ def run():
     db.session.execute("ALTER SEQUENCE devices_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE chats_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE messages_id_seq RESTART")
+    db.session.execute("ALTER SEQUENCE users_id_seq RESTART")
+
 
     db.session.commit()
 
