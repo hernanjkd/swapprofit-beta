@@ -20,7 +20,7 @@ def run():
     Messages.query.delete()
 
     Profiles.query.delete()
-    Users.query.delete()
+    # Users.query.delete()
 
     # db.session.execute("ALTER SEQUENCE casinos_id_seq RESTART")
     db.session.execute("ALTER SEQUENCE results_id_seq RESTART")
