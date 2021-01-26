@@ -28,43 +28,42 @@ def attach(app):
     @role_jwt_required(['admin'])
     def run_seeds(**kwargs):
 
-        print(get_jwt())
-        print('running hereee')
+
 
         if get_jwt()['role'] != 'admin':
             raise APIException('Access denied', 403)
         print('running here')
         seeds.run()
 
-        gabe = Profiles.query.filter_by(first_name='Gabriel').first()
+        # gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
-        now = datetime.utcnow()
+        # now = datetime.utcnow()
         # x['iat'] = now
         # x['nbf'] = now
         # x['sub'] = gabe.id
         # x['exp'] = now + timedelta(days=365)
 
-        identity = {
-            "id": gabe.id,
-            "role": "admin",
-            'sub': gabe.id,
-            "exp": now + timedelta(days=365),
-            'iat': now,
-            'nbf': now
-        }
+        # identity = {
+        #     "id": gabe.id,
+        #     "role": "admin",
+        #     'sub': gabe.id,
+        #     "exp": now + timedelta(days=365),
+        #     'iat': now,
+        #     'nbf': now
+        # }
 
         
 
-        xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
+        # xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
-        print('x')
+        # print('x')
 
-        return jsonify({
-            "1 Gabe's id": gabe.id,
-            "2 token_data": identity,
-            "3 token": xx
-        }, 200)
-
+        # return jsonify({
+        #     "1 Gabe's id": gabe.id,
+        #     "2 token_data": identity,
+        #     "3 token": xx
+        # }, 200)
+        return jsonify({'lol':'lol'})
 
     @app.route('/create/token', methods=['POST'])
     def create_token():
