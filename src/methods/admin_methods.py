@@ -26,9 +26,9 @@ def attach(app):
 
     @app.route('/reset_database')
     @role_jwt_required(['admin'])
-    def run_seeds(**kwargs):
+    def run_seeds(user_id, **kwargs):
 
-
+        print(get_jwt())
 
         if get_jwt()['role'] != 'admin':
             raise APIException('Access denied', 403)
@@ -38,10 +38,10 @@ def attach(app):
         gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
         now = datetime.utcnow()
-        x['iat'] = now
-        x['nbf'] = now
-        x['sub'] = gabe.id
-        x['exp'] = now + timedelta(days=365)
+        # x['iat'] = now
+        # x['nbf'] = now
+        # x['sub'] = gabe.id
+        # x['exp'] = now + timedelta(days=365)
 
         identity = {
             "id": gabe.id,
@@ -56,7 +56,6 @@ def attach(app):
 
         xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
-        print('x')
 
         return jsonify({
             "1 Gabe's id": gabe.id,
