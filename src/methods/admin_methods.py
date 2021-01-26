@@ -35,35 +35,35 @@ def attach(app):
         print('running here')
         seeds.run()
 
-        # gabe = Profiles.query.filter_by(first_name='Gabriel').first()
+        gabe = Profiles.query.filter_by(first_name='Gabriel').first()
 
-        # now = datetime.utcnow()
-        # x['iat'] = now
-        # x['nbf'] = now
-        # x['sub'] = gabe.id
-        # x['exp'] = now + timedelta(days=365)
+        now = datetime.utcnow()
+        x['iat'] = now
+        x['nbf'] = now
+        x['sub'] = gabe.id
+        x['exp'] = now + timedelta(days=365)
 
-        # identity = {
-        #     "id": gabe.id,
-        #     "role": "admin",
-        #     'sub': gabe.id,
-        #     "exp": now + timedelta(days=365),
-        #     'iat': now,
-        #     'nbf': now
-        # }
+        identity = {
+            "id": gabe.id,
+            "role": "admin",
+            'sub': gabe.id,
+            "exp": now + timedelta(days=365),
+            'iat': now,
+            'nbf': now
+        }
 
         
 
-        # xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
+        xx = jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
 
-        # print('x')
+        print('x')
 
-        # return jsonify({
-        #     "1 Gabe's id": gabe.id,
-        #     "2 token_data": identity,
-        #     "3 token": xx
-        # }, 200)
-        return jsonify({'lol':'lol'})
+        return jsonify({
+            "1 Gabe's id": gabe.id,
+            "2 token_data": identity,
+            "3 token": xx
+        }, 200)
+
 
     @app.route('/create/token', methods=['POST'])
     def create_token():
