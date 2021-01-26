@@ -26,13 +26,14 @@ def attach(app):
 
     @app.route('/reset_database')
     @role_jwt_required(['admin'])
-    def run_seeds(user_id, **kwargs):
+    def run_seeds(**kwargs):
 
         print(get_jwt())
+        print('running hereee')
 
         if get_jwt()['role'] != 'admin':
             raise APIException('Access denied', 403)
-
+        print('running here')
         seeds.run()
 
         gabe = Profiles.query.filter_by(first_name='Gabriel').first()
