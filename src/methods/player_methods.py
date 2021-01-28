@@ -252,6 +252,7 @@ def attach(app):
         if req['hendon_url'] is not None:
             print('checking for hendon', req['hendon_url'])
             existingHendonURL = Profiles.query.filter_by(hendon_url=req['hendon_url']).first()
+            print("User already has this", existingHendonURL)
             if existingHendonURL is not None:
                 raise APIException('This Hendon Mob profile has already been assigned to another user.')
 
