@@ -246,8 +246,8 @@ def attach(app):
 
         req = request.get_json()
         utils.check_params(req)
-
-        print('I sould be under params')
+        x = utils.check_params(req)
+        print('I sould be under params', x)
         
         if req['hendon_url'] :
             print('checking for hendon', req['hendon_url'])
