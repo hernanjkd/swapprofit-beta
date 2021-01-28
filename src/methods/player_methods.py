@@ -249,7 +249,7 @@ def attach(app):
         x = utils.check_params(req)
         print('I sould be under params', x)
         
-        if hasattr(req, 'hendon_url') :
+        if 'hendon_url' in x :
             print('checking for hendon', req['hendon_url'])
             existingHendonURL = Profiles.query.filter_by(hendon_url=req['hendon_url']).first() is not None
             print("User already has this", existingHendonURL)
