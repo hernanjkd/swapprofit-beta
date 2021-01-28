@@ -254,7 +254,7 @@ def attach(app):
             existingHendonURL = Profiles.query.filter_by(hendon_url=req['hendon_url']).first()
             print("User already has this", existingHendonURL)
             if existingHendonURL is not None:
-                raise APIException('This Hendon Mob profile has already been assigned to another user.')
+                raise APIException('This Hendon Mob profile has already been assigned to another user.', 400)
 
         utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id', 
                                                 'roi_rating','swap_rating'])
