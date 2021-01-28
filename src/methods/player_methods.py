@@ -257,12 +257,11 @@ def attach(app):
                 print('It got in')
                 raise APIException('This Hendon Mob profile has already been assigned to another user.', 400)
 
-        utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id', 
-                                                'roi_rating','swap_rating'])
+        utils.update_table(prof, req, ignore=['profile_pic_url','pokersociety_id', 'roi_rating','swap_rating'])
 
         db.session.commit()
 
-        return jsonify(prof.serialize())
+        return jsonify({'message': 'Your profile has been updated'}), 200
 
 
     # UPDATE PROFILE PICTURE
