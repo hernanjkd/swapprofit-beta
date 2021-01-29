@@ -139,6 +139,8 @@ def run():
     db.session.flush()
 
 
+# Give room for Swap Profit to add mock tournaments
+    db.session.execute("ALTER SEQUENCE users_id_seq RESTART WITH 4")
     db.session.commit()
 
 
