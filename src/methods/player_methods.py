@@ -251,7 +251,8 @@ def attach(app):
             print("User already has this", existingHendonURL)
             if existingHendonURL is True:
                 raise APIException('This Hendon Mob profile has already been assigned to another user.', 400)
-        
+            if 'https://pokerdb.thehendonmob.com/player.php?a=r&n=' not in req['hendon_url']:
+                raise APIException('You did not submit a valid Hendon Mob profile.', 400)
         return jsonify({'message': 'This Hendon Mob profile is available'}), 200
 
          
