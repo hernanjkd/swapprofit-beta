@@ -236,6 +236,24 @@ def attach(app):
 
         return jsonify({'message':'ok'}), 200
 
+     # UPDATE MY PROFILE
+    @app.route('/hendon_availability', methods=['POST'])
+    # @role_jwt_required(['user'])
+    def check_hendon_availability():
+
+        req = request.get_json()
+        utils.check_params(req)
+        x = utils.check_params(req)
+
+        if 'hendon_url' in x :
+            print('checking for hendon', req['hendon_url'])
+            existingHendonURL = Profiles.query.filter_by(hendon_url=req['hendon_url']).first() is not None
+            print("User already has this", existingHendonURL)
+            if existingHendonURL is True:
+                raise APIException('This Hendon Mob profile has already been assigned to another user.', 400)
+        
+        return jsonify({'message': 'This Hendon Mob profile is available'}), 200
+
          
     # UPDATE MY PROFILE
     @app.route('/profiles/me', methods=['PUT'])
