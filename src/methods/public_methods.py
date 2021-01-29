@@ -36,7 +36,7 @@ def attach(app):
                 .filter_by( email=email )
                 .first())
         print('user', user)
-        if user and user.status._value_ == 'unclaimed':     
+        if user and user.status._value_ == 'invalid':     
             data = {'validation_link': jwt_link(user.id)}
             send_email( template='email_validation', emails=user.email, data=data)
             
