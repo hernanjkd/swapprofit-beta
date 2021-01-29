@@ -24,15 +24,18 @@ def attach(app):
         regex = r'^[a-zA-Z]+[\w\.]*@\w+\.[a-zA-Z]{2,5}$'
         if re.search(regex, email, re.IGNORECASE) is None:
             raise APIException('This is not a valid email', 401)
-        
+
         if len( req['password'] ) < 6:
             raise APIException('Password must be at least 6 characters long', 401)
 
         # If user exists and failed to validate his account
+        # user = (Users.query
+        #         .filter_by( email=email, password=sha256(req['password']) )
+        #         .first())
         user = (Users.query
-                .filter_by( email=email, password=sha256(req['password']) )
+                .filter_by( email=email )
                 .first())
-
+        print('user', user)
         if user and user.status._value_ == 'unclaimed':     
             data = {'validation_link': jwt_link(user.id)}
             send_email( template='email_validation', emails=user.email, data=data)
@@ -40,12 +43,16 @@ def attach(app):
             return jsonify({'message':'Another email has been sent for email validation'})
 
         elif user and user.status._value_ == 'valid':
-            raise APIException('User already exists', 400)
+            print('should be ehreCCC')
+            raise APIException('This email address is already taken', 400)
+        print('should be ehreA')
 
         user = Users(
             email = email,
             password = sha256(req['password'])
         )
+        print('should be ehreBBBB')
+
         db.session.add(user)
         db.session.commit()
 
