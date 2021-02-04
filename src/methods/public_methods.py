@@ -105,7 +105,7 @@ def attach(app):
             'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         }), 200
 
-    @app.route('/redirect')
+    @app.route('/redirect', methods=['GET'])
     def redirectTo():
         return redirect("swapprofit://home")
 

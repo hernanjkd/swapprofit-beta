@@ -9,6 +9,14 @@
 			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 			crossorigin="anonymous"
 		/>
+		<script>
+			function redirectTo() {
+				const url = 'https://swapprofit-beta.herokuapp.com/redirectTo'
+						let response = await fetch(url, {
+							method:'GET'
+						})
+			}
+		</script>
 		<title>Poker Swap Email Validation Page</title>
 	</head>
 	<body>
@@ -16,7 +24,9 @@
 			<h1>Your SwapProfit email address has been validated.</h1>
 		</div>
 		<div class="text-center pt-3">
-			<h3>Please go back to the app and login to create your profile.</h3>
+			<button onclick="redirctTo()">
+				<h3>Click here to return to the SwapProfit app.</h3>
+			</button>
 		</div>
 	</body>
 </html>
