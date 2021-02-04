@@ -9,6 +9,16 @@
 			integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 			crossorigin="anonymous"
 		/>
+		
+		<title>Poker Swap Email Validation Page</title>
+	</head>
+	<body>
+		<div class="text-center pt-5">
+			<h1>Your SwapProfit email address has been validated.</h1>
+		</div>
+		<div class="text-center pt-3">
+			<button onclick="redirect()">Click here to return to the SwapProfit app.</button>
+		</div>
 		<script>
 			function redirect() {
 				const url = 'https://swapprofit-beta.herokuapp.com/redirect'
@@ -17,16 +27,5 @@
 						})
 			}
 		</script>
-		<title>Poker Swap Email Validation Page</title>
-	</head>
-	<body>
-		<div class="text-center pt-5">
-			<h1>Your SwapProfit email address has been validated.</h1>
-		</div>
-		<div class="text-center pt-3">
-			<a onclick="redirect()">
-				<h3>Click here to return to the SwapProfit app.</h3>
-			</a>
-		</div>
 	</body>
 </html>
