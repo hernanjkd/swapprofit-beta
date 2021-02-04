@@ -1,7 +1,7 @@
 import re
 import os
 import requests
-from flask import request, jsonify, render_template
+from flask import request, jsonify, render_template, redirect
 from flask_cors import CORS
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt
 import jwt
@@ -104,6 +104,12 @@ def attach(app):
         return jsonify({
             'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         }), 200
+
+    @app.route('/redirect', methods=['POST'])
+    def redirectTo():
+        return redirect("swapprofit://home")
+
+
 
 
     # VALIDATE EMAIL BY CHECKING THE TOKEN SENT IN EMAIL
