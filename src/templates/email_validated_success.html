@@ -10,7 +10,7 @@
 			crossorigin="anonymous"
 		/>
 		<script>
-			function redirectTo() {
+			function redirect() {
 				const url = 'https://swapprofit-beta.herokuapp.com/redirect'
 						let response = await fetch(url, {
 							method:'GET'
@@ -24,9 +24,9 @@
 			<h1>Your SwapProfit email address has been validated.</h1>
 		</div>
 		<div class="text-center pt-3">
-			<button onclick="redirctTo()">
+			<a onclick="redirct()">
 				<h3>Click here to return to the SwapProfit app.</h3>
-			</button>
+			</a>
 		</div>
 	</body>
 </html>
