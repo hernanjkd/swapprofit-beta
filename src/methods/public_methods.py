@@ -109,7 +109,7 @@ def attach(app):
     def redirectTo():
         print('was redirecyrf')
         redirect("swapprofit://home")
-        return(True)
+        return 'worked'
 
 
 
