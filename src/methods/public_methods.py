@@ -1,7 +1,7 @@
 import re
 import os
 import requests
-from flask import request, jsonify, render_template, redirect, url_fpr
+from flask import request, jsonify, render_template, redirect
 from flask_cors import CORS
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt
 import jwt
