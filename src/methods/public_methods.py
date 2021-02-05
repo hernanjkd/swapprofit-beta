@@ -1,7 +1,7 @@
 import re
 import os
 import requests
-from flask import request, jsonify, render_template, redirect
+from flask import request, jsonify, render_template, redirect, url_fpr
 from flask_cors import CORS
 from flask_jwt_simple import JWTManager, create_jwt, decode_jwt, get_jwt
 import jwt
@@ -107,7 +107,7 @@ def attach(app):
 
     @app.route('/redirect')
     def redirectTo():
-        return redirect("swapprofit://home", code=200)
+        return redirect("swapprofit://home", code=307)
 
 
 
