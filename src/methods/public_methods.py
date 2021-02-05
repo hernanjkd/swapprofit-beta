@@ -105,11 +105,9 @@ def attach(app):
             'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         }), 200
 
-    @app.route('/redirect', methods=['GET'])
+    @app.route('/redirect', methods=['POST'])
     def redirectTo():
-        print('was redirecyrf')
-        redirect("swapprofit://home", 302)
-        return 'worked'
+        return redirect("swapprofit://home")
 
 
 
