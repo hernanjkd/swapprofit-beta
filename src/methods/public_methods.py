@@ -108,7 +108,7 @@ def attach(app):
     @app.route('/redirect', methods=['GET'])
     def redirectTo():
         print('was redirecyrf')
-        return redirect("swapprofit://home")
+        redirect("swapprofit://home")
 
 
 
