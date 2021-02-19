@@ -414,13 +414,14 @@ def attach(app):
         nones = 0
         for val in regex_data.values():
             if val is None: nones += 1
-        if nones > 2:
-            print('TEST 2')
-            terminate_buyin()
+        # if nones > 2:
+        #     print('nones', )
+        #     print('TEST 2')
+        #     terminate_buyin()
 
-        if None in [regex_data['player_name'], regex_data['casino']]:
-            print('TEST 3')
-            terminate_buyin()
+        # if None in [regex_data['player_name'], regex_data['casino']]:
+        #     print('TEST 3')
+        #     terminate_buyin()
 
 
         #############################################
