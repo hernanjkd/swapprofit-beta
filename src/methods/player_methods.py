@@ -405,6 +405,7 @@ def attach(app):
 
         ocr_data = utils.ocr_reading( result )
         if list(ocr_data) == []:
+            print('ocr_data', ocr_data)
             print('TEST 1')
             terminate_buyin()
         
