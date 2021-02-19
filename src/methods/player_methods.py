@@ -404,6 +404,7 @@ def attach(app):
             raise APIException('Take another photo')
 
         ocr_data = utils.ocr_reading( result )
+        print("CHECK ", list(ocr_data))
         if list(ocr_data) == []:
             print('ocr_data', ocr_data)
             print('TEST 1')
