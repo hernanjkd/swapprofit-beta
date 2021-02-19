@@ -414,6 +414,7 @@ def attach(app):
         nones = 0
         for val in regex_data.values():
             if val is None: nones += 1
+        print('NONES', nones)
         # if nones > 2:
         #     print('nones', )
         #     print('TEST 2')
