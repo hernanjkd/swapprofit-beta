@@ -415,6 +415,7 @@ def attach(app):
         for val in regex_data.values():
             if val is None: nones += 1
         print('NONES', nones)
+        print('other', [regex_data['player_name'], regex_data['casino']])
         # if nones > 2:
         #     print('nones', )
         #     print('TEST 2')
