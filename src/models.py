@@ -512,6 +512,7 @@ class Buy_ins(db.Model):
     tournament_id = db.Column(db.Integer, db.ForeignKey('tournaments.id'))
     receipt_img_url = db.Column(db.String(250))
     chips = db.Column(db.Integer)
+    # submitted_chips = db.Column(db.Boolean, default=False)
     table = db.Column(db.String(20))
     seat = db.Column(db.Integer)
     place = db.Column(db.String(6), default=None)
@@ -529,18 +530,12 @@ class Buy_ins(db.Model):
 
     @staticmethod
     def get_latest(user_id, tournament_id):
-        # print('user_id', user_id)
-        # print('tournament_id', tournament_id)
         latest_buyin = db.session.query(Buy_ins) \
             .filter( Buy_ins.flight.has( tournament_id=tournament_id )) \
             .filter( Buy_ins.user_id==user_id ) \
             .order_by( Buy_ins.id.desc() ).first()
         return latest_buyin
-        # print('plz', Buy_ins.query.filter( Buy_ins.user_id==user_id ))
-        # return ( __self__.query.get( user_id )
-        #     .filter( Buy_ins.flight.has( tournament_id=tournament_id ))
-        #     .filter( Buy_ins.user_id==user_id )
-        #     .order_by( Buy_ins.id.desc() ).first() )
+
 
     def serialize(self):
         u = self.user
@@ -551,6 +546,7 @@ class Buy_ins(db.Model):
             'tournament_id': self.flight.tournament_id,
             'place': self.place,
             'chips': self.chips,
+            # 'submitted_chips': self.submitted_chips,
             'table': self.table,
             'seat': self.seat,
             'winnings': self.winnings,

@@ -528,7 +528,8 @@ def attach(app):
                 utils.check_params(req, 'chips','table','seat')
 
                 # Update chips, table and seat
-                if req['chips'] > 999999999:
+                # if req['submitted_chips'] == True:
+                if req['chips'] > 999999999 or req['chips'] < 0:
                     raise APIException('Too many characters for chips')
                 if len( req['table'] ) > 20:
                     raise APIException('Too many characters for table')
