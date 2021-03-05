@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: fefed1b21cce
+Revision ID: 43b8fa701c4d
 Revises: 
-Create Date: 2021-01-25 14:29:48.811546
+Create Date: 2021-03-05 09:56:35.872053
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fefed1b21cce'
+revision = '43b8fa701c4d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -79,6 +79,10 @@ def upgrade():
     sa.Column('blinds', sa.String(length=20), nullable=True),
     sa.Column('buy_in_amount', sa.String(length=20), nullable=True),
     sa.Column('starting_stack', sa.String(length=20), nullable=True),
+    sa.Column('place', sa.String(length=100), nullable=True),
+    sa.Column('duration', sa.DateTime(), nullable=True),
+    sa.Column('custom', sa.Boolean(), nullable=True),
+    sa.Column('accessibility', sa.Enum('invite_only', 'unlisted', 'open', name='tournamentaccessibility'), nullable=True),
     sa.Column('status', sa.Enum('open', 'closed', 'waiting_results', name='tournamentstatus'), nullable=True),
     sa.Column('casino_id', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),

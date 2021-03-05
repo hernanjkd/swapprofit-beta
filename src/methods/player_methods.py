@@ -237,6 +237,8 @@ def attach(app):
         return jsonify({'message':'ok'}), 200
 
      # UPDATE MY PROFILE
+    
+
     @app.route('/hendon_availability', methods=['POST'])
     # @role_jwt_required(['user'])
     def check_hendon_availability():
@@ -662,7 +664,7 @@ def attach(app):
 
 
     # GET SPECIFIC TOURNAMENT
-    @app.route('/tournaments/<id>', methods=['GET'])
+    @app.route('/tournaments/official/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_tournaments(user_id, id):
         print('ARGS',request.args)
@@ -691,7 +693,8 @@ def attach(app):
                 flights = flights.order_by(
                     Flights.start_at.asc() if order_method is None else order_method )
 
-            
+            # flights = list(filter(lambda x: x.tournament.custom ==False, flights))
+            # print('flights', flights)
             # Filter by name
             name = request.args.get('name') 
             if name is not None:
@@ -747,11 +750,15 @@ def attach(app):
             else:
                 # Pagination
                 offset, limit = utils.resolve_pagination( request.args )
+                print(flights[0])
+
                 flights = flights.offset( offset ).limit( limit )
-                
+                flights = list(filter(lambda x: x.tournament.custom ==False, flights))
+
+
                 return jsonify([{
                     **f.serialize(),
-                    'casino': f.tournament.casino.serialize_simple(),
+                    'casino': f.tournament.casino.serialize(),
                     # 'address': f.tournament.address,
                     # 'city': f.tournament.city,
                     # 'state': f.tournament.state,
@@ -772,6 +779,125 @@ def attach(app):
         raise APIException('Invalid id', 400)
 
 
+    # GET SPECIFIC TOURNAMENT
+    @app.route('/tournaments/custom/<id>', methods=['GET'])
+    @role_jwt_required(['user'])
+    def get_custom_events(user_id, id):
+        print('ARGS',request.args)
+        # List Flights
+        if id == 'all':
+            
+            # Order by date: ascending or descending
+            order_method = None
+            if request.args.get('asc') == 'true':
+                order_method = Flights.start_at.asc()
+            elif request.args.get('desc') == 'true':
+                order_method = Flights.start_at.desc()
+
+            # Filter past flights and order by default asc
+            if request.args.get('history') == 'true':
+                flights = Flights.get(history=True)
+                flights = flights.order_by(
+                    Flights.start_at.desc() if order_method is None else order_method )
+
+            # Filter current and future flights and order by default desc
+            else:
+                flights = Flights.get(history=False)
+                if flights is None:
+                    return jsonify([])
+
+                flights = flights.order_by(
+                    Flights.start_at.asc() if order_method is None else order_method )
+            # print(flights[4].tournament)
+            # flights = filter(lambda x: x.tournament.custom ==True, flights)
+            # flights.filter(Flights.tournament.custom==False)
+            # Filter by name
+            name = request.args.get('name') 
+            if name is not None:
+                flights = flights.filter( Flights.tournament.has(
+                    Tournaments.name.ilike(f'%{name}%') )) 
+
+
+            # Pagination
+            offset, limit = utils.resolve_pagination( request.args )
+            print(flights[0])
+
+            flights = flights.offset( offset ).limit( limit )
+            flights = list(filter(lambda x: x.tournament.custom ==True, flights))
+                
+            return jsonify([{
+                **f.serialize(),
+                # 'casino': None,
+                'duration': f.tournament.duration,
+                'place': f.tournament.place,
+                # 'address': f.tournament.address,
+                # 'city': f.tournament.city,
+                # 'state': f.tournament.state,
+                # 'zip_code': f.tournament.zip_code,
+                'buy_in': Buy_ins.get_latest( user_id, f.tournament_id ) is not None
+            } for f in flights]), 200
+            
+
+        # Single tournament by id
+        elif id.isnumeric():
+            trmnt = Tournaments.query.get(int(id))
+            if trmnt is None:
+                raise APIException('Tournament not found', 404)
+
+            return jsonify( actions.swap_tracker_json( trmnt, user_id )), 200
+
+
+        raise APIException('Invalid id', 400)
+
+  
+
+    @app.route('/tournament/custom', methods=['POST'])
+    @role_jwt_required(['user'])
+    def add_custom_tournaments(user_id):
+
+        
+        sender = Profiles.query.get(user_id)
+        
+        # Get request json
+        req = request.get_json()
+        utils.check_params(req, 'name', 'start_at', 'duration', 'place', 'accessibility',)
+
+
+        trmntjson = { 
+            # 'casino':None,
+            'name': req['name'], 
+            'custom': True,
+            'start_at': req['start_at'],
+            'duration': req['duration'],
+            'custom_address': req['custom_address'],
+            'place': req['place'], 
+            'accessibility': req['accessibility']
+        }
+            
+        
+
+
+        # Create tournament
+        trmnt = Tournaments( **trmntjson )
+        db.session.add( trmnt )
+        db.session.commit()
+
+        print(trmnt)
+        flightjson = {
+            'start_at':req['start_at'],
+            'day': None
+        }
+            
+        # Create flight
+        db.session.add( Flights(
+            tournament_id=trmnt.id,
+            **flightjson
+        ))
+
+
+        db.session.commit()
+
+        return jsonify({'message':'Your custom event has been added'}), 200
 
     ############### SWAP REQUESTS #################
     

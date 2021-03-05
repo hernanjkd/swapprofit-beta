@@ -341,6 +341,10 @@ class Casinos(db.Model):
             # 'time_zone_name': self.getTimeZoneName()
         }
 
+class TournamentAccessibility(enum.Enum):
+    invite_only = 'invite_only'
+    unlisted = 'unlisted'
+    open = 'open'
 
 class TournamentStatus(enum.Enum):
     open = 'open'
@@ -358,7 +362,13 @@ class Tournaments(db.Model):
     blinds = db.Column(db.String(20))
     buy_in_amount = db.Column(db.String(20))
     starting_stack = db.Column(db.String(20))
+    place = db.Column(db.String(100))
 
+    duration = db.Column(db.DateTime)
+
+    custom = db.Column(db.Boolean, default=False)
+    accessibility = db.Column(db.Enum(TournamentAccessibility), default=TournamentAccessibility.open)
+    custom_address = db.Column(db.String(100))
 
     status = db.Column(db.Enum(TournamentStatus), default=TournamentStatus.open)
     casino_id = db.Column(db.String, db.ForeignKey('casinos.id'))
@@ -428,6 +438,11 @@ class Tournaments(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'custom': self.custom,
+            'custom_address': self.custom_address,
+            'duration': self.duration,
+            'accessibility': self.accessibility._value_,
+            'place': self.place,
             'start_at': self.start_at,
             'casino': self.casino.serialize(),
             'buy_in_amount': self.buy_in_amount,
@@ -447,6 +462,11 @@ class Tournaments(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'custom': self.custom,
+            'custom_address': self.custom_address,
+            'duration': self.duration,
+            'accessibility': self.accessibility._value_,
+            'place': self.place,
             'casino': self.casino.simple_serialize(),
             'start_at': self.start_at,
             'results_link': self.results_link,
@@ -456,7 +476,6 @@ class Tournaments(db.Model):
             'flights': [x.serialize() for x in self.flights],
             'swaps': [x.serialize() for x in self.swaps],
         }
-
 
 
 class Flights(db.Model):
