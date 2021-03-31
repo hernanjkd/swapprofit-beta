@@ -11,21 +11,21 @@ def run():
     Transactions.query.delete()
 
     
-    Results.query.delete()
+    # Results.query.delete()
     Chats.query.delete()
     Devices.query.delete()
     Buy_ins.query.delete()
     Swaps.query.delete()
     Flights.query.delete()
     Tournaments.query.delete()
-    Casinos.query.delete()
+    # Casinos.query.delete()
     Messages.query.delete()
     Profiles.query.delete()
     Users.query.delete()
 
 
     # db.session.execute("ALTER SEQUENCE casinos_id_seq RESTART")
-    db.session.execute("ALTER SEQUENCE results_id_seq RESTART")
+    # db.session.execute("ALTER SEQUENCE results_id_seq RESTART")
     # db.session.execute("ALTER SEQUENCE casinos RESTART")
     db.session.execute("ALTER SEQUENCE users_id_seq RESTART")
 

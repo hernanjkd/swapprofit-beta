@@ -101,6 +101,8 @@ def attach(app):
 
         }
 
+        print(identity)
+
         return jsonify({
             'jwt': jwt.encode(identity, os.environ['JWT_SECRET_KEY'], algorithm='HS256')
         }), 200

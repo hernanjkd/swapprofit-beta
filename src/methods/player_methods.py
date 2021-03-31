@@ -383,6 +383,16 @@ def attach(app):
         db.session.add(buyin)
         db.session.flush()
 
+        tournament = Flights.query.get(flight.tournament_id)
+        print('tournament',tournament)
+        if tournament.custom == True:
+            
+            return jsonify({
+                'buyin_id': buyin.id,
+                # 'receipt_data': regex_data,
+                # 'validation': validation,
+            })
+
         if 'image' not in request.files:
             raise APIException('"image" property missing in the files array', 404)
         
@@ -455,9 +465,7 @@ def attach(app):
         
         # Check casino name
         trmnt_casino = flight.tournament.casino.name
-        print()
         print(trmnt_casino)
-        print()
         validation['casino'] = {
             'ocr': regex_data['casino'],
             'database': trmnt_casino,
@@ -664,6 +672,20 @@ def attach(app):
 
 
     # GET SPECIFIC TOURNAMENT
+    @app.route('/tournaments/<id>', methods=['GET'])
+    @role_jwt_required(['user'])
+    def get_a_tournament(user_id, id):
+        print(user_id, id)
+        trmnt = Tournaments.query.get(int(id))
+        if trmnt is None:
+            raise APIException('Tournament not found', 404)
+
+        return jsonify( actions.swap_tracker_json( trmnt, user_id )), 200
+
+
+        raise APIException('Invalid id', 400)
+
+    # GET SPECIFIC TOURNAMENT
     @app.route('/tournaments/official/<id>', methods=['GET'])
     @role_jwt_required(['user'])
     def get_tournaments(user_id, id):
@@ -830,6 +852,9 @@ def attach(app):
                 # 'casino': None,
                 'duration': f.tournament.duration,
                 'place': f.tournament.place,
+                'custom': f.tournament.custom,
+                'host_id': f.tournament.host_id,
+                'host_name': f.tournament.host_name,
                 # 'address': f.tournament.address,
                 # 'city': f.tournament.city,
                 # 'state': f.tournament.state,
@@ -867,6 +892,8 @@ def attach(app):
             # 'casino':None,
             'name': req['name'], 
             'custom': True,
+            'host_name': sender.first_name + ' ' + sender.last_name,
+            'host_id': user_id,
             'start_at': req['start_at'],
             'duration': req['duration'],
             'custom_address': req['custom_address'],
@@ -885,7 +912,8 @@ def attach(app):
         print(trmnt)
         flightjson = {
             'start_at':req['start_at'],
-            'day': None
+            'day': None,
+            'custom':True
         }
             
         # Create flight
@@ -1602,8 +1630,21 @@ def attach(app):
         if chat is None:
             raise APIException('Chat not found', 404)
 
+        
+
         return jsonify( chat.serialize() )
 
+
+    # GET ALL CHATS TWITH UNREAD MESSAGES
+    # @app.route('/chats/unread')
+    # @role_jwt_required(['user'])
+    # def get_chat(user_id, user2_id=None, chat_id=None):
+
+    # GET ALL MESSAGES IN A CHAT THAT ARE UNREAD
+    # @app.route('/chats/<int:chat_id>')
+    # @app.route('/chats/me/users/<int:user2_id>')
+    # @role_jwt_required(['user'])
+    # def get_chat(user_id, user2_id=None, chat_id=None):
 
     # SENDING A MESSAGE TO CHAT
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])

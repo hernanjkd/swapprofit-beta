@@ -50,10 +50,15 @@ def send_email(template, emails, data={}):
 def send_fcm(user_id, title, body, data={}):
     devices = session.query(Devices).filter( Devices.user_id == user_id )
     # devices = Devices.query.filter( user_id = user_id )
+
     registration_ids = [device.token for device in devices]
+
+    print(registration_ids)
 
     if len(registration_ids) == 0 or push_service is None:
         return False
+
+    print("push", push_service)
 
     result = push_service.notify_multiple_devices(
         registration_ids = registration_ids,

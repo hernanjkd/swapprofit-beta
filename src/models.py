@@ -70,6 +70,7 @@ class Profiles(db.Model):
     user = db.relationship('Users', back_populates='profile', uselist=False)
     buy_ins = db.relationship('Buy_ins', back_populates='user')
     transactions = db.relationship('Transactions', back_populates='user')
+    hosting_events = db.relationship('Tournaments', back_populates='host')
     devices = db.relationship('Devices', back_populates='user')
     
     buyin_update = db.Column(db.Boolean, default=True)
@@ -188,6 +189,7 @@ class Profiles(db.Model):
             'total_swaps': len( self.get_confirmed_swaps() ),
             'roi_rating': self.roi_rating,
             'swap_rating': self.swap_rating,
+            'hosting_events': [x.serialize() for x in self.hosting_events],
             'coins': self.get_coins() - self.get_reserved_coins(),
             'swap_availability_status': self.swap_availability_status._value_,
             'created_at': self.created_at,
@@ -355,6 +357,9 @@ class Tournaments(db.Model):
     __tablename__ = 'tournaments'
 
     id = db.Column(db.Integer, primary_key=True)
+    host_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
+    host_name = db.Column(db.String(100))
+
     name = db.Column(db.String(500), nullable=False)
     start_at = db.Column(db.DateTime)
     results_link = db.Column(db.String(256), default=None)
@@ -380,6 +385,7 @@ class Tournaments(db.Model):
     flights = db.relationship('Flights', back_populates='tournament')
     swaps = db.relationship('Swaps', back_populates='tournament')
     results = db.relationship('Results', back_populates='tournament')
+    host = db.relationship('Profiles', back_populates='hosting_events')
 
 
     def __repr__(self):
@@ -387,10 +393,28 @@ class Tournaments(db.Model):
 
     @staticmethod
     def get_live_upcoming(user_id=False):
+        
+
         close_time = utils.designated_trmnt_close_time()
+        
         trmnts = Tournaments.query \
                     .filter( Tournaments.flights.any(
                         Flights.start_at > close_time ))
+        if user_id:
+            trmnts =  trmnts.filter( Tournaments.flights.any( 
+                    Flights.buy_ins.any( user_id = user_id ))) \
+                .order_by( Tournaments.start_at.asc() )
+
+        return trmnts if trmnts.count() > 0 else None
+    
+    @staticmethod
+    def get_live_upcoming_custom(user_id=False):
+
+        trmnts = Tournaments.query \
+                    .filter( Tournaments.custom == True) \
+                    .filter( Tournaments.flights.any(
+                        Flights.start_at > Tournaments.duration
+                    ))
         if user_id:
             trmnts =  trmnts.filter( Tournaments.flights.any( 
                     Flights.buy_ins.any( user_id = user_id ))) \
@@ -439,12 +463,14 @@ class Tournaments(db.Model):
             'id': self.id,
             'name': self.name,
             'custom': self.custom,
+            'host_id': self.host_id,
+            'host_name': self.host_name,
             'custom_address': self.custom_address,
             'duration': self.duration,
             'accessibility': self.accessibility._value_,
             'place': self.place,
             'start_at': self.start_at,
-            'casino': self.casino.serialize(),
+            # 'casino': self.casino.serialize(),
             'buy_in_amount': self.buy_in_amount,
             'blinds': self.blinds,
             'starting_stack': self.starting_stack,
@@ -464,6 +490,8 @@ class Tournaments(db.Model):
             'name': self.name,
             'custom': self.custom,
             'custom_address': self.custom_address,
+            'host_id': self.host_id,
+            'host_name': self.host_name,
             'duration': self.duration,
             'accessibility': self.accessibility._value_,
             'place': self.place,
@@ -477,6 +505,52 @@ class Tournaments(db.Model):
             'swaps': [x.serialize() for x in self.swaps],
         }
 
+    def serialize2(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'custom': self.custom,
+            'host_id': self.host_id,
+            'host_name': self.host_name,
+            'custom_address': self.custom_address,
+            'duration': self.duration,
+            'accessibility': self.accessibility._value_,
+            'place': self.place,
+            'start_at': self.start_at,
+            'buy_in_amount': self.buy_in_amount,
+            'blinds': self.blinds,
+            'starting_stack': self.starting_stack,
+            'results_link': self.results_link,
+            'structure_link': self.structure_link,
+            'tournament_status': self.status._value_,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'flights': [x.serialize() for x in self.flights],
+            'swaps': [x.serialize() for x in self.swaps],
+            'buy_ins': self.get_all_users_latest_buyins()
+        }
+
+    def serialize2_simple(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'custom': self.custom,
+            'custom_address': self.custom_address,
+            'host_id': self.host_id,
+            'host_name': self.host_name,
+            'duration': self.duration,
+            'accessibility': self.accessibility._value_,
+            'place': self.place,
+            'start_at': self.start_at,
+            'results_link': self.results_link,
+            'tournament_status': self.status._value_,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+            'flights': [x.serialize() for x in self.flights],
+            'swaps': [x.serialize() for x in self.swaps],
+        }
+
+
 
 class Flights(db.Model):
     __tablename__ = 'flights'
@@ -486,6 +560,7 @@ class Flights(db.Model):
     day = db.Column(db.String(5), default=None)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    custom = db.Column(db.Boolean, default=False)
 
     tournament = db.relationship('Tournaments', back_populates='flights')
     buy_ins = db.relationship('Buy_ins', back_populates='flight')
@@ -495,6 +570,7 @@ class Flights(db.Model):
 
     @staticmethod
     def get(history, user_id=False):
+        
         close_time = utils.designated_trmnt_close_time()
         condition = Flights.start_at < close_time if history == True \
                 else Flights.start_at > close_time
@@ -503,6 +579,8 @@ class Flights(db.Model):
             flights = flights.filter( Flights.buy_ins.any( user_id=user_id ) )
         return flights if flights.count() > 0 else None
 
+    
+
     def serialize(self):
         return {
             'id': self.id,
@@ -510,6 +588,7 @@ class Flights(db.Model):
             'tournament': self.tournament.name,
             'start_at': self.start_at,
             'day': self.day,
+            'custom': self.custom,
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
@@ -705,12 +784,15 @@ class Chats(db.Model):
     def serialize(self):
         the_last_message = [x.serialize() for x in self.messages]
         w = the_last_message[-1]['updated_at']
+
+
         return {
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'status': self.status._value_,
             'created_at': self.created_at,
+            'unread_count': 3,
             'updated_at': w,
             'messages': [x.serialize() for x in self.messages]
         }
@@ -721,6 +803,8 @@ class Chats(db.Model):
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'status': self.status._value_,
+            # 'unread_count': ,
+            'unread_count': 4,
             'created_at': self.created_at,
             'updated_at':  self.updated_at,
             'messages': [x.serialize() for x in self.messages]
@@ -736,6 +820,7 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
+            'unread_count': 4,
             'last_message': the_last_message[-1]
         }
 
@@ -747,6 +832,8 @@ class Messages(db.Model):
     message = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    unread = db.Column(db.Boolean, default=True)
 
     chat = db.relationship('Chats', back_populates='messages')
 
@@ -775,4 +862,5 @@ class Messages(db.Model):
             'message': self.message,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
+            'unread': self.unread
         }
