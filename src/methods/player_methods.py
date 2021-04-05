@@ -57,7 +57,6 @@ def attach(app):
 
         return jsonify({'message': 'Please verify your new email'}), 200
 
-
     # TEMPLATE TO CREATE AND SAVE NEW PASSWORD IF FORGOTTEN
     @app.route('/users/reset_password/<token>', methods=['GET','PUT'])
     def html_reset_password(token):
@@ -96,7 +95,6 @@ def attach(app):
         db.session.commit()
 
         return jsonify({'message': 'Your password has been updated'}), 200
-
 
     # RESET PASSWORD
     @app.route('/users/me/password', methods=['PUT'])
@@ -139,8 +137,6 @@ def attach(app):
 
         return jsonify({'message': 'Your password has been changed'}), 200
 
-
-
     @app.route('/users/invite', methods=['POST'])
     @role_jwt_required(['user'])
     def invite_users(user_id):
@@ -155,8 +151,6 @@ def attach(app):
         })
 
         return jsonify({'message':'Invitation sent successfully'})
-
-
 
     # GET A PROFILE
     @app.route('/profiles/<id>', methods=['GET'])
@@ -188,7 +182,6 @@ def attach(app):
 
 
         return jsonify(user.serialize()), 200
-
 
     # CREATE A PROFILE
     @app.route('/profiles', methods=['POST'])
@@ -238,7 +231,6 @@ def attach(app):
 
      # UPDATE MY PROFILE
     
-
     @app.route('/hendon_availability', methods=['POST'])
     # @role_jwt_required(['user'])
     def check_hendon_availability():
@@ -256,8 +248,7 @@ def attach(app):
             if 'https://pokerdb.thehendonmob.com/player.php?a=r&n=' not in req['hendon_url']:
                 raise APIException('You did not submit a valid Hendon Mob profile.', 400)
         return jsonify({'message': 'This Hendon Mob profile is available'}), 200
-
-         
+       
     # UPDATE MY PROFILE
     @app.route('/profiles/me', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -284,7 +275,6 @@ def attach(app):
         db.session.commit()
 
         return jsonify({'message': 'Your profile has been updated'}), 200
-
 
     # UPDATE PROFILE PICTURE
     @app.route('/profiles/image', methods=['PUT'])
@@ -317,7 +307,6 @@ def attach(app):
 
         return jsonify({'profile_pic_url': result['secure_url']}), 200
 
-
     # UPDATE USER NOTIFICATION SETTINGS
     @app.route('/me/notification/setting/update', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -347,7 +336,6 @@ def attach(app):
         db.session.commit()
         return jsonify(prof.serialize())
 
-
     ############### BUYIN REQUESTS ##################
 
     # GET MY MOST RECENT BUYIN
@@ -360,7 +348,6 @@ def attach(app):
             raise APIException('Buy_in not found', 404)
 
         return jsonify(buyin.serialize()), 200
-
 
     # CREATE BUYIN
     @app.route('/me/buy_ins/flight/<int:id>/image', methods=['PUT'])
@@ -505,8 +492,7 @@ def attach(app):
             'validation': validation,
             'ocr_data': ocr_data
         })
-
-        
+     
     # UPDATE BUYIN 
     @app.route('/me/buy_ins/<int:id>', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -670,6 +656,7 @@ def attach(app):
 
         return jsonify({'buy_in': buyin.serialize()})
 
+    ############### TOURNAMENT REQUESTS ##################
 
     # GET SPECIFIC TOURNAMENT
     @app.route('/tournaments/<id>', methods=['GET'])
@@ -722,6 +709,9 @@ def attach(app):
             if name is not None:
                 flights = flights.filter( Flights.tournament.has(
                     Tournaments.name.ilike(f'%{name}%') ))
+                print('My Flights', list(flights))
+                if len(list(flights)) == 0:
+                    return jsonify([{'message':"There are no events under that name in our database"}])
 
 
             # Get zip code LAT LON
@@ -800,7 +790,6 @@ def attach(app):
 
         raise APIException('Invalid id', 400)
 
-
     # GET SPECIFIC TOURNAMENT
     @app.route('/tournaments/custom/<id>', methods=['GET'])
     @role_jwt_required(['user'])
@@ -875,18 +864,15 @@ def attach(app):
         raise APIException('Invalid id', 400)
 
   
-
     @app.route('/tournament/custom', methods=['POST'])
     @role_jwt_required(['user'])
     def add_custom_tournaments(user_id):
-
         
         sender = Profiles.query.get(user_id)
         
         # Get request json
         req = request.get_json()
         utils.check_params(req, 'name', 'start_at', 'duration', 'place', 'accessibility',)
-
 
         trmntjson = { 
             # 'casino':None,
@@ -901,15 +887,11 @@ def attach(app):
             'accessibility': req['accessibility']
         }
             
-        
-
-
         # Create tournament
         trmnt = Tournaments( **trmntjson )
         db.session.add( trmnt )
         db.session.commit()
 
-        print(trmnt)
         flightjson = {
             'start_at':req['start_at'],
             'day': None,
@@ -921,7 +903,6 @@ def attach(app):
             tournament_id=trmnt.id,
             **flightjson
         ))
-
 
         db.session.commit()
 
@@ -1049,7 +1030,6 @@ def attach(app):
             'swap_id': swap.id,
             'message': 'Swap created successfully.'
         }), 200
-
 
     # UPDATE A SWAP
     @app.route('/me/swaps/<int:id>', methods=['PUT'])
@@ -1231,7 +1211,6 @@ def attach(app):
             counter_swap.serialize(),
         ])
 
-
     # GET ACTION IN AN EVENT
     @app.route('/swaps/me/tournament/<int:id>', methods=['GET'])
     @role_jwt_required(['user'])
@@ -1239,7 +1218,6 @@ def attach(app):
 
         prof = Profiles.query.get(user_id)
         return jsonify(prof.get_swaps_actions(id))
-
 
     # PAY SWAPS TO ONE USER, IN ONE EVENT
     @app.route('/users/me/swaps/<int:id>/paid', methods=['PUT'])
@@ -1319,7 +1297,6 @@ def attach(app):
         )
 
         return jsonify({'message':'Swap/s has been paid'})
-
 
     # CONFIRM SWAPS FROM ONE USER, IN ONE EVENT
     @app.route('/users/me/swaps/<int:id>/confirmed', methods=['PUT'])
@@ -1418,20 +1395,17 @@ def attach(app):
 
         return jsonify({'message':'Swap/s has been confirmed'}) 
 
-
     # DISPUTE SWAPS FROM ONE USER, IN ONE TOURNAMENT
     @app.route('/users/me/swaps/<int:id>/disputed', methods=['PUT'])
     @role_jwt_required(['user'])
     def set_swap_disputed(user_id, id):
+
         req = request.get_json()
         utils.check_params(req, 'tournament_id', 'recipient_id')
         prof = Profiles.query.get(user_id)
-
         swap = Swaps.query.get(id)
-
         fullName = prof.first_name + ' ' + prof.last_name
         
-
         if req['tournament_id'] !=  swap.tournament_id \
             or req['recipient_id'] != swap.recipient_id:
             raise APIException('Swap data does not match json data', 400)
@@ -1456,7 +1430,6 @@ def attach(app):
 
         user = Profiles.query.get( user_id )
 
-        # user.swap_rating = user.calculate_swap_rating()
         db.session.commit()
 
         send_fcm(
@@ -1472,7 +1445,6 @@ def attach(app):
         )
 
         return jsonify({'message':'Swap/s has been disputed'}) 
-
 
     # GET SWAP TRACKER (CURRENT/UPCOMING)
     @app.route('/me/swap_tracker', methods=['GET'])
@@ -1493,7 +1465,6 @@ def attach(app):
                 swap_trackers.append( json )
 
         return jsonify( swap_trackers )
-
 
     ############# SWAP TOKEN REQUESTS ###############
 
@@ -1516,7 +1487,6 @@ def attach(app):
         user = Profiles.query.get( user_id )
         return jsonify({'total_coins': user.get_coins()})
 
-
     # GET TRANSACTIONS
     @app.route('/users/me/transactions/report', methods=['GET'])
     @role_jwt_required(['user'])
@@ -1536,11 +1506,11 @@ def attach(app):
     @app.route('/me/chats', methods=['POST'])
     @role_jwt_required(['user'])
     def create_chat(user_id):
-        print('this iuser id numb skiull', user_id)
+
         req = request.get_json()
         utils.check_params(req, 'message', 'user2_id')
-        
         chat = Chats.get(user_id, req['user2_id'])
+
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
         
@@ -1555,8 +1525,10 @@ def attach(app):
         the_message = req['message']
         def chunkstring(string, length):
             return (string[0+i:length+i] for i in range(0, len(string), length))
+        
         chunkedMessage = list(chunkstring(the_message, 100))
         # messages have a 100 char limit, make sure to break it up
+        
         for x in chunkedMessage:
             db.session.add( Messages(
                 chat_id = a_chat['id'],
@@ -1565,18 +1537,10 @@ def attach(app):
             ))
             db.session.commit()
         
-
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
-        print('the data going to message', 
-            "req['user2_id']",req['user2_id'], a_title, chunkedMessage[0],
-            ['id', a_chat['id'],
-                'sender', user_id, 
-                'alert', chunkedMessage[0],
-                'type', 'chat',
-                'initialPath', 'Contacts',
-                'finalPath', 'Chat' ])
         a_prof = Profiles.query.get(req['user2_id'])
+        
         if a_prof.chat_update is True:
             send_fcm(
                 user_id = req['user2_id'],
@@ -1595,28 +1559,97 @@ def attach(app):
 
         return jsonify( chat.serialize() )
 
-
     # GETTING ALL MY CHATS
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
         # chats = Chats.getMine(user_id)
-        chat = Chats.query \
+        chat_list = Chats.query \
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
+
         def takeSecond(elem):
             return elem['updated_at']
-        a_chat = [x.serialize3() for x in chat]
+
+        a_chat = [chat.serialize3() for chat in chat_list]
+        unreadChats = 0
+        
+        for chat in a_chat:
+            print(chat)
+            if chat['user1_id'] != user_id:
+                if chat['unread_messages2'] > 0:
+                    unreadChats = unreadChats + 1
+            elif chat['user2_id'] == user_id:
+                if chat['unread_messages1'] > 0:
+                    unreadChats = unreadChats + 1
+
+        
         a_chat.sort( reverse=True, key=takeSecond )
-        return jsonify(a_chat)
-        # my_chats= []
-        # if chats is not None:
-        #     for chat in chats:
-        #         json = actions.swap_tracker_json( chat, user_id )
-        #         my_chats.append( json )        
-        #     return jsonify( my_chats )
+
+        return jsonify({'chats':a_chat, 'unreadChats': unreadChats})
+
+# GETTING ALL MY CHATS
+    @app.route('/me/chats/unread', methods=['GET'])
+    @role_jwt_required(['user'])
+    def count_my_unread_chats(user_id):
+        # chats = Chats.getMine(user_id)
+        chat_list = Chats.query \
+            .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
+            .order_by( Chats.updated_at.desc() )
 
 
+
+        a_chat = [chat.serialize3() for chat in chat_list]
+
+        unreadChats = 0
+        
+        for chat in a_chat:
+            print('chat', chat['unread_messages2'])
+            if chat['user1_id'] == user_id:
+                print('is user1')
+                if int(chat['unread_messages2']) > 0:
+                    print('adding 1')
+                    unreadChats = unreadChats + 1
+            elif chat['user1_id'] != user_id:
+                print('is user2')
+                if int(chat['unread_messages1']) > 0:
+                    unreadChats = unreadChats + 1
+        print(unreadChats)
+
+        return jsonify({"count":unreadChats})
+
+
+    # READ A CHAT
+    @app.route('/chats/<int:chat_id>/read', methods=['PUT'])
+    @app.route('/chats/me/users/<int:user2_id>/read', methods=['PUT'])
+    @role_jwt_required(['user'])
+    def read_chat(user_id, user2_id=None, chat_id=None):
+
+        if chat_id:
+            chat = Chats.query.get(chat_id)
+            unread_chat_messages =None
+            unread_chat_messages = Messages.query.filter(Messages.chat_id == chat_id) \
+                .filter(Messages.user_id != user_id) \
+                .filter(Messages.unread == True)
+                
+            
+            print('UNREAD MESSAGES', unread_chat_messages)
+            a = 0
+            for message in unread_chat_messages:
+                message.unread = False
+                a = a + 1
+                print("Message #", a, message.user_id, message.message)
+                
+        else:
+            chat = Chats.get(user_id, user2_id)
+        if unread_chat_messages is None:
+            raise APIException('No unread found', 404)
+
+        db.session.commit()
+
+
+        return jsonify( {'message': "Up to date"} )
+    
     # GETTING A SPECIFIC CHAT 
     @app.route('/chats/<int:chat_id>')
     @app.route('/chats/me/users/<int:user2_id>')
@@ -1630,15 +1663,22 @@ def attach(app):
         if chat is None:
             raise APIException('Chat not found', 404)
 
-        
-
         return jsonify( chat.serialize() )
 
-
     # GET ALL CHATS TWITH UNREAD MESSAGES
-    # @app.route('/chats/unread')
+    # @app.route('/chats/unread/<int:chat_id>')
+    # @app.route('/chats/me/users/unread/<int:user2_id>')
     # @role_jwt_required(['user'])
-    # def get_chat(user_id, user2_id=None, chat_id=None):
+    # def get_chat_unread(user_id, user2_id=None, chat_id=None):
+    #     if chat_id:
+    #         chat = Chats.query.get( chat_id )
+    #     else:
+    #         chat = Chats.get(user_id, user2_id)
+    #     if chat is None:
+    #         raise APIException('Chat not found', 404)
+
+    #     return jsonify( chat.serialize() )
+
 
     # GET ALL MESSAGES IN A CHAT THAT ARE UNREAD
     # @app.route('/chats/<int:chat_id>')
@@ -1653,8 +1693,10 @@ def attach(app):
 
         req = utils.check_params( request.get_json(), 'message', 'their_id' )
         the_message = req['message']
+
         def chunkstring(string, length):
             return (string[0+i:length+i] for i in range(0, len(string), length))
+
         chunkedMessage = list(chunkstring(the_message, 100))
         # messages have a 100 char limit, make sure to break it up
         for x in chunkedMessage:
@@ -1686,6 +1728,5 @@ def attach(app):
             print("Not sending")
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
-
 
     return app

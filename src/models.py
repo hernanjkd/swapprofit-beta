@@ -749,6 +749,9 @@ class Chats(db.Model):
     status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    unread_messages1 = db.Column(db.Integer, default=0)
+    unread_messages2 = db.Column(db.Integer, default=0)
+
 
     messages = db.relationship('Messages', back_populates='chat')
     user1 = db.relationship('Profiles', foreign_keys=[user1_id], backref='chats1')
@@ -784,7 +787,18 @@ class Chats(db.Model):
     def serialize(self):
         the_last_message = [x.serialize() for x in self.messages]
         w = the_last_message[-1]['updated_at']
+ 
+        unreadCount1 = 0
+        unreadCount2 = 0
+        
+        for x in self.messages:
+            if x.unread == True:
+                if x.user_id == self.user1_id:
+                    unreadCount1 = unreadCount1 + 1
+                else:
+                    unreadCount2 = unreadCount2 + 1
 
+                
 
         return {
             'id': self.id,
@@ -792,10 +806,12 @@ class Chats(db.Model):
             'user2_id': self.user2_id,
             'status': self.status._value_,
             'created_at': self.created_at,
-            'unread_count': 3,
+            'unread_messages1': unreadCount1,
+            'unread_messages2': unreadCount2,
             'updated_at': w,
             'messages': [x.serialize() for x in self.messages]
         }
+
     def serialize2(self):
 
         return {
@@ -803,16 +819,30 @@ class Chats(db.Model):
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
             'status': self.status._value_,
-            # 'unread_count': ,
-            'unread_count': 4,
+            'unread_messages': 4,
             'created_at': self.created_at,
             'updated_at':  self.updated_at,
             'messages': [x.serialize() for x in self.messages]
 
         }
+
     def serialize3(self):
         the_last_message = [x.serialize() for x in self.messages]
         w = the_last_message[-1]['updated_at']
+
+        unreadCount1 = 0
+        unreadCount2 = 0
+        
+        for x in self.messages:
+            if x.unread == True:
+                if x.user_id == self.user1_id:
+                    unreadCount1 = unreadCount1 + 1
+                else:
+                    unreadCount2 = unreadCount2 + 1
+
+                
+
+
         return {
             'id': self.id,
             'user1_id': self.user1_id,
@@ -820,7 +850,8 @@ class Chats(db.Model):
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
-            'unread_count': 4,
+            'unread_messages1': unreadCount1,
+            'unread_messages2': unreadCount2,
             'last_message': the_last_message[-1]
         }
 

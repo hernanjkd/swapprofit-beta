@@ -10,8 +10,9 @@ import pytz
 def run():
     Transactions.query.delete()
 
-    
+    Casinos.query.delete()
     # Results.query.delete()
+    Messages.query.delete()
     Chats.query.delete()
     Devices.query.delete()
     Buy_ins.query.delete()
@@ -19,7 +20,6 @@ def run():
     Flights.query.delete()
     Tournaments.query.delete()
     # Casinos.query.delete()
-    Messages.query.delete()
     Profiles.query.delete()
     Users.query.delete()
 
@@ -98,7 +98,10 @@ def run():
         casino=oneCasino,
         name="Apple Demo Event '22",
         start_at= d3,
-        buy_in_amount=100
+        buy_in_amount=100,
+        starting_stack = 5000,
+        blinds= 20,
+        structure_link = 'https://www.seminolehardrockpokeropen.com/wp-content/uploads/2021/03/2021-April-2-9-30-6P-Fri-150-Deep-Stack-Green-Chip-Bounty-88-Entry-Maxv....pdf'
     )
     db.session.add(demo1)
     flight1_demo1 = Flights(
@@ -120,7 +123,10 @@ def run():
         casino=oneCasino,
         name="Android Demo Event '22",
         start_at= d4,
-        buy_in_amount=100
+        buy_in_amount=100,
+        starting_stack = 4000,
+        blinds= 21,
+        structure_link = 'https://www.seminolehardrockpokeropen.com/wp-content/uploads/2021/03/2021-April-13-14-11A-7P-140-Showdown-Mega-Turbo-Satellite-Event-.pdf'
     )
     db.session.add(demo2)
     flight1_demo2 = Flights(
