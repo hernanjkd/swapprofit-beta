@@ -1563,32 +1563,18 @@ def attach(app):
     @app.route('/me/chats', methods=['GET'])
     @role_jwt_required(['user'])
     def get_my_chats(user_id):
-        # chats = Chats.getMine(user_id)
+
         chat_list = Chats.query \
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
+        print(chat_list)
+        # Pagination
+        offset, limit = utils.resolve_pagination( request.args )
+        a_chat_list = chat_list.offset( offset ).limit( limit )
 
-        def takeSecond(elem):
-            return elem['updated_at']
+        return jsonify([chat.serialize3() for chat in a_chat_list])
 
-        a_chat = [chat.serialize3() for chat in chat_list]
-        unreadChats = 0
-        
-        for chat in a_chat:
-            print(chat)
-            if chat['user1_id'] != user_id:
-                if chat['unread_messages2'] > 0:
-                    unreadChats = unreadChats + 1
-            elif chat['user2_id'] == user_id:
-                if chat['unread_messages1'] > 0:
-                    unreadChats = unreadChats + 1
-
-        
-        a_chat.sort( reverse=True, key=takeSecond )
-
-        return jsonify({'chats':a_chat, 'unreadChats': unreadChats})
-
-# GETTING ALL MY CHATS
+    # GETTING ALL MY CHATS
     @app.route('/me/chats/unread', methods=['GET'])
     @role_jwt_required(['user'])
     def count_my_unread_chats(user_id):
@@ -1618,8 +1604,7 @@ def attach(app):
 
         return jsonify({"count":unreadChats})
 
-
-    # READ A CHAT
+    # READ ALL MESSAGES IN A CHAT
     @app.route('/chats/<int:chat_id>/read', methods=['PUT'])
     @app.route('/chats/me/users/<int:user2_id>/read', methods=['PUT'])
     @role_jwt_required(['user'])
@@ -1656,35 +1641,25 @@ def attach(app):
     @role_jwt_required(['user'])
     def get_chat(user_id, user2_id=None, chat_id=None):
 
-        if chat_id:
-            chat = Chats.query.get( chat_id )
-        else:
-            chat = Chats.get(user_id, user2_id)
-        if chat is None:
-            raise APIException('Chat not found', 404)
 
-        return jsonify( chat.serialize() )
+        # if chat_id:
+        #     chat = Chats.query.get( chat_id )
+        # else:
+        #     chat = Chats.get(user_id, user2_id)
+        # if chat is None:
+        #     raise APIException('Chat not found', 404)
+        message_list = Messages.query \
+            .filter(Messages.chat_id == chat_id) \
+            .order_by( Messages.created_at.desc() )
 
-    # GET ALL CHATS TWITH UNREAD MESSAGES
-    # @app.route('/chats/unread/<int:chat_id>')
-    # @app.route('/chats/me/users/unread/<int:user2_id>')
-    # @role_jwt_required(['user'])
-    # def get_chat_unread(user_id, user2_id=None, chat_id=None):
-    #     if chat_id:
-    #         chat = Chats.query.get( chat_id )
-    #     else:
-    #         chat = Chats.get(user_id, user2_id)
-    #     if chat is None:
-    #         raise APIException('Chat not found', 404)
+        # Pagination
+        print(message_list)
+        offset, limit = utils.resolve_pagination( request.args )
+        a_chat_list = message_list.offset( offset ).limit( limit )
 
-    #     return jsonify( chat.serialize() )
+        return jsonify([a_chat.serialize() for a_chat in a_chat_list])
 
-
-    # GET ALL MESSAGES IN A CHAT THAT ARE UNREAD
-    # @app.route('/chats/<int:chat_id>')
-    # @app.route('/chats/me/users/<int:user2_id>')
-    # @role_jwt_required(['user'])
-    # def get_chat(user_id, user2_id=None, chat_id=None):
+        # return jsonify( chat.serialize() )
 
     # SENDING A MESSAGE TO CHAT
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
