@@ -746,6 +746,11 @@ class Chats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user1_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     user2_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
+    user1_name = db.Column(db.String(25))
+    user2_name = db.Column(db.String(25))
+    user1_pic = db.Column(db.String(200))
+    user2_pic = db.Column(db.String(200))
+
     status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -798,12 +803,14 @@ class Chats(db.Model):
                 else:
                     unreadCount2 = unreadCount2 + 1
 
-                
-
         return {
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
+            'user1_name': self.user1_name,
+            'user2_name': self.user2_name,
+            'user1_pic': self.user1_pic,
+            'user2_pic': self.user2_pic,
             'status': self.status._value_,
             'created_at': self.created_at,
             'unread_messages1': unreadCount1,
@@ -818,12 +825,15 @@ class Chats(db.Model):
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
+            'user1_name': self.user1_name,
+            'user2_name': self.user2_name,
+            'user1_pic': self.user1_pic,
+            'user2_pic': self.user2_pic,
             'status': self.status._value_,
             'unread_messages': 4,
             'created_at': self.created_at,
             'updated_at':  self.updated_at,
             'messages': [x.serialize() for x in self.messages]
-
         }
 
     def serialize3(self):
@@ -841,12 +851,14 @@ class Chats(db.Model):
                     unreadCount2 = unreadCount2 + 1
 
                 
-
-
         return {
             'id': self.id,
             'user1_id': self.user1_id,
             'user2_id': self.user2_id,
+            'user1_name': self.user1_name,
+            'user2_name': self.user2_name,
+            'user1_pic': self.user1_pic,
+            'user2_pic': self.user2_pic,
             'status': self.status._value_,
             'created_at': self.created_at,
             'updated_at': w,
@@ -861,6 +873,7 @@ class Messages(db.Model):
     chat_id = db.Column(db.Integer, db.ForeignKey('chats.id'))
     user_id = db.Column(db.Integer, nullable=False)
     message = db.Column(db.String(100), nullable=False)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

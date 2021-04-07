@@ -1508,15 +1508,20 @@ def attach(app):
     def create_chat(user_id):
 
         req = request.get_json()
-        utils.check_params(req, 'message', 'user2_id')
+        utils.check_params(req, 'user1_id', 'user2_id', 'user1_name', 'user2_name', 
+            'user1_pic', 'user2_pic', 'message')
         chat = Chats.get(user_id, req['user2_id'])
 
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
-        
+
         chat = Chats(
-            user1_id = user_id,
-            user2_id = req['user2_id']
+            user1_id = req['user1_id'],
+            user2_id = req['user2_id'],
+            user1_name = req['user1_name'],
+            user2_name = req['user2_name'],
+            user1_avatar = req['user1_pic'],
+            user2_avatar = req['user2_pic'],
         )
         db.session.add( chat )
         db.session.commit()
@@ -1618,7 +1623,6 @@ def attach(app):
                 .filter(Messages.unread == True)
                 
             
-            print('UNREAD MESSAGES', unread_chat_messages)
             a = 0
             for message in unread_chat_messages:
                 message.unread = False
@@ -1641,25 +1645,20 @@ def attach(app):
     @role_jwt_required(['user'])
     def get_chat(user_id, user2_id=None, chat_id=None):
 
-
-        # if chat_id:
-        #     chat = Chats.query.get( chat_id )
-        # else:
-        #     chat = Chats.get(user_id, user2_id)
-        # if chat is None:
-        #     raise APIException('Chat not found', 404)
-        message_list = Messages.query \
-            .filter(Messages.chat_id == chat_id) \
-            .order_by( Messages.created_at.desc() )
+        if user2_id != None:
+            message_list = Chats.query \
+                .filter(or_(Chats.user1_id == user2_id, Chats.user2_id == user2_id )) \
+                .order_by( Chats.created_at.desc() )
+        else:
+            message_list = Messages.query \
+                .filter(Messages.chat_id == chat_id) \
+                .order_by( Messages.created_at.desc() )
 
         # Pagination
-        print(message_list)
         offset, limit = utils.resolve_pagination( request.args )
         a_chat_list = message_list.offset( offset ).limit( limit )
 
         return jsonify([a_chat.serialize() for a_chat in a_chat_list])
-
-        # return jsonify( chat.serialize() )
 
     # SENDING A MESSAGE TO CHAT
     @app.route('/messages/me/chats/<int:chat_id>', methods=['POST'])
@@ -1692,8 +1691,11 @@ def attach(app):
                 title = a_title,
                 body = chunkedMessage[0],
                 data = {
-                    'id': chat_id,
+                    'id': id,
+                    'chat_id': chat_id,
                     'sender': user_id, 
+                    'profile_pic_url':a_prof.profile_pic_url,
+                    'first_name':a_prof.first_name,
                     'alert': chunkedMessage[0],
                     'type': 'chat',
                     'initialPath': 'Contacts',
@@ -1703,5 +1705,16 @@ def attach(app):
             print("Not sending")
 
         return jsonify( Chats.query.get( chat_id ).serialize() )
+
+    #GET MAEESAGWE
+    @app.route('/messages/<int:message_id>', methods=['GET'])
+    @role_jwt_required(['user'])
+    def get_message(user_id, message_id):
+        req = utils.check_params( request.get_json(), 'message_id' )
+
+        print('LOL', req['message_id'])
+
+        return jsonify( Messages.query.get( req['message_id'] ).serialize() )
+
 
     return app
