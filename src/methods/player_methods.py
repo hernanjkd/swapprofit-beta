@@ -172,7 +172,7 @@ def attach(app):
             raise APIException('Invalid id: ' + id, 400)
 
         user = Profiles.query.get(int(id))
-        print('User is:', user)
+        # print('User is:', user)
         # print(user.sending_swaps)
         # print('coins',user.get_coins())
         # print('reserved', user.get_reserved_coins())
@@ -1515,13 +1515,17 @@ def attach(app):
         if chat is not None:
             raise APIException('Chat already exists with id '+ str(chat.id), 400)
 
+        # print(req['user1_name'])
+        # print(req['user2_name'])
+        # print(req['user1_pic'])
+        # print(req['user2_pic'])
         chat = Chats(
             user1_id = req['user1_id'],
             user2_id = req['user2_id'],
             user1_name = req['user1_name'],
             user2_name = req['user2_name'],
-            user1_avatar = req['user1_pic'],
-            user2_avatar = req['user2_pic'],
+            user1_pic = req['user1_pic'],
+            user2_pic = req['user2_pic'],
         )
         db.session.add( chat )
         db.session.commit()
@@ -1572,7 +1576,7 @@ def attach(app):
         chat_list = Chats.query \
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
-        print(chat_list)
+
         # Pagination
         offset, limit = utils.resolve_pagination( request.args )
         a_chat_list = chat_list.offset( offset ).limit( limit )
@@ -1588,24 +1592,22 @@ def attach(app):
             .filter(or_(Chats.user1_id == user_id, Chats.user2_id == user_id )) \
             .order_by( Chats.updated_at.desc() )
 
-
-
         a_chat = [chat.serialize3() for chat in chat_list]
 
         unreadChats = 0
         
         for chat in a_chat:
-            print('chat', chat['unread_messages2'])
+            # print('chat', chat['unread_messages2'])
             if chat['user1_id'] == user_id:
-                print('is user1')
+                # print('is user1')
                 if int(chat['unread_messages2']) > 0:
                     print('adding 1')
                     unreadChats = unreadChats + 1
             elif chat['user1_id'] != user_id:
-                print('is user2')
+                # print('is user2')
                 if int(chat['unread_messages1']) > 0:
                     unreadChats = unreadChats + 1
-        print(unreadChats)
+        # print(unreadChats)
 
         return jsonify({"count":unreadChats})
 
@@ -1644,19 +1646,27 @@ def attach(app):
     @app.route('/chats/me/users/<int:user2_id>')
     @role_jwt_required(['user'])
     def get_chat(user_id, user2_id=None, chat_id=None):
-
+        print('user2', user2_id)
         if user2_id != None:
+            print('user2', user2_id)
+            a_prof = Profiles.query.get(user2_id)
+            print('aprof ', a_prof)
             message_list = Chats.query \
-                .filter(or_(Chats.user1_id == user2_id, Chats.user2_id == user2_id )) \
+                .filter(or_(Chats.user1 == a_prof, Chats.user2 == a_prof )) \
                 .order_by( Chats.created_at.desc() )
         else:
             message_list = Messages.query \
                 .filter(Messages.chat_id == chat_id) \
                 .order_by( Messages.created_at.desc() )
 
+        # print('message_lisy', message_list)
+        # print('message_lisy', [a_chat.serialize() for a_chat in message_list])
+
         # Pagination
         offset, limit = utils.resolve_pagination( request.args )
         a_chat_list = message_list.offset( offset ).limit( limit )
+        
+        print('message_lisy', [a_chat.serialize() for a_chat in a_chat_list])
 
         return jsonify([a_chat.serialize() for a_chat in a_chat_list])
 
@@ -1665,13 +1675,15 @@ def attach(app):
     @role_jwt_required(['user'])
     def send_message(user_id, chat_id):
 
-        req = utils.check_params( request.get_json(), 'message', 'their_id' )
+        req = utils.check_params( request.get_json(), 'user_id', 'message', 'their_id' )
         the_message = req['message']
-
+        print('check 1')
         def chunkstring(string, length):
             return (string[0+i:length+i] for i in range(0, len(string), length))
 
         chunkedMessage = list(chunkstring(the_message, 100))
+        print('check 2')
+
         # messages have a 100 char limit, make sure to break it up
         for x in chunkedMessage:
             db.session.add( Messages(
@@ -1680,20 +1692,24 @@ def attach(app):
                 message = x
             ))
             db.session.commit()
+        
+        print('check 3')
 
         sender = Profiles.query.get(user_id)
         a_title = f'{sender.get_name()}'
-
+        print('check 4')
         a_prof = Profiles.query.get(req['their_id'])
+        z = Chats.query.get( chat_id )
+
+        print(chat_id, chat_id, user_id, chunkedMessage[0], )
         if a_prof.chat_update is True:
             send_fcm(
                 user_id = req['their_id'],
                 title = a_title,
                 body = chunkedMessage[0],
                 data = {
-                    'id': id,
-                    'chat_id': chat_id,
-                    'sender': user_id, 
+                    'id': chat_id,
+                    'sender': user_id,
                     'profile_pic_url':a_prof.profile_pic_url,
                     'first_name':a_prof.first_name,
                     'alert': chunkedMessage[0],
@@ -1703,8 +1719,9 @@ def attach(app):
             )
         else:
             print("Not sending")
-
-        return jsonify( Chats.query.get( chat_id ).serialize() )
+        print('check 5')
+        
+        return jsonify(  the_message )
 
     #GET MAEESAGWE
     @app.route('/messages/<int:message_id>', methods=['GET'])
@@ -1715,6 +1732,35 @@ def attach(app):
         print('LOL', req['message_id'])
 
         return jsonify( Messages.query.get( req['message_id'] ).serialize() )
+
+    #GET MAEESAGWE
+    @app.route('/user/<int:user_id>/chats/<int:chat_id>/messages', methods=['GET'])
+    @role_jwt_required(['user'])
+    def recieve_messages(user_id, chat_id):
+        # req = utils.check_params( request.get_json(), 'user_id' )
+        # print('chat_id', chat_id, user_id, req["user_id"])
+        print('user-di', user_id)
+        if chat_id:
+            chat = Chats.query.get(chat_id)
+            unread_chat_messages = None
+            unread_chat_messages = Messages.query.filter(Messages.chat_id == chat_id).all()
+            unread_chat_messages = [message for message in unread_chat_messages if message.user_id != user_id]
+            unread_chat_messages = [message for message in unread_chat_messages if message.unread == True]
+
+            # for message in unread_chat_messages:
+            #     print('message', message)
+            
+                
+                # .filter(Messages.unread == True)
+            
+            for message in unread_chat_messages:
+                print('message', message.serialize())
+            
+            return jsonify([message.serialize() for message in unread_chat_messages])
+            # return (message.serialize() for message in unread_chat_messages)
+        else:
+            raise APIException("This isnt a real chat", 400)
+
 
 
     return app

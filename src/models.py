@@ -174,7 +174,7 @@ class Profiles(db.Model):
         for swap in self.sending_swaps:
             if swap.status._value_ in status_to_consider:
                 reserved_coins += swap.cost
-        print('reserved_coins',reserved_coins)
+        # print('reserved_coins',reserved_coins)
         return reserved_coins        
 
     def serialize(self):
@@ -746,10 +746,10 @@ class Chats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user1_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
     user2_id = db.Column(db.Integer, db.ForeignKey('profiles.id'))
-    user1_name = db.Column(db.String(25))
-    user2_name = db.Column(db.String(25))
-    user1_pic = db.Column(db.String(200))
-    user2_pic = db.Column(db.String(200))
+    user1_name = db.Column(db.String(25), nullable=False)
+    user2_name = db.Column(db.String(25), nullable=False)
+    user1_pic = db.Column(db.String(200), nullable=False)
+    user2_pic = db.Column(db.String(200), nullable=False)
 
     status = db.Column(db.Enum(ChatStatus), default=ChatStatus.opened)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -762,7 +762,7 @@ class Chats(db.Model):
     user1 = db.relationship('Profiles', foreign_keys=[user1_id], backref='chats1')
     user2 = db.relationship('Profiles', foreign_keys=[user2_id], backref='chats2')
 
-    def __init__(self, user1_id, user2_id):
+    def __init__(self, user1_id, user2_id, user1_name, user2_name, user1_pic, user2_pic):
         if user1_id == user2_id:
             raise utils.APIException('user1 and user2 must be different users', 400)
 
@@ -771,9 +771,13 @@ class Chats(db.Model):
             raise utils.APIException('User2 not found', 404)
         self.user1_id = user1_id
         self.user2_id = user2_id
+        self.user1_name = user1_name
+        self.user2_name = user2_name
+        self.user1_pic = user1_pic
+        self.user2_pic = user2_pic
 
     def __repr__(self):
-        return f'<Chats user1={self.user1_id} user2={self.user2_id}>'
+        return f'<Chats user1={self.user1_id} user2={self.user2_id} user1_name={self.user1_name} user2_name={self.user2_name} >'
 
     @staticmethod
     def get(user1_id, user2_id):
