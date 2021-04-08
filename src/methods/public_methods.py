@@ -68,7 +68,7 @@ def attach(app):
 
         req = request.get_json()
         check_params(req, 'email', 'password', 'device_token')
-
+        print(os.environ['API_HOST'])
         user = Users.query.filter_by( 
             email=req['email'], password=sha256(req['password']) ).first()
 
