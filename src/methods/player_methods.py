@@ -1718,7 +1718,7 @@ def attach(app):
                     'finalPath': 'Chat' }
             )
         else:
-            print("Not sending")
+            print("Not sending ok")
         print('check 5')
         
         return jsonify(  the_message )
